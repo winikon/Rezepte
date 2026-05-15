@@ -6,17 +6,17 @@
     <title>Meine Rezept-App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; }
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-track { background: #E6E4DD; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
+            border-top: 4px solid #dc2626; /* Roter Spinner passend zum Logo */
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -24,176 +24,164 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); }
+        /* Angepasster Glass-Effekt an die neue Hintergrundfarbe */
+        .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 h-screen flex flex-col overflow-hidden">
+<body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
-    <!-- LADEBILDSCHIRM -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-white z-[60] flex flex-col items-center justify-center">
+    <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center">
         <div class="loader mb-4"></div>
-        <p class="text-gray-500 font-medium" id="loadingText">App wird geladen...</p>
+        <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
-    <!-- ANSICHT 0: LOGIN & REGISTRIERUNG -->
-    <div id="loginView" class="hidden fixed inset-0 bg-gray-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-100">
+    <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                </div>
+                <img src="logomr78brutalist.png" alt="mr 78 Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm">
+                
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
 
             <form id="authForm" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">E-Mail Adresse</label>
-                    <input type="email" id="authEmail" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="deine@email.de">
+                    <label class="block text-sm font-medium text-gray-800 mb-1">E-Mail Adresse</label>
+                    <input type="email" id="authEmail" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="deine@email.de">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Passwort</label>
-                    <input type="password" id="authPassword" required minlength="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Min. 6 Zeichen">
+                    <label class="block text-sm font-medium text-gray-800 mb-1">Passwort</label>
+                    <input type="password" id="authPassword" required minlength="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="Min. 6 Zeichen">
                 </div>
                 
-                <div id="authError" class="hidden text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg">Fehler bei der Anmeldung.</div>
+                <div id="authError" class="hidden text-red-600 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">Fehler bei der Anmeldung.</div>
 
-                <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">
+                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">
                     Einloggen
                 </button>
             </form>
 
             <div class="mt-6 text-center">
-                <button type="button" id="toggleAuthModeBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
+                <button type="button" id="toggleAuthModeBtn" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
                     Neu hier? Jetzt registrieren
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- HEADER (App Navigation) -->
-    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100">
+    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <div class="bg-blue-600 text-white p-2 rounded-lg shadow-md shadow-blue-200">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            </div>
-            <h1 class="text-xl font-bold text-gray-800 tracking-tight">Meine Rezepte</h1>
+            <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Meine Rezepte</h1>
         </div>
         
         <div class="flex-1 max-w-xl relative" id="searchContainer">
-            <input type="text" id="searchInput" placeholder="Rezepte durchsuchen..." class="w-full pl-11 pr-4 py-2.5 bg-gray-100 border-transparent focus:bg-white border focus:border-blue-300 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
+            <input type="text" id="searchInput" placeholder="Rezepte durchsuchen..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 focus:border-red-500 rounded-full focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner">
             <svg class="w-5 h-5 text-gray-400 absolute left-4 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-            <button id="importBtn" class="flex-shrink-0 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-indigo-200">
+            <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                 Import
             </button>
-            <button id="newRecipeBtn" class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-blue-500/30 transition-all flex items-center gap-2">
+            <button id="newRecipeBtn" class="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-red-500/30 transition-all flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Neu
             </button>
-            <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors" title="Abmelden">
+            <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Abmelden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
         </div>
     </header>
 
-    <!-- HAUPTBEREICH -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative">
 
-        <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-6xl mx-auto block">
             <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2" id="filterTagsContainer">
-                <span class="text-sm font-semibold text-gray-500 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+                <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
             </div>
-            <div id="activeFilterNote" class="hidden mb-6 bg-blue-50 text-blue-800 px-4 py-3 rounded-xl flex items-center justify-between border border-blue-100">
+            <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
-                <button id="clearFilterBtn" class="text-blue-600 hover:text-blue-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-blue-100 transition-colors">Filter aufheben</button>
+                <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="recipeGrid"></div>
             
-            <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300 mt-8">
-                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-800">Noch keine Rezepte</h3>
-                <p class="text-gray-500 mt-2 max-w-sm mx-auto">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
+                <h3 class="text-xl font-bold text-gray-900">Noch keine Rezepte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
         </div>
 
-        <!-- ANSICHT 2: REZEPT DETAILS -->
-        <div id="detailView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-gray-50/80 p-4 border-b border-gray-100 flex items-center justify-between backdrop-blur-sm sticky top-0 z-10">
-                <button class="backToHomeBtn flex items-center gap-2 text-gray-600 hover:text-blue-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200">
+        <div id="detailView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToHomeBtn flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Zurück
                 </button>
                 <div class="flex gap-2">
-                    <button id="editRecipeBtn" class="text-blue-600 hover:bg-blue-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors">
+                    <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         Bearbeiten
                     </button>
-                    <button id="deleteRecipeBtn" class="text-red-500 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors">
+                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         Löschen
                     </button>
                 </div>
             </div>
             
-            <!-- Bild-Header -->
-            <div id="detailImageContainer" class="w-full h-64 md:h-96 bg-gray-100 hidden">
+            <div id="detailImageContainer" class="w-full h-64 md:h-96 bg-gray-200 hidden border-b border-gray-200">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
             </div>
 
             <div class="p-6 md:p-10">
                 <div class="flex flex-wrap gap-2 mb-4" id="detailTags"></div>
-                <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-8 tracking-tight" id="detailTitle">Rezept Titel</h2>
+                <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-8 tracking-tight" id="detailTitle">Rezept Titel</h2>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div class="lg:col-span-1 bg-blue-50/40 p-6 rounded-2xl border border-blue-100/50 h-fit">
-                        <h3 class="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <div class="lg:col-span-1 bg-[#E6E4DD]/50 p-6 rounded-2xl border border-gray-300 h-fit shadow-sm">
+                        <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-300 pb-2">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             Zutaten
                         </h3>
                         <ul class="space-y-3" id="detailIngredients"></ul>
                     </div>
 
                     <div class="lg:col-span-2">
-                        <h3 class="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-2">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Zubereitung
                         </h3>
-                        <div class="prose prose-blue prose-lg max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed" id="detailInstructions"></div>
+                        <div class="prose prose-red prose-lg max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed" id="detailInstructions"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ANSICHT 3: FORMULAR -->
-        <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-             <div class="bg-gray-50/80 p-4 border-b border-gray-100 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-                <button class="backToHomeBtn flex items-center gap-2 text-gray-600 hover:text-blue-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200">
+        <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden">
+             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToHomeBtn flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     Abbrechen
                 </button>
-                <h3 class="font-bold text-gray-800" id="formHeaderTitle">Neues Rezept</h3>
-                <div class="w-24"></div> <!-- Spacer -->
-            </div>
+                <h3 class="font-bold text-gray-900" id="formHeaderTitle">Neues Rezept</h3>
+                <div class="w-24"></div> </div>
 
             <div class="p-6 md:p-10">
-                <!-- Import URL Bereich -->
-                <div id="importSection" class="mb-10 bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 hidden">
-                    <h3 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
+                    <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                         Rezept aus dem Internet importieren
                     </h3>
-                    <p class="text-sm text-indigo-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App versucht, die Daten automatisch auszufüllen.</p>
+                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App versucht, die Daten automatisch auszufüllen.</p>
                     <div class="flex gap-2">
-                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <button type="button" id="startImportBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
+                        <button type="button" id="startImportBtn" class="bg-gray-800 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
                             Auslesen
                         </button>
                     </div>
@@ -201,23 +189,21 @@
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
-                    <!-- Bild Upload -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Rezeptbild</label>
+                        <label class="block text-sm font-bold text-gray-800 mb-2">Rezeptbild</label>
                         <div class="flex items-center gap-6">
-                            <div id="imagePreviewContainer" class="w-32 h-32 bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden relative group">
+                            <div id="imagePreviewContainer" class="w-32 h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden relative group">
                                 <span id="imagePreviewPlaceholder" class="text-gray-400 flex flex-col items-center">
                                     <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     <span class="text-xs">Kein Bild</span>
                                 </span>
                                 <img id="formImagePreview" src="" class="hidden recipe-image-preview">
-                                <!-- Overlay zum Löschen -->
-                                <button type="button" id="removeImageBtn" class="hidden absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button type="button" id="removeImageBtn" class="hidden absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                             </div>
                             <div class="flex-1">
-                                <label class="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-xl transition-colors inline-block shadow-sm">
+                                <label class="cursor-pointer bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2.5 px-5 rounded-xl transition-colors inline-block shadow-sm">
                                     <span>Foto auswählen...</span>
                                     <input type="file" id="imageInput" accept="image/*" class="hidden">
                                 </label>
@@ -226,26 +212,23 @@
                         </div>
                     </div>
 
-                    <!-- Titel -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Rezept Name <span class="text-red-500">*</span></label>
-                        <input type="text" id="formTitle" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-xl font-medium" placeholder="z.B. Omas Apfelkuchen">
+                        <label class="block text-sm font-bold text-gray-800 mb-1">Rezept Name <span class="text-red-600">*</span></label>
+                        <input type="text" id="formTitle" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors text-xl font-bold text-gray-900 shadow-sm" placeholder="z.B. Omas Apfelkuchen">
                     </div>
 
-                    <!-- Tags -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Kategorien / Tags <span class="text-gray-400 font-normal">(Tippen und Enter drücken)</span></label>
-                        <div class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white transition-colors flex flex-wrap gap-2 items-center" id="tagInputContainer">
+                        <label class="block text-sm font-bold text-gray-800 mb-1">Kategorien / Tags <span class="text-gray-500 font-normal font-medium">(Tippen und Enter drücken)</span></label>
+                        <div class="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-red-600 focus-within:border-transparent transition-colors flex flex-wrap gap-2 items-center shadow-sm" id="tagInputContainer">
                             <div id="activeTagsContainer" class="flex flex-wrap gap-2"></div>
-                            <input type="text" id="formTagInput" class="flex-1 bg-transparent border-none focus:outline-none min-w-[150px] py-1 px-2" placeholder="z.B. Vegan, Dessert...">
+                            <input type="text" id="formTagInput" class="flex-1 bg-transparent border-none focus:outline-none min-w-[150px] py-1 px-2 text-gray-900" placeholder="z.B. Vegan, Dessert...">
                         </div>
                     </div>
 
-                    <!-- Zutaten -->
-                    <div class="bg-blue-50/30 p-5 rounded-2xl border border-blue-100">
+                    <div class="bg-[#E6E4DD]/40 p-5 rounded-2xl border border-gray-300 shadow-inner">
                         <div class="flex items-center justify-between mb-4">
-                            <label class="block text-base font-bold text-gray-800">Zutaten</label>
-                            <button type="button" id="addIngredientBtn" class="text-sm bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg shadow-sm transition-colors">
+                            <label class="block text-lg font-black text-gray-900">Zutaten</label>
+                            <button type="button" id="addIngredientBtn" class="text-sm bg-white border border-gray-300 text-gray-800 hover:text-red-600 hover:border-red-200 font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg shadow-sm transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 Zeile hinzufügen
                             </button>
@@ -253,23 +236,19 @@
                         
                         <datalist id="ingredientSuggestions"></datalist>
 
-                        <!-- NEUE REIHENFOLGE: Zutat | Einheit | Menge -->
-                        <div class="grid grid-cols-12 gap-2 mb-2 text-xs font-bold text-gray-500 uppercase px-2 tracking-wider">
+                        <div class="grid grid-cols-12 gap-2 mb-2 text-xs font-bold text-gray-600 uppercase px-2 tracking-wider">
                             <div class="col-span-5 md:col-span-6">Zutat</div>
                             <div class="col-span-3">Einheit</div>
                             <div class="col-span-3 md:col-span-2">Menge</div>
                         </div>
 
                         <div id="ingredientsList" class="space-y-2">
-                            <!-- Template Row -->
-                            <div class="ingredient-row grid grid-cols-12 gap-2 items-center bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm">
-                                <!-- 1. Zutat -->
+                            <div class="ingredient-row grid grid-cols-12 gap-2 items-center bg-white p-1.5 rounded-xl border border-gray-300 shadow-sm">
                                 <div class="col-span-5 md:col-span-6">
-                                    <input type="text" list="ingredientSuggestions" class="ingredient-name w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400" placeholder="Zutat...">
+                                    <input type="text" list="ingredientSuggestions" class="ingredient-name w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400 font-medium text-gray-900" placeholder="Zutat...">
                                 </div>
-                                <!-- 2. Einheit -->
-                                <div class="col-span-3 border-l border-gray-100">
-                                    <select class="ingredient-unit w-full px-2 py-2 bg-transparent border-none focus:outline-none focus:ring-0 text-gray-700 cursor-pointer">
+                                <div class="col-span-3 border-l border-gray-200">
+                                    <select class="ingredient-unit w-full px-2 py-2 bg-transparent border-none focus:outline-none focus:ring-0 text-gray-800 font-medium cursor-pointer">
                                         <option value="g">g</option>
                                         <option value="kg">kg</option>
                                         <option value="ml">ml</option>
@@ -290,13 +269,11 @@
                                         <option value="">--</option>
                                     </select>
                                 </div>
-                                <!-- 3. Menge -->
-                                <div class="col-span-3 md:col-span-2 border-l border-gray-100">
-                                    <input type="text" class="ingredient-amount w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400" placeholder="1/2, 100...">
+                                <div class="col-span-3 md:col-span-2 border-l border-gray-200">
+                                    <input type="text" class="ingredient-amount w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400 font-medium text-gray-900" placeholder="1/2, 100...">
                                 </div>
-                                <!-- 4. Löschen Button -->
-                                <div class="col-span-1 flex justify-center border-l border-gray-100">
-                                    <button type="button" class="remove-ingredient text-gray-400 hover:text-red-500 p-1.5 transition-colors rounded-lg hover:bg-red-50">
+                                <div class="col-span-1 flex justify-center border-l border-gray-200">
+                                    <button type="button" class="remove-ingredient text-gray-400 hover:text-red-600 p-1.5 transition-colors rounded-lg hover:bg-red-50">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </div>
@@ -304,15 +281,13 @@
                         </div>
                     </div>
 
-                    <!-- Zubereitung -->
                     <div>
-                        <label class="block text-base font-bold text-gray-800 mb-2">Zubereitungsschritte <span class="text-red-500">*</span></label>
-                        <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors leading-relaxed" placeholder="1. Zwiebeln anbraten...&#10;2. Tomaten hinzugeben..."></textarea>
+                        <label class="block text-lg font-black text-gray-900 mb-2">Zubereitungsschritte <span class="text-red-600">*</span></label>
+                        <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="1. Zwiebeln anbraten...&#10;2. Tomaten hinzugeben..."></textarea>
                     </div>
 
-                    <!-- Submit -->
-                    <div class="pt-6 border-t border-gray-100 flex justify-end">
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-10 rounded-2xl shadow-lg transition-transform transform hover:-translate-y-1 flex items-center gap-2">
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit" class="bg-gray-900 hover:bg-black text-white font-bold py-4 px-10 rounded-2xl shadow-xl transition-transform transform hover:-translate-y-1 flex items-center gap-2 border border-gray-800">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Rezept speichern
                         </button>
@@ -322,7 +297,6 @@
         </div>
     </main>
 
-    <!-- FIREBASE & LOGIK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -365,7 +339,8 @@
         const searchInput = document.getElementById('searchInput');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
-        const tagColors = ['bg-red-100 text-red-700', 'bg-orange-100 text-orange-700', 'bg-amber-100 text-amber-700', 'bg-green-100 text-green-700', 'bg-emerald-100 text-emerald-700', 'bg-teal-100 text-teal-700', 'bg-cyan-100 text-cyan-700', 'bg-blue-100 text-blue-700', 'bg-indigo-100 text-indigo-700', 'bg-violet-100 text-violet-700', 'bg-purple-100 text-purple-700', 'bg-pink-100 text-pink-700'];
+        // Farbpalette für Tags anpassen (etwas gedecktere, brutalere Töne)
+        const tagColors = ['bg-red-100 text-red-800 border border-red-200', 'bg-gray-200 text-gray-800 border border-gray-300', 'bg-orange-100 text-orange-800 border border-orange-200', 'bg-stone-200 text-stone-800 border border-stone-300', 'bg-neutral-200 text-neutral-800 border border-neutral-300'];
         function getColorForTag(tag) {
             let hash = 0;
             for (let i = 0; i < tag.length; i++) hash = tag.charCodeAt(i) + ((hash << 5) - hash);
@@ -576,13 +551,13 @@
             const allTags = new Set();
             recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
 
-            container.innerHTML = '<span class="text-sm font-semibold text-gray-500 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>';
+            container.innerHTML = '<span class="text-sm font-bold text-gray-800 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>';
             
             Array.from(allTags).sort().forEach(tag => {
                 const isActive = tag === activeFilter;
                 const colors = getColorForTag(tag);
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${isActive ? 'ring-2 ring-offset-2 ring-blue-500 shadow-md ' + colors : 'opacity-80 hover:opacity-100 hover:shadow ' + colors}`;
+                btn.className = `px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${isActive ? 'ring-2 ring-offset-2 ring-red-600 shadow-md ' + colors : 'opacity-80 hover:opacity-100 hover:shadow ' + colors}`;
                 btn.textContent = tag;
                 btn.addEventListener('click', () => {
                     activeFilter = isActive ? null : tag;
@@ -629,11 +604,11 @@
                 count++;
                 
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full";
+                card.className = "bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full";
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
                 const cardHeader = document.createElement('div');
-                cardHeader.className = "h-48 bg-gray-100 flex items-center justify-center relative overflow-hidden";
+                cardHeader.className = "h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden border-b border-gray-200";
                 
                 if (recipe.imageBase64) {
                     const img = document.createElement('img');
@@ -641,9 +616,9 @@
                     img.className = "w-full h-full object-cover";
                     cardHeader.appendChild(img);
                 } else {
-                    cardHeader.className += " bg-gradient-to-br from-blue-50 to-indigo-50";
+                    cardHeader.className += " bg-gradient-to-br from-gray-100 to-gray-200";
                     const icon = document.createElement('div');
-                    icon.className = "w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl font-bold text-blue-600";
+                    icon.className = "w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800";
                     icon.textContent = recipe.title.charAt(0).toUpperCase();
                     cardHeader.appendChild(icon);
                 }
@@ -652,7 +627,7 @@
                 cardBody.className = "p-5 flex-1 flex flex-col";
 
                 const title = document.createElement('h3');
-                title.className = "text-xl font-bold text-gray-800 mb-3 line-clamp-2";
+                title.className = "text-xl font-bold text-gray-900 mb-3 line-clamp-2";
                 title.textContent = recipe.title;
 
                 const tagsContainer = document.createElement('div');
@@ -660,14 +635,14 @@
                 if (recipe.tags) {
                     recipe.tags.slice(0, 3).forEach(tag => {
                         const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-medium ${getColorForTag(tag)}`;
+                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold ${getColorForTag(tag)}`;
                         t.textContent = tag;
                         tagsContainer.appendChild(t);
                     });
                 }
 
                 const preview = document.createElement('p');
-                preview.className = "text-sm text-gray-500 line-clamp-2 mt-auto";
+                preview.className = "text-sm text-gray-600 line-clamp-2 mt-auto font-medium";
                 preview.textContent = recipe.ingredients ? recipe.ingredients.map(i => i.name).join(', ') : '';
 
                 cardBody.appendChild(title);
@@ -718,10 +693,10 @@
             if (recipe.ingredients) {
                 recipe.ingredients.forEach(ing => {
                     const li = document.createElement('li');
-                    li.className = "flex justify-between items-center pb-2 border-b border-blue-100/50 last:border-0";
+                    li.className = "flex justify-between items-center pb-2 border-b border-gray-300 last:border-0";
                     li.innerHTML = `
-                        <span class="font-medium text-gray-800">${ing.name}</span>
-                        <span class="text-gray-700 font-medium bg-white px-2 py-1 rounded-md shadow-sm text-sm border border-gray-100">${ing.amount ? ing.amount : ''} ${ing.unit ? ing.unit : ''}</span>
+                        <span class="font-bold text-gray-900">${ing.name}</span>
+                        <span class="text-gray-800 font-bold bg-white px-2 py-1 rounded-md shadow-sm text-sm border border-gray-200">${ing.amount ? ing.amount : ''} ${ing.unit ? ing.unit : ''}</span>
                     `;
                     ingList.appendChild(li);
                 });
@@ -943,7 +918,7 @@
             if (!currentUser) return;
 
             const submitBtn = e.target.querySelector('button[type="submit"]');
-            submitBtn.innerHTML = '<div class="loader inline-block border-2 w-5 h-5 mr-2"></div> Speichere...';
+            submitBtn.innerHTML = '<div class="loader inline-block border-2 w-5 h-5 mr-2" style="border-top-color: white;"></div> Speichere...';
             submitBtn.disabled = true;
 
             const ingredients = [];
@@ -1026,7 +1001,7 @@
             if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
             statusEl.textContent = 'Versuche Daten abzurufen... (Das kann kurz dauern)';
-            statusEl.className = 'text-sm mt-3 font-medium text-indigo-600 block';
+            statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
             const proxies = [
                 `https://corsproxy.io/?${encodeURIComponent(url)}`,
@@ -1143,7 +1118,7 @@
 
                 if(title || instructions || ingredientsList.length > 0) {
                     statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
-                    statusEl.className = 'text-sm mt-3 font-medium text-green-600 block';
+                    statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
                 } else {
                     statusEl.textContent = 'Webseite wurde geladen, aber es konnten keine Rezeptdaten gefunden werden.';
                     statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
