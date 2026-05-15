@@ -24,7 +24,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Kleine visuelle Verbesserungen */
         .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
     </style>
@@ -254,22 +253,22 @@
                         
                         <datalist id="ingredientSuggestions"></datalist>
 
+                        <!-- NEUE REIHENFOLGE: Zutat | Einheit | Menge -->
                         <div class="grid grid-cols-12 gap-2 mb-2 text-xs font-bold text-gray-500 uppercase px-2 tracking-wider">
-                            <div class="col-span-6 md:col-span-7">Zutat</div>
-                            <div class="col-span-3 md:col-span-2">Menge</div>
+                            <div class="col-span-5 md:col-span-6">Zutat</div>
                             <div class="col-span-3">Einheit</div>
+                            <div class="col-span-3 md:col-span-2">Menge</div>
                         </div>
 
                         <div id="ingredientsList" class="space-y-2">
                             <!-- Template Row -->
                             <div class="ingredient-row grid grid-cols-12 gap-2 items-center bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm">
-                                <div class="col-span-6 md:col-span-7">
+                                <!-- 1. Zutat -->
+                                <div class="col-span-5 md:col-span-6">
                                     <input type="text" list="ingredientSuggestions" class="ingredient-name w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400" placeholder="Zutat...">
                                 </div>
-                                <div class="col-span-3 md:col-span-2 border-l border-gray-100">
-                                    <input type="text" class="ingredient-amount w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400" placeholder="1/2, 100...">
-                                </div>
-                                <div class="col-span-2 border-l border-gray-100">
+                                <!-- 2. Einheit -->
+                                <div class="col-span-3 border-l border-gray-100">
                                     <select class="ingredient-unit w-full px-2 py-2 bg-transparent border-none focus:outline-none focus:ring-0 text-gray-700 cursor-pointer">
                                         <option value="g">g</option>
                                         <option value="kg">kg</option>
@@ -291,6 +290,11 @@
                                         <option value="">--</option>
                                     </select>
                                 </div>
+                                <!-- 3. Menge -->
+                                <div class="col-span-3 md:col-span-2 border-l border-gray-100">
+                                    <input type="text" class="ingredient-amount w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400" placeholder="1/2, 100...">
+                                </div>
+                                <!-- 4. Löschen Button -->
                                 <div class="col-span-1 flex justify-center border-l border-gray-100">
                                     <button type="button" class="remove-ingredient text-gray-400 hover:text-red-500 p-1.5 transition-colors rounded-lg hover:bg-red-50">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -320,12 +324,11 @@
 
     <!-- FIREBASE & LOGIK -->
     <script type="module">
-        // 1. Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 2. Deine ECHTE Firebase Konfiguration!
+        // Deine echte Firebase Konfiguration
         const firebaseConfig = {
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
             authDomain: "rezepte-5cf2b.firebaseapp.com",
@@ -340,10 +343,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // Konstanten für die Datenbank
-        const appNamespace = 'meine-rezepte-app'; // Damit deine Daten einen festen Ort haben
+        const appNamespace = 'meine-rezepte-app'; 
 
-        // Globale App-Daten
         let currentUser = null;
         let recipes = []; 
         let customIngredients = ["Mehl", "Zucker", "Milch", "Eier", "Butter", "Salz", "Pfeffer", "Zwiebel", "Knoblauch", "Olivenöl"]; 
@@ -353,7 +354,6 @@
         let currentEditRecipeId = null;
         let currentImageBase64 = null;
 
-        // DOM Elemente
         const views = {
             login: document.getElementById('loginView'),
             list: document.getElementById('listView'),
@@ -365,7 +365,6 @@
         const searchInput = document.getElementById('searchInput');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // Farben für Tags generieren
         const tagColors = ['bg-red-100 text-red-700', 'bg-orange-100 text-orange-700', 'bg-amber-100 text-amber-700', 'bg-green-100 text-green-700', 'bg-emerald-100 text-emerald-700', 'bg-teal-100 text-teal-700', 'bg-cyan-100 text-cyan-700', 'bg-blue-100 text-blue-700', 'bg-indigo-100 text-indigo-700', 'bg-violet-100 text-violet-700', 'bg-purple-100 text-purple-700', 'bg-pink-100 text-pink-700'];
         function getColorForTag(tag) {
             let hash = 0;
@@ -996,8 +995,29 @@
         });
 
         // ==========================================
-        // IMPORT LOGIK (Chefkoch etc.)
+        // IMPORT LOGIK (JSON-LD & Regex)
         // ==========================================
+        function parseIngredientString(str) {
+            // Regex sucht am Anfang nach Zahlen/Brüchen, dann eine Einheit, dann der Rest als Name
+            const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
+            
+            if (match) {
+                let amount = (match[1] || '').trim();
+                let unitRaw = (match[2] || '').trim();
+                let name = (match[3] || '').trim();
+
+                let unit = '';
+                if (unitRaw) {
+                    const foundUnit = Array.from(document.querySelectorAll('.ingredient-unit option')).find(opt => opt.value.toLowerCase() === unitRaw.toLowerCase().replace('scheiben', 'scheibe').replace('pck', 'pck.').replace('msp', 'msp.'));
+                    if (foundUnit) unit = foundUnit.value;
+                }
+                
+                if (!name && !amount && !unit) name = str.trim();
+                return { amount, unit, name };
+            }
+            return { amount: '', unit: '', name: str.trim() };
+        }
+
         document.getElementById('startImportBtn').addEventListener('click', async () => {
             let url = document.getElementById('importUrlInput').value.trim();
             const statusEl = document.getElementById('importStatus');
@@ -1028,7 +1048,7 @@
             }
 
             if (!html) {
-                statusEl.textContent = 'Fehler: Die Webseite hat den automatischen Zugriff blockiert.';
+                statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
                 statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                 return;
             }
@@ -1037,25 +1057,101 @@
                 const parser = new DOMParser();
                 const docObj = parser.parseFromString(html, 'text/html');
 
-                let title = docObj.querySelector('h1')?.textContent.trim();
-                if(title) document.getElementById('formTitle').value = title;
-
+                let title = '';
                 let instructions = '';
-                const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
-                if (instructionBlocks.length > 0) {
-                    instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
-                } else {
-                    const articleBlocks = docObj.querySelectorAll('article p');
-                    articleBlocks.forEach(p => { if(p.textContent.length > 40) instructions += p.textContent.trim() + '\n\n'; });
+                let ingredientsList = [];
+
+                // 1. Suche nach JSON-LD (Die saubere Datenstruktur für Google, die z.B. Chefkoch nutzt)
+                const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
+                for (const script of ldScripts) {
+                    try {
+                        const data = JSON.parse(script.textContent);
+                        
+                        // JSON-LD kann ein einzelnes Objekt, ein Array oder verschachtelt sein
+                        const recipes = Array.isArray(data) 
+                            ? data.filter(item => item['@type'] === 'Recipe') 
+                            : (data['@type'] === 'Recipe' ? [data] : []);
+
+                        if(recipes.length === 0 && data['@graph']) {
+                            const graphRecipes = data['@graph'].filter(item => item['@type'] === 'Recipe');
+                            if(graphRecipes.length > 0) recipes.push(...graphRecipes);
+                        }
+
+                        if (recipes.length > 0) {
+                            const r = recipes[0];
+                            title = r.name || title;
+
+                            if (r.recipeInstructions) {
+                                if (typeof r.recipeInstructions === 'string') {
+                                    instructions = r.recipeInstructions;
+                                } else if (Array.isArray(r.recipeInstructions)) {
+                                    // Manchmal ist es ein Array von Strings, manchmal Objekte mit "text" Attribut
+                                    instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
+                                }
+                            }
+
+                            if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
+                                ingredientsList = r.recipeIngredient;
+                            }
+                            break; // Gefunden, Schleife abbrechen
+                        }
+                    } catch(e) { console.warn("Fehler beim Parsen eines JSON-LD Blocks", e); }
                 }
+
+                // 2. Fallback: Falls kein JSON-LD gefunden wurde, versuche normales HTML Scraping
+                if (!title) {
+                    title = docObj.querySelector('h1')?.textContent.trim();
+                }
+                
+                if (!instructions) {
+                    const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
+                    if (instructionBlocks.length > 0) {
+                        instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
+                    }
+                }
+
+                // Daten in die Felder eintragen
+                if(title) document.getElementById('formTitle').value = title;
                 if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
 
-                statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder unten.';
-                statusEl.className = 'text-sm mt-3 font-medium text-green-600 block';
+                // Zutaten eintragen
+                if(ingredientsList.length > 0) {
+                    const list = document.getElementById('ingredientsList');
+                    const rows = list.querySelectorAll('.ingredient-row');
+                    // Alle bis auf die erste Zeile löschen
+                    for(let i=1; i<rows.length; i++) rows[i].remove();
+
+                    const firstRow = list.querySelector('.ingredient-row');
+                    
+                    ingredientsList.forEach((ingStr, index) => {
+                        const parsed = parseIngredientString(ingStr);
+                        let targetRow;
+                        
+                        if(index === 0) {
+                            targetRow = firstRow;
+                        } else {
+                            targetRow = firstRow.cloneNode(true);
+                            attachRemoveEventToRow(targetRow);
+                            list.appendChild(targetRow);
+                        }
+                        
+                        targetRow.querySelector('.ingredient-name').value = parsed.name;
+                        targetRow.querySelector('.ingredient-amount').value = parsed.amount;
+                        targetRow.querySelector('.ingredient-unit').value = parsed.unit;
+                    });
+                }
+
+                if(title || instructions || ingredientsList.length > 0) {
+                    statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
+                    statusEl.className = 'text-sm mt-3 font-medium text-green-600 block';
+                } else {
+                    statusEl.textContent = 'Webseite wurde geladen, aber es konnten keine Rezeptdaten gefunden werden.';
+                    statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
+                }
 
             } catch(e) {
                 console.error(e);
-                statusEl.textContent = 'Fehler beim Lesen der Webseiten-Struktur.';
+                statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten.';
                 statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
             }
         });
