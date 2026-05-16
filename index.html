@@ -27,7 +27,6 @@
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
         
-        /* Verstecke die Pfeile in Number-Inputs für sauberere Optik */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -180,23 +179,28 @@
 
                 <!-- Nährwerte (Makros) -->
                 <div id="detailNutritionContainer" class="mb-8 hidden">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3">Nährwerte pro Portion (ca.)</h3>
-                    <div class="flex flex-wrap gap-3">
-                        <div class="bg-gray-100 px-4 py-2 rounded-xl flex items-center gap-2 border border-gray-200">
-                            <span class="text-gray-500 font-medium text-sm">Kcal:</span>
-                            <span id="detailKcal" class="font-bold text-gray-900"></span>
-                        </div>
-                        <div class="bg-gray-100 px-4 py-2 rounded-xl flex items-center gap-2 border border-gray-200">
-                            <span class="text-gray-500 font-medium text-sm">Protein:</span>
-                            <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
-                        </div>
-                        <div class="bg-gray-100 px-4 py-2 rounded-xl flex items-center gap-2 border border-gray-200">
-                            <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
-                            <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
-                        </div>
-                        <div class="bg-gray-100 px-4 py-2 rounded-xl flex items-center gap-2 border border-gray-200">
-                            <span class="text-gray-500 font-medium text-sm">Fett:</span>
-                            <span id="detailFat" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                        <h3 class="text-base font-bold text-gray-900 whitespace-nowrap flex items-center gap-2 m-0">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Nährwerte pro Portion (ca.)
+                        </h3>
+                        <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                                <span class="text-gray-500 font-medium text-sm">Kcal:</span>
+                                <span id="detailKcal" class="font-bold text-gray-900"></span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                                <span class="text-gray-500 font-medium text-sm">Protein:</span>
+                                <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                                <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
+                                <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                                <span class="text-gray-500 font-medium text-sm">Fett:</span>
+                                <span id="detailFat" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -204,26 +208,33 @@
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
                     
                     <!-- Zutaten Container -->
-                    <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit">
-                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER -->
-                        <div class="flex items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-2 flex-wrap">
+                    <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm">
+                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER & WAKE LOCK -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-4">
                             <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 Zutaten
                             </h3>
-                            <div class="flex items-center gap-2 bg-white px-2 py-1.5 rounded-lg border border-gray-300 shadow-sm text-sm">
-                                <span class="font-bold text-gray-600 mr-1 hidden sm:inline">Portionen:</span>
-                                <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                            <div class="flex items-center gap-2 self-start sm:self-auto">
+                                <!-- FEATURE 2: Wake Lock Button -->
+                                <button id="wakeLockBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-yellow-600 transition-colors" title="Display beim Kochen anlassen">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                    <span class="hidden sm:inline" id="wakeLockText">Display anlassen</span>
                                 </button>
-                                <span id="detailPortionsCount" class="font-black text-gray-900 w-6 text-center tabular-nums">4</span>
-                                <button id="btnPortionPlus" class="text-green-600 hover:bg-green-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                                </button>
+                                <!-- Portions Rechner -->
+                                <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-gray-300 shadow-sm text-sm">
+                                    <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                                    </button>
+                                    <span id="detailPortionsCount" class="font-black text-gray-900 w-5 text-center tabular-nums">4</span>
+                                    <button id="btnPortionPlus" class="text-green-600 hover:bg-green-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
-                        <ul class="space-y-0" id="detailIngredients"></ul>
+                        <ul class="space-y-1" id="detailIngredients"></ul>
                     </div>
 
                     <!-- Zubereitung Container -->
@@ -474,9 +485,12 @@
         let currentEditRecipeId = null;
         let currentImageBase64 = null;
         
-        // NEU: Globale Variablen für den Portionsrechner
+        // Globale Variablen für den Portionsrechner
         let currentDetailRecipe = null;
         let currentDisplayPortions = 4;
+        
+        // FEATURE 2: Globale Variable für den Wake Lock (Wachhalter)
+        let wakeLock = null;
 
         const views = {
             login: document.getElementById('loginView'),
@@ -515,6 +529,46 @@
             hash = Math.abs(hash + (tag.length * 37));
             return tagColors[hash % tagColors.length];
         }
+
+        // ==========================================
+        // FEATURE 2: WAKE LOCK (Display anlassen)
+        // ==========================================
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                const btn = document.getElementById('wakeLockBtn');
+                btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
+                btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
+                document.getElementById('wakeLockText').textContent = 'Display bleibt an';
+            } catch (err) {
+                console.error('Wake Lock Fehler:', err);
+                alert("Dein Browser unterstützt diese Funktion leider noch nicht.");
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => { wakeLock = null; });
+            }
+            const btn = document.getElementById('wakeLockBtn');
+            if(btn) {
+                btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
+                btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
+                document.getElementById('wakeLockText').textContent = 'Display anlassen';
+            }
+        }
+
+        document.getElementById('wakeLockBtn').addEventListener('click', () => {
+            if (wakeLock !== null) { releaseWakeLock(); } 
+            else { requestWakeLock(); }
+        });
+
+        // Wenn der Browser minimiert wurde, geht der Lock verloren. Hier holen wir ihn uns zurück:
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        });
 
         // ==========================================
         // AUTHENTIFIZIERUNG (Login / Register)
@@ -629,12 +683,11 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     
-                    // --- DATEN-NORMALISIERUNG INKLUSIVE ZEITEN & PORTIONEN ---
                     recipes.push({
                         id: doc.id,
                         title: data.title || '',
                         tags: data.tags || [],
-                        portions: data.portions || 4, // Standard 4 Portionen
+                        portions: data.portions || 4,
                         times: data.times || { prep: '', cook: '', total: '' },
                         ingredients: data.ingredients || [],
                         instructions: data.instructions || '',
@@ -689,6 +742,7 @@
 
             if (viewName === 'list') {
                 document.getElementById('searchContainer').classList.remove('hidden');
+                releaseWakeLock(); // Wachhalter aus, wenn man die Liste ansieht
                 window.location.hash = '';
             } else {
                 document.getElementById('searchContainer').classList.add('hidden');
@@ -833,7 +887,6 @@
                     });
                 }
 
-                // Zeige Gesamtzeit, Portionen oder Nährwerte
                 const preview = document.createElement('p');
                 preview.className = "text-sm text-gray-600 line-clamp-2 mt-auto font-medium flex items-center gap-2 flex-wrap";
                 
@@ -866,27 +919,16 @@
         // PORTIONS-RECHNER & DETAILANSICHT
         // ==========================================
         
-        // Hilfsfunktion: Berechnet die neue Menge anhand des Faktors
         function scaleIngredientAmount(amountStr, ratio) {
             if (!amountStr) return '';
-            
-            // Komma zu Punkt für die Rechnung
             let str = amountStr.toString().trim().replace(',', '.');
-            
-            // Wenn es ein Bruch ist (z.B. "1/2")
             if (str.match(/^\d+\/\d+$/)) {
                 let parts = str.split('/');
                 str = (parseFloat(parts[0]) / parseFloat(parts[1])).toString();
             }
-            
             let val = parseFloat(str);
-            
-            // Wenn keine echte Zahl erkannt wurde (z.B. "etwas", "nach Belieben"), einfach zurückgeben
             if (isNaN(val)) return amountStr; 
-            
             let scaled = val * ratio;
-            
-            // Auf 1 Nachkommastelle runden und Punkt wieder zu Komma machen
             return (Math.round(scaled * 10) / 10).toString().replace('.', ',');
         }
 
@@ -894,14 +936,15 @@
             const ingList = document.getElementById('detailIngredients');
             ingList.innerHTML = '';
             
-            // Verhindern von Teilen durch 0, falls die Datenbank fehlerhaft ist
             const basePortions = recipe.portions > 0 ? recipe.portions : 1; 
             const ratio = portionsToDisplay / basePortions;
 
             if (recipe.ingredients) {
                 recipe.ingredients.forEach(ing => {
                     const li = document.createElement('li');
-                    li.className = "flex justify-between items-center py-2.5 border-b border-gray-300/50 last:border-0 gap-4";
+                    
+                    // FEATURE 1: Interaktives Abhaken (Cursor-pointer & Hover-Effekt)
+                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group";
                     
                     const scaledAmount = scaleIngredientAmount(ing.amount, ratio);
                     const unitStr = (ing.unit || '').trim();
@@ -911,20 +954,45 @@
                     if (fullAmount) {
                         amountHtml = `
                         <div class="flex-shrink-0">
-                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block">${fullAmount}</span>
+                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block group-[.is-checked]:bg-gray-100 group-[.is-checked]:text-gray-400 group-[.is-checked]:shadow-none transition-all">${fullAmount}</span>
                         </div>`;
                     }
 
+                    // Leeres SVG für den Kreis (Checkbox)
+                    const checkmarkHtml = `
+                    <svg class="ing-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" stroke-width="2" class="opacity-100"></circle>
+                    </svg>`;
+
                     li.innerHTML = `
-                        <span class="font-bold text-gray-900 flex-1 break-words leading-snug">${ing.name}</span>
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            ${checkmarkHtml}
+                            <span class="font-bold text-gray-900 break-words leading-snug ing-text transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400">${ing.name}</span>
+                        </div>
                         ${amountHtml}
                     `;
+
+                    // Klick-Logik zum Abhaken
+                    li.addEventListener('click', function() {
+                        this.classList.toggle('is-checked');
+                        const svg = this.querySelector('.ing-checkbox');
+                        
+                        if (this.classList.contains('is-checked')) {
+                            // Häkchen setzen
+                            svg.classList.replace('text-gray-300', 'text-green-500');
+                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                        } else {
+                            // Zurück zum leeren Kreis
+                            svg.classList.replace('text-green-500', 'text-gray-300');
+                            svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
+                        }
+                    });
+
                     ingList.appendChild(li);
                 });
             }
         }
 
-        // Event-Listener für Plus/Minus Buttons
         document.getElementById('btnPortionMinus').addEventListener('click', () => {
             if (currentDisplayPortions > 1 && currentDetailRecipe) {
                 currentDisplayPortions--;
@@ -946,7 +1014,6 @@
             const recipe = recipes.find(r => r.id === id);
             if (!recipe) { window.location.hash = ''; return; }
 
-            // Globale Variablen für den Portionsrechner setzen
             currentDetailRecipe = recipe;
             currentDisplayPortions = recipe.portions > 0 ? recipe.portions : 4;
 
@@ -1017,13 +1084,11 @@
                 nutContainer.classList.add('hidden');
             }
 
-            // ZUTATEN RENDERN MIT PORTIONEN
             document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
             renderDetailIngredientsList(recipe, currentDisplayPortions);
 
             document.getElementById('detailInstructions').textContent = recipe.instructions;
 
-            // ORIGINAL LINK RENDERN
             const sourceContainer = document.getElementById('detailSourceContainer');
             const sourceLink = document.getElementById('detailSourceLink');
             if (recipe.sourceUrl) {
@@ -1068,7 +1133,6 @@
             firstRow.querySelector('.ingredient-amount').value = '';
             firstRow.querySelector('.ingredient-unit').value = 'g';
 
-            // Alle neuen Felder leeren
             document.getElementById('formPortions').value = '4';
             document.getElementById('formPrepTime').value = '';
             document.getElementById('formCookTime').value = '';
@@ -1388,14 +1452,12 @@
             return { amount: '', unit: '', name: str.trim() };
         }
 
-        // Hilfsfunktion um Zahlen aus Texten zu extrahieren (z.B. "450 kcal" -> "450")
         function extractNumber(str) {
             if(!str) return '';
             const match = str.toString().match(/\d+/);
             return match ? match[0] : '';
         }
 
-        // Hilfsfunktion zum Umwandeln des ISO 8601 Zeitformats von Webseiten (z.B. "PT15M" in "15")
         function parseIsoDuration(duration) {
             if(!duration) return '';
             const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
@@ -1482,17 +1544,14 @@
                                 ingredientsList = r.recipeIngredient;
                             }
                             
-                            // Portionen extrahieren
                             if (r.recipeYield) {
                                 portions = extractNumber(r.recipeYield);
                             }
 
-                            // Zeiten extrahieren
                             if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
                             if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
                             if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
 
-                            // Makros extrahieren
                             if (r.nutrition) {
                                 nutritionData.kcal = extractNumber(r.nutrition.calories);
                                 nutritionData.protein = extractNumber(r.nutrition.proteinContent);
@@ -1518,16 +1577,13 @@
                 if(title) document.getElementById('formTitle').value = title;
                 if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                 
-                // Original URL einsetzen
                 document.getElementById('formSourceUrl').value = url;
 
-                // Nährwerte eintragen
                 if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
                 if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
                 if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
                 if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
                 
-                // Zeiten und Portionen eintragen
                 if(portions) document.getElementById('formPortions').value = portions;
                 if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
                 if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
