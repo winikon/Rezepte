@@ -16,7 +16,7 @@
         
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #dc2626; /* Roter Spinner passend zum Logo */
+            border-top: 4px solid #dc2626;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -24,23 +24,23 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Angepasster Glass-Effekt an die neue Hintergrundfarbe */
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
     </style>
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
+    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
+    <!-- ANSICHT 0: LOGIN & REGISTRIERUNG -->
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
                 <img src="logomr78brutalist.png" alt="mr 78 Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm">
-                
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
@@ -70,6 +70,7 @@
         </div>
     </div>
 
+    <!-- HEADER (App Navigation) -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
             <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5">
@@ -96,8 +97,10 @@
         </div>
     </header>
 
+    <!-- HAUPTBEREICH -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative">
 
+        <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-6xl mx-auto block">
             <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2" id="filterTagsContainer">
                 <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
@@ -117,6 +120,7 @@
             </div>
         </div>
 
+        <!-- ANSICHT 2: REZEPT DETAILS -->
         <div id="detailView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToHomeBtn flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
@@ -135,6 +139,7 @@
                 </div>
             </div>
             
+            <!-- Bild-Header -->
             <div id="detailImageContainer" class="w-full h-64 md:h-96 bg-gray-200 hidden border-b border-gray-200">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
             </div>
@@ -163,6 +168,7 @@
             </div>
         </div>
 
+        <!-- ANSICHT 3: FORMULAR -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToHomeBtn flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
@@ -170,9 +176,11 @@
                     Abbrechen
                 </button>
                 <h3 class="font-bold text-gray-900" id="formHeaderTitle">Neues Rezept</h3>
-                <div class="w-24"></div> </div>
+                <div class="w-24"></div> <!-- Spacer -->
+            </div>
 
             <div class="p-6 md:p-10">
+                <!-- Import URL Bereich -->
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
                     <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
@@ -189,6 +197,7 @@
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
+                    <!-- Bild Upload -->
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2">Rezeptbild</label>
                         <div class="flex items-center gap-6">
@@ -198,6 +207,7 @@
                                     <span class="text-xs">Kein Bild</span>
                                 </span>
                                 <img id="formImagePreview" src="" class="hidden recipe-image-preview">
+                                <!-- Overlay zum Löschen -->
                                 <button type="button" id="removeImageBtn" class="hidden absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
@@ -212,19 +222,25 @@
                         </div>
                     </div>
 
+                    <!-- Titel -->
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-1">Rezept Name <span class="text-red-600">*</span></label>
                         <input type="text" id="formTitle" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors text-xl font-bold text-gray-900 shadow-sm" placeholder="z.B. Omas Apfelkuchen">
                     </div>
 
+                    <!-- Tags -->
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-1">Kategorien / Tags <span class="text-gray-500 font-normal font-medium">(Tippen und Enter drücken)</span></label>
                         <div class="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-red-600 focus-within:border-transparent transition-colors flex flex-wrap gap-2 items-center shadow-sm" id="tagInputContainer">
                             <div id="activeTagsContainer" class="flex flex-wrap gap-2"></div>
-                            <input type="text" id="formTagInput" class="flex-1 bg-transparent border-none focus:outline-none min-w-[150px] py-1 px-2 text-gray-900" placeholder="z.B. Vegan, Dessert...">
+                            
+                            <!-- NEU: Datalist für Tag-Vorschläge -->
+                            <datalist id="tagSuggestions"></datalist>
+                            <input type="text" id="formTagInput" list="tagSuggestions" class="flex-1 bg-transparent border-none focus:outline-none min-w-[150px] py-1 px-2 text-gray-900" placeholder="z.B. Vegan, Dessert...">
                         </div>
                     </div>
 
+                    <!-- Zutaten -->
                     <div class="bg-[#E6E4DD]/40 p-5 rounded-2xl border border-gray-300 shadow-inner">
                         <div class="flex items-center justify-between mb-4">
                             <label class="block text-lg font-black text-gray-900">Zutaten</label>
@@ -243,6 +259,7 @@
                         </div>
 
                         <div id="ingredientsList" class="space-y-2">
+                            <!-- Template Row -->
                             <div class="ingredient-row grid grid-cols-12 gap-2 items-center bg-white p-1.5 rounded-xl border border-gray-300 shadow-sm">
                                 <div class="col-span-5 md:col-span-6">
                                     <input type="text" list="ingredientSuggestions" class="ingredient-name w-full px-3 py-2 bg-transparent border-none focus:outline-none focus:ring-0 placeholder-gray-400 font-medium text-gray-900" placeholder="Zutat...">
@@ -281,11 +298,13 @@
                         </div>
                     </div>
 
+                    <!-- Zubereitung -->
                     <div>
                         <label class="block text-lg font-black text-gray-900 mb-2">Zubereitungsschritte <span class="text-red-600">*</span></label>
                         <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="1. Zwiebeln anbraten...&#10;2. Tomaten hinzugeben..."></textarea>
                     </div>
 
+                    <!-- Submit -->
                     <div class="pt-6 border-t border-gray-200 flex justify-end">
                         <button type="submit" class="bg-gray-900 hover:bg-black text-white font-bold py-4 px-10 rounded-2xl shadow-xl transition-transform transform hover:-translate-y-1 flex items-center gap-2 border border-gray-800">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -297,12 +316,12 @@
         </div>
     </main>
 
+    <!-- FIREBASE & LOGIK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Deine echte Firebase Konfiguration
         const firebaseConfig = {
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
             authDomain: "rezepte-5cf2b.firebaseapp.com",
@@ -339,8 +358,25 @@
         const searchInput = document.getElementById('searchInput');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // Farbpalette für Tags anpassen (etwas gedecktere, brutalere Töne)
-        const tagColors = ['bg-red-100 text-red-800 border border-red-200', 'bg-gray-200 text-gray-800 border border-gray-300', 'bg-orange-100 text-orange-800 border border-orange-200', 'bg-stone-200 text-stone-800 border border-stone-300', 'bg-neutral-200 text-neutral-800 border border-neutral-300'];
+        // NEU: Erweiterte und passendere Farbpalette für die Tags
+        const tagColors = [
+            'bg-red-100 text-red-800 border border-red-200',
+            'bg-gray-200 text-gray-800 border border-gray-300',
+            'bg-orange-100 text-orange-800 border border-orange-200',
+            'bg-stone-200 text-stone-800 border border-stone-300',
+            'bg-amber-100 text-amber-800 border border-amber-200',
+            'bg-lime-100 text-lime-800 border border-lime-200',
+            'bg-emerald-100 text-emerald-800 border border-emerald-200',
+            'bg-teal-100 text-teal-800 border border-teal-200',
+            'bg-cyan-100 text-cyan-800 border border-cyan-200',
+            'bg-blue-100 text-blue-800 border border-blue-200',
+            'bg-indigo-100 text-indigo-800 border border-indigo-200',
+            'bg-violet-100 text-violet-800 border border-violet-200',
+            'bg-purple-100 text-purple-800 border border-purple-200',
+            'bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200',
+            'bg-pink-100 text-pink-800 border border-pink-200',
+            'bg-rose-100 text-rose-800 border border-rose-200'
+        ];
         function getColorForTag(tag) {
             let hash = 0;
             for (let i = 0; i < tag.length; i++) hash = tag.charCodeAt(i) + ((hash << 5) - hash);
@@ -463,6 +499,7 @@
                 
                 renderRecipes();
                 renderFilterTags();
+                updateTagDatalist(); // NEU: Aktualisiert die Tag-Vorschläge
                 loadingOverlay.classList.add('hidden');
             }, (error) => {
                 console.error("Fehler beim Laden der Rezepte:", error);
@@ -635,8 +672,16 @@
                 if (recipe.tags) {
                     recipe.tags.slice(0, 3).forEach(tag => {
                         const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold ${getColorForTag(tag)}`;
+                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${getColorForTag(tag)}`;
                         t.textContent = tag;
+                        // NEU: Verhindert, dass das Rezept geöffnet wird, wenn man auf den Tag klickt
+                        t.addEventListener('click', (e) => {
+                            e.stopPropagation(); 
+                            activeFilter = tag;
+                            updateActiveFilterUI();
+                            renderRecipes();
+                            renderFilterTags();
+                        });
                         tagsContainer.appendChild(t);
                     });
                 }
@@ -853,6 +898,19 @@
             });
         }
 
+        // NEU: Aktualisiert die Datalist für Tag-Vorschläge
+        function updateTagDatalist() {
+            const datalist = document.getElementById('tagSuggestions');
+            datalist.innerHTML = '';
+            const allTags = new Set();
+            recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+            Array.from(allTags).sort().forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                datalist.appendChild(option);
+            });
+        }
+
         const tagInput = document.getElementById('formTagInput');
         const tagContainer = document.getElementById('tagInputContainer');
         tagContainer.addEventListener('click', () => tagInput.focus());
@@ -871,6 +929,22 @@
             });
         }
         window.removeFormTag = function(t) { currentRecipeTags = currentRecipeTags.filter(x => x !== t); renderFormTags(); }
+
+        // NEU: Wenn man einen Vorschlag anklickt/auswählt, wird er sofort übernommen
+        tagInput.addEventListener('input', (e) => {
+            let val = tagInput.value.trim().replace(',', '');
+            const allTags = new Set();
+            recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+            
+            // Prüfen, ob die exakte Eingabe in der Liste der bekannten Tags ist
+            if (Array.from(allTags).includes(val)) {
+                if (!currentRecipeTags.includes(val)) {
+                    currentRecipeTags.push(val);
+                    tagInput.value = '';
+                    renderFormTags();
+                }
+            }
+        });
 
         tagInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ',') {
@@ -973,7 +1047,6 @@
         // IMPORT LOGIK (JSON-LD & Regex)
         // ==========================================
         function parseIngredientString(str) {
-            // Regex sucht am Anfang nach Zahlen/Brüchen, dann eine Einheit, dann der Rest als Name
             const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
             
             if (match) {
@@ -1036,13 +1109,11 @@
                 let instructions = '';
                 let ingredientsList = [];
 
-                // 1. Suche nach JSON-LD (Die saubere Datenstruktur für Google, die z.B. Chefkoch nutzt)
                 const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
                 for (const script of ldScripts) {
                     try {
                         const data = JSON.parse(script.textContent);
                         
-                        // JSON-LD kann ein einzelnes Objekt, ein Array oder verschachtelt sein
                         const recipes = Array.isArray(data) 
                             ? data.filter(item => item['@type'] === 'Recipe') 
                             : (data['@type'] === 'Recipe' ? [data] : []);
@@ -1060,7 +1131,6 @@
                                 if (typeof r.recipeInstructions === 'string') {
                                     instructions = r.recipeInstructions;
                                 } else if (Array.isArray(r.recipeInstructions)) {
-                                    // Manchmal ist es ein Array von Strings, manchmal Objekte mit "text" Attribut
                                     instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
                                 }
                             }
@@ -1068,12 +1138,11 @@
                             if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
                                 ingredientsList = r.recipeIngredient;
                             }
-                            break; // Gefunden, Schleife abbrechen
+                            break; 
                         }
                     } catch(e) { console.warn("Fehler beim Parsen eines JSON-LD Blocks", e); }
                 }
 
-                // 2. Fallback: Falls kein JSON-LD gefunden wurde, versuche normales HTML Scraping
                 if (!title) {
                     title = docObj.querySelector('h1')?.textContent.trim();
                 }
@@ -1085,15 +1154,12 @@
                     }
                 }
 
-                // Daten in die Felder eintragen
                 if(title) document.getElementById('formTitle').value = title;
                 if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
 
-                // Zutaten eintragen
                 if(ingredientsList.length > 0) {
                     const list = document.getElementById('ingredientsList');
                     const rows = list.querySelectorAll('.ingredient-row');
-                    // Alle bis auf die erste Zeile löschen
                     for(let i=1; i<rows.length; i++) rows[i].remove();
 
                     const firstRow = list.querySelector('.ingredient-row');
