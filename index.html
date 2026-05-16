@@ -32,6 +32,7 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
+        /* OPTIMIERTE DRUCKANSICHT FÜR 1 SEITE */
         @media print {
             body { background-color: white !important; font-size: 11pt !important; }
             .print\:hidden { display: none !important; }
@@ -291,7 +292,7 @@
                     <!-- Zutaten Container -->
                     <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:p-5 print:shadow-none page-break-inside-avoid">
                         
-                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER, WAKE LOCK & EXPORT -->
+                        <!-- ZUTATEN HEADER -->
                         <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3 print:pb-2 print:mb-2">
                             <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap">
                                 <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -333,7 +334,6 @@
                         </h3>
                         <div class="space-y-2 print:space-y-1" id="detailInstructions"></div>
 
-                        <!-- Persönliche Notizen -->
                         <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:mt-6 print:shadow-none print:border-gray-400 print:bg-white print:border-dashed print:p-4">
                             <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 print:text-gray-800">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -342,7 +342,6 @@
                             <p id="detailNotesText" class="text-gray-800 whitespace-pre-wrap leading-relaxed italic"></p>
                         </div>
 
-                        <!-- Original Link -->
                         <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden print:hidden">
                             <a id="detailSourceLink" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-red-600 transition-colors bg-gray-100 hover:bg-red-50 px-4 py-2.5 rounded-xl">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -386,7 +385,7 @@
         </div>
 
         <!-- FLOATING TIMER CONTAINER -->
-        <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[90] flex flex-col gap-3 print:hidden"></div>
+        <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 print:hidden"></div>
 
         <!-- ANSICHT 3: FORMULAR -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
@@ -769,7 +768,21 @@
         function updateZenModeUI() {
             window.speechSynthesis.cancel(); 
             document.getElementById('zenCurrentStepNum').textContent = currentZenStepIndex + 1;
-            document.getElementById('zenInstructionText').textContent = zenSteps[currentZenStepIndex];
+            
+            // FEATURE 3 in ZEN MODE: Timer im großen Text klickbar machen
+            const stepText = zenSteps[currentZenStepIndex];
+            const textWithTimers = parseTextForTimers(stepText);
+            const instrContainer = document.getElementById('zenInstructionText');
+            instrContainer.innerHTML = textWithTimers;
+
+            // Timer Events anhängen
+            instrContainer.querySelectorAll('.timer-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    const mins = parseInt(trigger.getAttribute('data-time'));
+                    if(!isNaN(mins)) startTimer(mins);
+                });
+            });
             
             document.getElementById('zenPrevBtn').disabled = currentZenStepIndex === 0;
             
