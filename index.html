@@ -32,8 +32,9 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
+        /* OPTIMIERTE DRUCKANSICHT FÜR 1 SEITE */
         @media print {
-            body { background-color: white !important; }
+            body { background-color: white !important; font-size: 11pt !important; }
             .print\:hidden { display: none !important; }
             .print\:shadow-none { box-shadow: none !important; }
             .print\:border-none { border: none !important; }
@@ -41,7 +42,8 @@
             .print\:p-0 { padding: 0 !important; }
             #mainContent { overflow: visible !important; height: auto !important; padding: 0 !important; }
             #detailView { border: none !important; box-shadow: none !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
-            #detailImageContainer { height: 250px !important; margin-bottom: 20px !important; border-radius: 12px; overflow: hidden; }
+            #detailImageContainer { height: 160px !important; margin-bottom: 12px !important; border-radius: 8px; overflow: hidden; }
+            h2#detailTitle { font-size: 2rem !important; margin-bottom: 12px !important; line-height: 1.1 !important; }
             .page-break-inside-avoid { page-break-inside: avoid; }
         }
     </style>
@@ -162,40 +164,40 @@
             </div>
             
             <!-- Bild-Header -->
-            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-64">
+            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
             </div>
 
-            <div class="p-6 md:p-10 print:p-0 print:pt-6">
-                <div class="flex flex-wrap items-center gap-2 mb-4" id="detailTags"></div>
+            <div class="p-6 md:p-10 print:p-0 print:pt-4">
+                <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
                 
-                <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight" id="detailTitle">Rezept Titel</h2>
+                <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight print:text-3xl print:mb-4" id="detailTitle">Rezept Titel</h2>
 
                 <!-- ZEITEN & BEWERTUNG -->
-                <div class="flex flex-wrap gap-4 mb-8">
-                    <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden">
-                        <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                <div class="flex flex-wrap gap-4 mb-8 print:mb-4">
+                    <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden print:gap-3">
+                        <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
                             <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>
                             <div>
                                 <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Gesamtzeit</p>
                                 <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
                             </div>
                         </div>
-                        <div id="timePrepBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                        <div id="timePrepBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
                             <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             <div>
                                 <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Arbeitszeit</p>
                                 <p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p>
                             </div>
                         </div>
-                        <div id="timeCookBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                        <div id="timeCookBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
                             <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10h14M7 10v6a4 4 0 004 4h2a4 4 0 004-4v-6M9 4h6M12 4v6"></path></svg>
                             <div>
                                 <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Koch-/Backzeit</p>
                                 <p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p>
                             </div>
                         </div>
-                        <div id="timeRestBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                        <div id="timeRestBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
                             <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 4H3m18 16H3m7-10l-4-4h12l-4 4m0 4l4 4H7l4-4"></path></svg>
                             <div>
                                 <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Ruhezeit</p>
@@ -206,26 +208,26 @@
                 </div>
 
                 <!-- Nährwerte (Makros) -->
-                <div id="detailNutritionContainer" class="mb-8 hidden page-break-inside-avoid">
-                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm print:shadow-none print:border-gray-400">
+                <div id="detailNutritionContainer" class="mb-8 hidden page-break-inside-avoid print:mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm print:shadow-none print:border-gray-400 print:p-3">
                         <h3 class="text-base font-bold text-gray-900 whitespace-nowrap flex items-center gap-2 m-0">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none print:border-l print:border-gray-300 print:rounded-none">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Protein:</span>
                                 <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none print:border-l print:border-gray-300 print:rounded-none">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
                                 <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none print:border-l print:border-gray-300 print:rounded-none">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Fett:</span>
                                 <span id="detailFat" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
@@ -233,13 +235,13 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-5 print:gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-5 print:gap-6">
                     
                     <!-- Zutaten Container -->
-                    <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:shadow-none page-break-inside-avoid">
+                    <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:p-5 print:shadow-none page-break-inside-avoid">
                         
                         <!-- ZUTATEN HEADER MIT PORTIONSRECHNER, WAKE LOCK & EXPORT -->
-                        <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3">
+                        <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3 print:pb-2 print:mb-2">
                             <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap">
                                 <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 Zutaten
@@ -277,14 +279,14 @@
 
                     <!-- Zubereitung Container -->
                     <div class="lg:col-span-3 print:col-span-3">
-                        <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-3">
+                        <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-3 print:mb-3 print:pb-2">
                             <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Zubereitung
                         </h3>
-                        <div class="space-y-2" id="detailInstructions"></div>
+                        <div class="space-y-2 print:space-y-1" id="detailInstructions"></div>
 
                         <!-- FEATURE 3: Persönliche Notizen -->
-                        <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:shadow-none print:border-gray-400 print:bg-white print:border-dashed">
+                        <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:mt-6 print:shadow-none print:border-gray-400 print:bg-white print:border-dashed print:p-4">
                             <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 print:text-gray-800">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 Meine Notizen
@@ -610,7 +612,6 @@
             return tagColors[hash % tagColors.length];
         }
 
-        // Hilfsfunktion: Sterne HTML generieren
         function getStarsHtml(rating) {
             if(!rating || rating === 0) return '';
             let html = '<div class="flex items-center gap-0.5 text-yellow-400">';
@@ -621,12 +622,10 @@
             return html;
         }
 
-        // FEATURE 6: Drucken
         document.getElementById('printRecipeBtn').addEventListener('click', () => {
             window.print();
         });
 
-        // FEATURE 5: Einkaufsliste Kopieren
         document.getElementById('copyIngredientsBtn').addEventListener('click', () => {
             if(!currentDetailRecipe) return;
             const btn = document.getElementById('copyIngredientsBtn');
@@ -655,7 +654,6 @@
             });
         });
 
-        // FEATURE 2: WAKE LOCK (Display anlassen)
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -692,9 +690,6 @@
             }
         });
 
-        // ==========================================
-        // AUTHENTIFIZIERUNG (Login / Register)
-        // ==========================================
         let isLoginMode = true;
         const authForm = document.getElementById('authForm');
         const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
@@ -790,9 +785,6 @@
             }
         });
 
-        // ==========================================
-        // FIREBASE DATENBANK LOGIK
-        // ==========================================
         let recipesUnsubscribe = null;
         let settingsUnsubscribe = null;
 
@@ -805,7 +797,6 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     
-                    // --- DATEN-NORMALISIERUNG INKLUSIVE BEWERTUNG, SCHWIERIGKEIT UND NOTIZEN ---
                     recipes.push({
                         id: doc.id,
                         title: data.title || '',
@@ -814,9 +805,9 @@
                         times: data.times || { prep: '', cook: '', rest: '', total: '' },
                         ingredients: data.ingredients || [],
                         instructions: data.instructions || '',
-                        notes: data.notes || '', // FEATURE 3
-                        rating: data.rating ? parseInt(data.rating) : 0, // FEATURE 4
-                        difficulty: data.difficulty || '', // FEATURE 4
+                        notes: data.notes || '', 
+                        rating: data.rating ? parseInt(data.rating) : 0, 
+                        difficulty: data.difficulty || '', 
                         sourceUrl: data.sourceUrl || '',
                         nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '' },
                         imageBase64: data.imageBase64 || null,
@@ -853,9 +844,6 @@
             } catch (e) { console.error("Zutaten Fehler:", e); }
         }
 
-        // ==========================================
-        // ROUTING & NAVIGATION
-        // ==========================================
         function showView(viewName) {
             views.login.classList.add('hidden');
             views.list.classList.add('hidden');
@@ -908,9 +896,6 @@
             btn.addEventListener('click', () => { window.location.hash = ''; });
         });
 
-        // ==========================================
-        // RENDERING LOGIK (UI AUFBAUEN)
-        // ==========================================
         function renderFilterTags() {
             const container = document.getElementById('filterTagsContainer');
             const allTags = new Set();
@@ -988,7 +973,6 @@
                     cardHeader.appendChild(icon);
                 }
 
-                // FEATURE 4: Badges für Sterne und Schwierigkeit auf der Karte
                 let badgesHtml = '';
                 if(recipe.rating > 0 || recipe.difficulty) {
                     badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
@@ -1006,7 +990,7 @@
                 title.textContent = recipe.title;
 
                 const tagsContainer = document.createElement('div');
-                tagsContainer.className = "flex flex-wrap gap-1.5 mb-3";
+                tagsContainer.className = "flex flex-wrap gap-1.5 mb-2"; // Abstand nach unten etwas verringert
                 if (recipe.tags) {
                     recipe.tags.slice(0, 3).forEach(tag => {
                         const t = document.createElement('span');
@@ -1023,22 +1007,25 @@
                     });
                 }
 
-                const preview = document.createElement('p');
-                preview.className = "text-sm text-gray-600 line-clamp-2 mt-auto font-medium flex items-center gap-2 flex-wrap";
+                // NEU: Footer mit Zeit und Protein, immer unten auf der Karte
+                const footer = document.createElement('div');
+                footer.className = "mt-auto flex items-center gap-2 flex-wrap pt-3";
                 
-                let detailsHTML = '';
-                if(recipe.times && recipe.times.total) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total} Min</span>`;
-                if(recipe.nutrition && recipe.nutrition.protein) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs">${recipe.nutrition.protein}g Protein</span>`;
-                
-                if (detailsHTML) {
-                    preview.innerHTML = detailsHTML;
-                } else {
-                    preview.textContent = recipe.ingredients ? recipe.ingredients.map(i => i.name).join(', ') : '';
+                let timeHtml = '';
+                if(recipe.times && recipe.times.total) {
+                    timeHtml = `<div class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 border border-gray-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total} Min</div>`;
                 }
+                
+                let proteinHtml = '';
+                if(recipe.nutrition && recipe.nutrition.protein) {
+                    proteinHtml = `<div class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold border border-gray-200">${recipe.nutrition.protein}g Protein</div>`;
+                }
+
+                footer.innerHTML = timeHtml + proteinHtml;
 
                 cardBody.appendChild(title);
                 cardBody.appendChild(tagsContainer);
-                cardBody.appendChild(preview);
+                cardBody.appendChild(footer);
                 
                 card.appendChild(cardHeader);
                 card.appendChild(cardBody);
@@ -1051,10 +1038,6 @@
 
         searchInput.addEventListener('input', renderRecipes);
 
-        // ==========================================
-        // PORTIONS-RECHNER & DETAILANSICHT
-        // ==========================================
-        
         function scaleIngredientAmount(amountStr, ratio) {
             if (!amountStr) return '';
             let str = amountStr.toString().trim().replace(',', '.');
@@ -1079,7 +1062,7 @@
                 recipe.ingredients.forEach(ing => {
                     const li = document.createElement('li');
                     
-                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group page-break-inside-avoid print:px-0 print:mx-0";
+                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group page-break-inside-avoid print:px-0 print:mx-0 print:py-1";
                     
                     const scaledAmount = scaleIngredientAmount(ing.amount, ratio);
                     const unitStr = (ing.unit || '').trim();
@@ -1165,16 +1148,15 @@
             const tagsContainer = document.getElementById('detailTags');
             tagsContainer.innerHTML = '';
             
-            // FEATURE 4: Bewertung und Schwierigkeit neben den Tags anzeigen
             if(recipe.difficulty) {
                 const diffSpan = document.createElement('span');
-                diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300`;
+                diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300 print:border-gray-400`;
                 diffSpan.textContent = recipe.difficulty;
                 tagsContainer.appendChild(diffSpan);
             }
             if(recipe.rating > 0) {
                 const starSpan = document.createElement('span');
-                starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300`;
+                starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300 print:border-gray-400`;
                 starSpan.innerHTML = getStarsHtml(recipe.rating);
                 tagsContainer.appendChild(starSpan);
             }
@@ -1188,7 +1170,6 @@
                 });
             }
 
-            // ZEITEN RENDERN (Neue Reihenfolge + Ruhezeit)
             const timesContainer = document.getElementById('detailTimesContainer');
             const boxTotal = document.getElementById('timeTotalBox');
             const boxPrep = document.getElementById('timePrepBox');
@@ -1225,7 +1206,6 @@
             if (hasTimes) timesContainer.classList.remove('hidden');
             else timesContainer.classList.add('hidden');
 
-            // NÄHRWERTE RENDERN
             const nutContainer = document.getElementById('detailNutritionContainer');
             if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.fat)) {
                 nutContainer.classList.remove('hidden');
@@ -1241,7 +1221,6 @@
             document.getElementById('printPortionsCount').textContent = currentDisplayPortions;
             renderDetailIngredientsList(recipe, currentDisplayPortions);
 
-            // ZUBEREITUNG RENDERN (Interaktiv abhaken)
             const instrContainer = document.getElementById('detailInstructions');
             instrContainer.innerHTML = '';
             
@@ -1249,7 +1228,7 @@
                 const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
                 steps.forEach(step => {
                     const stepEl = document.createElement('div');
-                    stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0";
+                    stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0 print:p-1";
                     
                     const checkmarkHtml = `
                     <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1258,7 +1237,7 @@
 
                     stepEl.innerHTML = `
                         ${checkmarkHtml}
-                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal">${step.trim()}</p>
+                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${step.trim()}</p>
                     `;
 
                     stepEl.addEventListener('click', function() {
@@ -1277,7 +1256,6 @@
                 });
             }
 
-            // FEATURE 3: PERSÖNLICHE NOTIZEN RENDERN
             const notesContainer = document.getElementById('detailNotesContainer');
             if(recipe.notes && recipe.notes.trim() !== '') {
                 notesContainer.classList.remove('hidden');
@@ -1310,9 +1288,6 @@
             }
         });
 
-        // ==========================================
-        // FORMULAR LOGIK (Neues Rezept / Bearbeiten)
-        // ==========================================
         function resetForm() {
             document.getElementById('recipeForm').reset();
             currentRecipeTags = [];
@@ -1333,7 +1308,7 @@
             document.getElementById('formPortions').value = '4';
             document.getElementById('formPrepTime').value = '';
             document.getElementById('formCookTime').value = '';
-            document.getElementById('formRestTime').value = ''; // NEU
+            document.getElementById('formRestTime').value = ''; 
             document.getElementById('formTotalTime').value = '';
             document.getElementById('formKcal').value = '';
             document.getElementById('formProtein').value = '';
@@ -1364,7 +1339,7 @@
             if(recipe.times) {
                 document.getElementById('formPrepTime').value = recipe.times.prep || '';
                 document.getElementById('formCookTime').value = recipe.times.cook || '';
-                document.getElementById('formRestTime').value = recipe.times.rest || ''; // NEU
+                document.getElementById('formRestTime').value = recipe.times.rest || ''; 
                 document.getElementById('formTotalTime').value = recipe.times.total || '';
             }
             
@@ -1598,7 +1573,7 @@
                 times: {
                     prep: document.getElementById('formPrepTime').value,
                     cook: document.getElementById('formCookTime').value,
-                    rest: document.getElementById('formRestTime').value, // NEU
+                    rest: document.getElementById('formRestTime').value, 
                     total: document.getElementById('formTotalTime').value
                 },
                 ingredients: ingredients,
@@ -1638,9 +1613,6 @@
             }
         });
 
-        // ==========================================
-        // IMPORT LOGIK (JSON-LD & Regex)
-        // ==========================================
         function parseIngredientString(str) {
             const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
             
