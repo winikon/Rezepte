@@ -6,7 +6,8 @@
     <title>Meine Rezept-App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; }
+        /* Erzwingt, dass Hintergrundfarben (wie das Grau bei Zutaten) gedruckt werden */
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
         ::-webkit-scrollbar { width: 8px; }
@@ -31,21 +32,16 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* FEATURE 6: SAUBERE DRUCKANSICHT */
         @media print {
             body { background-color: white !important; }
             .print\:hidden { display: none !important; }
             .print\:shadow-none { box-shadow: none !important; }
             .print\:border-none { border: none !important; }
-            .print\:bg-transparent { background-color: transparent !important; }
             .print\:m-0 { margin: 0 !important; }
             .print\:p-0 { padding: 0 !important; }
-            .print\:w-full { width: 100% !important; max-width: 100% !important; }
-            .print\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
             #mainContent { overflow: visible !important; height: auto !important; padding: 0 !important; }
-            #detailView { border: none !important; box-shadow: none !important; margin: 0 !important; }
+            #detailView { border: none !important; box-shadow: none !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
             #detailImageContainer { height: 250px !important; margin-bottom: 20px !important; border-radius: 12px; overflow: hidden; }
-            .lg\:col-span-2, .lg\:col-span-3 { grid-column: span 1 / span 1 !important; } /* Untereinander beim Drucken */
             .page-break-inside-avoid { page-break-inside: avoid; }
         }
     </style>
@@ -178,25 +174,32 @@
                 <!-- ZEITEN & BEWERTUNG -->
                 <div class="flex flex-wrap gap-4 mb-8">
                     <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden">
-                        <div id="timePrepBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>
                             <div>
-                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Vorbereitung</p>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Gesamtzeit</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
+                            </div>
+                        </div>
+                        <div id="timePrepBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Arbeitszeit</p>
                                 <p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p>
                             </div>
                         </div>
-                        <div id="timeCookBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
+                        <div id="timeCookBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10h14M7 10v6a4 4 0 004 4h2a4 4 0 004-4v-6M9 4h6M12 4v6"></path></svg>
                             <div>
-                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zubereitung</p>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Koch-/Backzeit</p>
                                 <p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p>
                             </div>
                         </div>
-                        <div id="timeTotalBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
-                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <div id="timeRestBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 4H3m18 16H3m7-10l-4-4h12l-4 4m0 4l4 4H7l4-4"></path></svg>
                             <div>
-                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zeit Gesamt</p>
-                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Ruhezeit</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeRest"></span> Min.</p>
                             </div>
                         </div>
                     </div>
@@ -210,19 +213,19 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Protein:</span>
                                 <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
                                 <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:border-none print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Fett:</span>
                                 <span id="detailFat" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
@@ -230,10 +233,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-1 print:gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-5 print:gap-8">
                     
                     <!-- Zutaten Container -->
-                    <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:bg-transparent print:border-gray-400 print:shadow-none page-break-inside-avoid">
+                    <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:shadow-none page-break-inside-avoid">
                         
                         <!-- ZUTATEN HEADER MIT PORTIONSRECHNER, WAKE LOCK & EXPORT -->
                         <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3">
@@ -273,7 +276,7 @@
                     </div>
 
                     <!-- Zubereitung Container -->
-                    <div class="lg:col-span-3">
+                    <div class="lg:col-span-3 print:col-span-3">
                         <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-3">
                             <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Zubereitung
@@ -281,8 +284,8 @@
                         <div class="space-y-2" id="detailInstructions"></div>
 
                         <!-- FEATURE 3: Persönliche Notizen -->
-                        <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner">
-                            <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                        <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:shadow-none print:border-gray-400 print:bg-white print:border-dashed">
+                            <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 print:text-gray-800">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 Meine Notizen
                             </h4>
@@ -322,7 +325,7 @@
                     <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung, Zeiten und Nährwerte automatisch aus.</p>
                     <div class="flex gap-2">
                         <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
-                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                        <button type="button" id="startImportBtn" class="bg-gray-800 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
                             Auslesen
                         </button>
                     </div>
@@ -397,25 +400,29 @@
                         </div>
                     </div>
 
-                    <!-- Zeiten & Portionen -->
+                    <!-- Zeiten & Portionen (NEU: Mit Ruhezeit) -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Zeiten & Portionen</label>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Portionen</label>
                                 <input type="number" id="formPortions" value="4" min="1" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 4">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Vorbereitung (Min.)</label>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Arbeitszeit (Min)</label>
                                 <input type="number" id="formPrepTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 15">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Zubereitung (Min.)</label>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Koch-/Backzeit</label>
                                 <input type="number" id="formCookTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 30">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Gesamtzeit (Min.)</label>
-                                <input type="number" id="formTotalTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 45">
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Ruhezeit (Min)</label>
+                                <input type="number" id="formRestTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 60">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Gesamtzeit (Min)</label>
+                                <input type="number" id="formTotalTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 105">
                             </div>
                         </div>
                     </div>
@@ -804,7 +811,7 @@
                         title: data.title || '',
                         tags: data.tags || [],
                         portions: data.portions || 4,
-                        times: data.times || { prep: '', cook: '', total: '' },
+                        times: data.times || { prep: '', cook: '', rest: '', total: '' },
                         ingredients: data.ingredients || [],
                         instructions: data.instructions || '',
                         notes: data.notes || '', // FEATURE 3
@@ -1020,7 +1027,7 @@
                 preview.className = "text-sm text-gray-600 line-clamp-2 mt-auto font-medium flex items-center gap-2 flex-wrap";
                 
                 let detailsHTML = '';
-                if(recipe.times && recipe.times.total) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${recipe.times.total} Min</span>`;
+                if(recipe.times && recipe.times.total) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total} Min</span>`;
                 if(recipe.nutrition && recipe.nutrition.protein) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs">${recipe.nutrition.protein}g Protein</span>`;
                 
                 if (detailsHTML) {
@@ -1181,14 +1188,21 @@
                 });
             }
 
-            // ZEITEN RENDERN
+            // ZEITEN RENDERN (Neue Reihenfolge + Ruhezeit)
             const timesContainer = document.getElementById('detailTimesContainer');
+            const boxTotal = document.getElementById('timeTotalBox');
             const boxPrep = document.getElementById('timePrepBox');
             const boxCook = document.getElementById('timeCookBox');
-            const boxTotal = document.getElementById('timeTotalBox');
+            const boxRest = document.getElementById('timeRestBox');
             
             let hasTimes = false;
             if (recipe.times) {
+                if (recipe.times.total) {
+                    boxTotal.classList.remove('hidden');
+                    document.getElementById('detailTimeTotal').textContent = recipe.times.total;
+                    hasTimes = true;
+                } else { boxTotal.classList.add('hidden'); }
+
                 if (recipe.times.prep) {
                     boxPrep.classList.remove('hidden');
                     document.getElementById('detailTimePrep').textContent = recipe.times.prep;
@@ -1201,11 +1215,11 @@
                     hasTimes = true;
                 } else { boxCook.classList.add('hidden'); }
                 
-                if (recipe.times.total) {
-                    boxTotal.classList.remove('hidden');
-                    document.getElementById('detailTimeTotal').textContent = recipe.times.total;
+                if (recipe.times.rest) {
+                    boxRest.classList.remove('hidden');
+                    document.getElementById('detailTimeRest').textContent = recipe.times.rest;
                     hasTimes = true;
-                } else { boxTotal.classList.add('hidden'); }
+                } else { boxRest.classList.add('hidden'); }
             }
             
             if (hasTimes) timesContainer.classList.remove('hidden');
@@ -1319,15 +1333,16 @@
             document.getElementById('formPortions').value = '4';
             document.getElementById('formPrepTime').value = '';
             document.getElementById('formCookTime').value = '';
+            document.getElementById('formRestTime').value = ''; // NEU
             document.getElementById('formTotalTime').value = '';
             document.getElementById('formKcal').value = '';
             document.getElementById('formProtein').value = '';
             document.getElementById('formCarbs').value = '';
             document.getElementById('formFat').value = '';
             document.getElementById('formSourceUrl').value = '';
-            document.getElementById('formNotes').value = ''; // Feature 3
-            document.getElementById('formRating').value = '0'; // Feature 4
-            document.getElementById('formDifficulty').value = ''; // Feature 4
+            document.getElementById('formNotes').value = ''; 
+            document.getElementById('formRating').value = '0'; 
+            document.getElementById('formDifficulty').value = ''; 
         }
 
         document.getElementById('editRecipeBtn').addEventListener('click', () => {
@@ -1349,6 +1364,7 @@
             if(recipe.times) {
                 document.getElementById('formPrepTime').value = recipe.times.prep || '';
                 document.getElementById('formCookTime').value = recipe.times.cook || '';
+                document.getElementById('formRestTime').value = recipe.times.rest || ''; // NEU
                 document.getElementById('formTotalTime').value = recipe.times.total || '';
             }
             
@@ -1582,6 +1598,7 @@
                 times: {
                     prep: document.getElementById('formPrepTime').value,
                     cook: document.getElementById('formCookTime').value,
+                    rest: document.getElementById('formRestTime').value, // NEU
                     total: document.getElementById('formTotalTime').value
                 },
                 ingredients: ingredients,
