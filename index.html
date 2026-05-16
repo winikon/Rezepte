@@ -26,6 +26,11 @@
 
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
+        
+        /* Verstecke die Pfeile in Number-Inputs für sauberere Optik */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
@@ -40,7 +45,7 @@
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png" alt="mr 78 Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm">
+                <img src="logomr78brutalist.png" alt="mr 78 Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
@@ -73,7 +78,7 @@
     <!-- HEADER (App Navigation) -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5">
+            <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Meine Rezepte</h1>
         </div>
         
@@ -148,6 +153,31 @@
                 <div class="flex flex-wrap gap-2 mb-4" id="detailTags"></div>
                 <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight" id="detailTitle">Rezept Titel</h2>
 
+                <!-- ZEITEN (Prep, Cook, Total) -->
+                <div id="detailTimesContainer" class="flex flex-wrap gap-4 mb-8 hidden">
+                    <div id="timePrepBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Vorbereitung</p>
+                            <p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p>
+                        </div>
+                    </div>
+                    <div id="timeCookBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zubereitung</p>
+                            <p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p>
+                        </div>
+                    </div>
+                    <div id="timeTotalBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden">
+                        <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zeit Gesamt</p>
+                            <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Nährwerte (Makros) -->
                 <div id="detailNutritionContainer" class="flex flex-wrap gap-3 mb-8 hidden">
                     <div class="bg-gray-100 px-4 py-2 rounded-xl flex items-center gap-2 border border-gray-200">
@@ -172,10 +202,24 @@
                     
                     <!-- Zutaten Container -->
                     <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit">
-                        <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-300 pb-3">
-                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            Zutaten
-                        </h3>
+                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER -->
+                        <div class="flex items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-2 flex-wrap">
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                Zutaten
+                            </h3>
+                            <div class="flex items-center gap-2 bg-white px-2 py-1.5 rounded-lg border border-gray-300 shadow-sm text-sm">
+                                <span class="font-bold text-gray-600 mr-1 hidden sm:inline">Portionen:</span>
+                                <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                                </button>
+                                <span id="detailPortionsCount" class="font-black text-gray-900 w-6 text-center tabular-nums">4</span>
+                                <button id="btnPortionPlus" class="text-green-600 hover:bg-green-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        
                         <ul class="space-y-0" id="detailIngredients"></ul>
                     </div>
 
@@ -217,10 +261,10 @@
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                         Rezept aus dem Internet importieren
                     </h3>
-                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung und Nährwerte automatisch aus.</p>
+                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung, Zeiten und Nährwerte automatisch aus.</p>
                     <div class="flex gap-2">
                         <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
-                        <button type="button" id="startImportBtn" class="bg-gray-800 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
                             Auslesen
                         </button>
                     </div>
@@ -268,25 +312,48 @@
                         </div>
                     </div>
 
+                    <!-- NEU: Zeiten & Portionen -->
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <label class="block text-lg font-black text-gray-900 mb-4">Zeiten & Portionen</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Portionen</label>
+                                <input type="number" id="formPortions" value="4" min="1" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 4">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Vorbereitung (Min.)</label>
+                                <input type="number" id="formPrepTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 15">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Zubereitung (Min.)</label>
+                                <input type="number" id="formCookTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 30">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Gesamtzeit (Min.)</label>
+                                <input type="number" id="formTotalTime" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 45">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Nährwerte -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Nährwerte (pro Portion)</label>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Kalorien (kcal)</label>
-                                <input type="number" id="formKcal" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 450">
+                                <input type="number" id="formKcal" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 450">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Protein (g)</label>
-                                <input type="number" id="formProtein" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 35">
+                                <input type="number" id="formProtein" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 35">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Kohlenhydrate (g)</label>
-                                <input type="number" id="formCarbs" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 40">
+                                <input type="number" id="formCarbs" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 40">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Fett (g)</label>
-                                <input type="number" id="formFat" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 15">
+                                <input type="number" id="formFat" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 15">
                             </div>
                         </div>
                     </div>
@@ -403,6 +470,10 @@
         let currentDetailRecipeId = null;
         let currentEditRecipeId = null;
         let currentImageBase64 = null;
+        
+        // NEU: Globale Variablen für den Portionsrechner
+        let currentDetailRecipe = null;
+        let currentDisplayPortions = 4;
 
         const views = {
             login: document.getElementById('loginView'),
@@ -417,19 +488,19 @@
 
         // Bunte Tags, weicher Hintergrund, dunkle Schrift
         const tagColors = [
-            'bg-yellow-200 text-yellow-900',
-            'bg-green-200 text-green-900',
-            'bg-blue-200 text-blue-900',
-            'bg-purple-200 text-purple-900',
-            'bg-pink-200 text-pink-900',
-            'bg-orange-200 text-orange-900',
-            'bg-teal-200 text-teal-900',
-            'bg-indigo-200 text-indigo-900',
-            'bg-rose-200 text-rose-900',
-            'bg-cyan-200 text-cyan-900',
-            'bg-lime-200 text-lime-900',
-            'bg-amber-200 text-amber-900',
-            'bg-fuchsia-200 text-fuchsia-900'
+            'bg-yellow-200 text-yellow-900 border border-yellow-300',
+            'bg-blue-200 text-blue-900 border border-blue-300',
+            'bg-green-200 text-green-900 border border-green-300',
+            'bg-pink-200 text-pink-900 border border-pink-300',
+            'bg-purple-200 text-purple-900 border border-purple-300',
+            'bg-orange-200 text-orange-900 border border-orange-300',
+            'bg-cyan-200 text-cyan-900 border border-cyan-300',
+            'bg-lime-200 text-lime-900 border border-lime-300',
+            'bg-indigo-200 text-indigo-900 border border-indigo-300',
+            'bg-rose-200 text-rose-900 border border-rose-300',
+            'bg-teal-200 text-teal-900 border border-teal-300',
+            'bg-amber-200 text-amber-900 border border-amber-300',
+            'bg-gray-200 text-gray-900 border border-gray-300'
         ];
         
         function getColorForTag(tag) {
@@ -555,13 +626,13 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     
-                    // --- ZUKUNFTSSICHERE DATEN-NORMALISIERUNG ---
-                    // Fehlende Felder in alten Rezepten werden hier automatisch mit leeren Standardwerten aufgefüllt.
-                    // Das verhindert Abstürze und bereitet die App perfekt auf zukünftige Erweiterungen vor!
+                    // --- DATEN-NORMALISIERUNG INKLUSIVE ZEITEN & PORTIONEN ---
                     recipes.push({
                         id: doc.id,
                         title: data.title || '',
                         tags: data.tags || [],
+                        portions: data.portions || 4, // Standard 4 Portionen
+                        times: data.times || { prep: '', cook: '', total: '' },
                         ingredients: data.ingredients || [],
                         instructions: data.instructions || '',
                         sourceUrl: data.sourceUrl || '',
@@ -759,13 +830,16 @@
                     });
                 }
 
-                // Zeige Nährwerte oder Zutaten-Vorschau
+                // Zeige Gesamtzeit, Portionen oder Nährwerte
                 const preview = document.createElement('p');
                 preview.className = "text-sm text-gray-600 line-clamp-2 mt-auto font-medium flex items-center gap-2 flex-wrap";
                 
-                if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein)) {
-                    if(recipe.nutrition.kcal) preview.innerHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs">${recipe.nutrition.kcal} kcal</span>`;
-                    if(recipe.nutrition.protein) preview.innerHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs">${recipe.nutrition.protein}g Protein</span>`;
+                let detailsHTML = '';
+                if(recipe.times && recipe.times.total) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${recipe.times.total} Min</span>`;
+                if(recipe.nutrition && recipe.nutrition.protein) detailsHTML += `<span class="bg-gray-100 px-2 py-0.5 rounded text-xs">${recipe.nutrition.protein}g Protein</span>`;
+                
+                if (detailsHTML) {
+                    preview.innerHTML = detailsHTML;
                 } else {
                     preview.textContent = recipe.ingredients ? recipe.ingredients.map(i => i.name).join(', ') : '';
                 }
@@ -785,9 +859,93 @@
 
         searchInput.addEventListener('input', renderRecipes);
 
+        // ==========================================
+        // PORTIONS-RECHNER & DETAILANSICHT
+        // ==========================================
+        
+        // Hilfsfunktion: Berechnet die neue Menge anhand des Faktors
+        function scaleIngredientAmount(amountStr, ratio) {
+            if (!amountStr) return '';
+            
+            // Komma zu Punkt für die Rechnung
+            let str = amountStr.toString().trim().replace(',', '.');
+            
+            // Wenn es ein Bruch ist (z.B. "1/2")
+            if (str.match(/^\d+\/\d+$/)) {
+                let parts = str.split('/');
+                str = (parseFloat(parts[0]) / parseFloat(parts[1])).toString();
+            }
+            
+            let val = parseFloat(str);
+            
+            // Wenn keine echte Zahl erkannt wurde (z.B. "etwas", "nach Belieben"), einfach zurückgeben
+            if (isNaN(val)) return amountStr; 
+            
+            let scaled = val * ratio;
+            
+            // Auf 1 Nachkommastelle runden und Punkt wieder zu Komma machen
+            return (Math.round(scaled * 10) / 10).toString().replace('.', ',');
+        }
+
+        function renderDetailIngredientsList(recipe, portionsToDisplay) {
+            const ingList = document.getElementById('detailIngredients');
+            ingList.innerHTML = '';
+            
+            // Verhindern von Teilen durch 0, falls die Datenbank fehlerhaft ist
+            const basePortions = recipe.portions > 0 ? recipe.portions : 1; 
+            const ratio = portionsToDisplay / basePortions;
+
+            if (recipe.ingredients) {
+                recipe.ingredients.forEach(ing => {
+                    const li = document.createElement('li');
+                    li.className = "flex justify-between items-center py-2.5 border-b border-gray-300/50 last:border-0 gap-4";
+                    
+                    const scaledAmount = scaleIngredientAmount(ing.amount, ratio);
+                    const unitStr = (ing.unit || '').trim();
+                    const fullAmount = `${scaledAmount} ${unitStr}`.trim();
+
+                    let amountHtml = '';
+                    if (fullAmount) {
+                        amountHtml = `
+                        <div class="flex-shrink-0">
+                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block">${fullAmount}</span>
+                        </div>`;
+                    }
+
+                    li.innerHTML = `
+                        <span class="font-bold text-gray-900 flex-1 break-words leading-snug">${ing.name}</span>
+                        ${amountHtml}
+                    `;
+                    ingList.appendChild(li);
+                });
+            }
+        }
+
+        // Event-Listener für Plus/Minus Buttons
+        document.getElementById('btnPortionMinus').addEventListener('click', () => {
+            if (currentDisplayPortions > 1 && currentDetailRecipe) {
+                currentDisplayPortions--;
+                document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
+                renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
+            }
+        });
+
+        document.getElementById('btnPortionPlus').addEventListener('click', () => {
+            if (currentDetailRecipe) {
+                currentDisplayPortions++;
+                document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
+                renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
+            }
+        });
+
+
         function openRecipeDetail(id) {
             const recipe = recipes.find(r => r.id === id);
             if (!recipe) { window.location.hash = ''; return; }
+
+            // Globale Variablen für den Portionsrechner setzen
+            currentDetailRecipe = recipe;
+            currentDisplayPortions = recipe.portions > 0 ? recipe.portions : 4;
 
             currentDetailRecipeId = id;
             document.getElementById('detailTitle').textContent = recipe.title;
@@ -813,6 +971,37 @@
                 });
             }
 
+            // ZEITEN RENDERN
+            const timesContainer = document.getElementById('detailTimesContainer');
+            const boxPrep = document.getElementById('timePrepBox');
+            const boxCook = document.getElementById('timeCookBox');
+            const boxTotal = document.getElementById('timeTotalBox');
+            
+            let hasTimes = false;
+            if (recipe.times) {
+                if (recipe.times.prep) {
+                    boxPrep.classList.remove('hidden');
+                    document.getElementById('detailTimePrep').textContent = recipe.times.prep;
+                    hasTimes = true;
+                } else { boxPrep.classList.add('hidden'); }
+                
+                if (recipe.times.cook) {
+                    boxCook.classList.remove('hidden');
+                    document.getElementById('detailTimeCook').textContent = recipe.times.cook;
+                    hasTimes = true;
+                } else { boxCook.classList.add('hidden'); }
+                
+                if (recipe.times.total) {
+                    boxTotal.classList.remove('hidden');
+                    document.getElementById('detailTimeTotal').textContent = recipe.times.total;
+                    hasTimes = true;
+                } else { boxTotal.classList.add('hidden'); }
+            }
+            
+            if (hasTimes) timesContainer.classList.remove('hidden');
+            else timesContainer.classList.add('hidden');
+
+
             // NÄHRWERTE RENDERN
             const nutContainer = document.getElementById('detailNutritionContainer');
             if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.fat)) {
@@ -825,36 +1014,9 @@
                 nutContainer.classList.add('hidden');
             }
 
-            // ZUTATEN RENDERN (Betty Bossi Style)
-            const ingList = document.getElementById('detailIngredients');
-            ingList.innerHTML = '';
-            if (recipe.ingredients) {
-                recipe.ingredients.forEach(ing => {
-                    const li = document.createElement('li');
-                    
-                    // Flexbox, die Elemente auf Abstand hält. gap-4 sorgt für Mindestabstand.
-                    li.className = "flex justify-between items-center py-2.5 border-b border-gray-300/50 last:border-0 gap-4";
-                    
-                    const amountStr = (ing.amount || '').trim();
-                    const unitStr = (ing.unit || '').trim();
-                    const fullAmount = `${amountStr} ${unitStr}`.trim();
-
-                    let amountHtml = '';
-                    if (fullAmount) {
-                        // flex-shrink-0 blockiert Quetschen, min-w-[70px] und text-center formen den Knopf
-                        amountHtml = `
-                        <div class="flex-shrink-0">
-                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block">${fullAmount}</span>
-                        </div>`;
-                    }
-
-                    li.innerHTML = `
-                        <span class="font-bold text-gray-900 flex-1 break-words leading-snug">${ing.name}</span>
-                        ${amountHtml}
-                    `;
-                    ingList.appendChild(li);
-                });
-            }
+            // ZUTATEN RENDERN MIT PORTIONEN
+            document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
+            renderDetailIngredientsList(recipe, currentDisplayPortions);
 
             document.getElementById('detailInstructions').textContent = recipe.instructions;
 
@@ -903,7 +1065,11 @@
             firstRow.querySelector('.ingredient-amount').value = '';
             firstRow.querySelector('.ingredient-unit').value = 'g';
 
-            // Nährwerte leeren
+            // Alle neuen Felder leeren
+            document.getElementById('formPortions').value = '4';
+            document.getElementById('formPrepTime').value = '';
+            document.getElementById('formCookTime').value = '';
+            document.getElementById('formTotalTime').value = '';
             document.getElementById('formKcal').value = '';
             document.getElementById('formProtein').value = '';
             document.getElementById('formCarbs').value = '';
@@ -921,12 +1087,21 @@
             document.getElementById('formTitle').value = recipe.title;
             document.getElementById('formInstructions').value = recipe.instructions;
             
-            // Da wir die Daten beim Laden normalisieren, existieren diese Felder jetzt immer sicher!
-            document.getElementById('formSourceUrl').value = recipe.sourceUrl;
-            document.getElementById('formKcal').value = recipe.nutrition.kcal;
-            document.getElementById('formProtein').value = recipe.nutrition.protein;
-            document.getElementById('formCarbs').value = recipe.nutrition.carbs;
-            document.getElementById('formFat').value = recipe.nutrition.fat;
+            document.getElementById('formPortions').value = recipe.portions || '4';
+            document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
+
+            if(recipe.times) {
+                document.getElementById('formPrepTime').value = recipe.times.prep || '';
+                document.getElementById('formCookTime').value = recipe.times.cook || '';
+                document.getElementById('formTotalTime').value = recipe.times.total || '';
+            }
+            
+            if (recipe.nutrition) {
+                document.getElementById('formKcal').value = recipe.nutrition.kcal || '';
+                document.getElementById('formProtein').value = recipe.nutrition.protein || '';
+                document.getElementById('formCarbs').value = recipe.nutrition.carbs || '';
+                document.getElementById('formFat').value = recipe.nutrition.fat || '';
+            }
 
             if(recipe.imageBase64) {
                 currentImageBase64 = recipe.imageBase64;
@@ -1147,6 +1322,12 @@
             const recipeData = {
                 title: document.getElementById('formTitle').value,
                 tags: currentRecipeTags,
+                portions: parseInt(document.getElementById('formPortions').value) || 4,
+                times: {
+                    prep: document.getElementById('formPrepTime').value,
+                    cook: document.getElementById('formCookTime').value,
+                    total: document.getElementById('formTotalTime').value
+                },
                 ingredients: ingredients,
                 instructions: document.getElementById('formInstructions').value,
                 sourceUrl: document.getElementById('formSourceUrl').value,
@@ -1211,6 +1392,17 @@
             return match ? match[0] : '';
         }
 
+        // Hilfsfunktion zum Umwandeln des ISO 8601 Zeitformats von Webseiten (z.B. "PT15M" in "15")
+        function parseIsoDuration(duration) {
+            if(!duration) return '';
+            const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+            if(!match) return '';
+            const hours = parseInt(match[1] || 0, 10);
+            const minutes = parseInt(match[2] || 0, 10);
+            const total = (hours * 60) + minutes;
+            return total > 0 ? total.toString() : '';
+        }
+
         document.getElementById('startImportBtn').addEventListener('click', async () => {
             let url = document.getElementById('importUrlInput').value.trim();
             const statusEl = document.getElementById('importStatus');
@@ -1252,6 +1444,8 @@
 
                 let title = '';
                 let instructions = '';
+                let portions = '';
+                let timesData = {};
                 let ingredientsList = [];
                 let nutritionData = {};
 
@@ -1284,6 +1478,16 @@
                             if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
                                 ingredientsList = r.recipeIngredient;
                             }
+                            
+                            // Portionen extrahieren
+                            if (r.recipeYield) {
+                                portions = extractNumber(r.recipeYield);
+                            }
+
+                            // Zeiten extrahieren
+                            if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
+                            if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
+                            if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
 
                             // Makros extrahieren
                             if (r.nutrition) {
@@ -1319,6 +1523,12 @@
                 if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
                 if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
                 if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
+                
+                // Zeiten und Portionen eintragen
+                if(portions) document.getElementById('formPortions').value = portions;
+                if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
+                if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
+                if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
 
                 if(ingredientsList.length > 0) {
                     const list = document.getElementById('ingredientsList');
