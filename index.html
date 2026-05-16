@@ -27,22 +27,39 @@
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
         
-        /* Verstecke die Pfeile in Number-Inputs für sauberere Optik */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* FEATURE 6: SAUBERE DRUCKANSICHT */
+        @media print {
+            body { background-color: white !important; }
+            .print\:hidden { display: none !important; }
+            .print\:shadow-none { box-shadow: none !important; }
+            .print\:border-none { border: none !important; }
+            .print\:bg-transparent { background-color: transparent !important; }
+            .print\:m-0 { margin: 0 !important; }
+            .print\:p-0 { padding: 0 !important; }
+            .print\:w-full { width: 100% !important; max-width: 100% !important; }
+            .print\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+            #mainContent { overflow: visible !important; height: auto !important; padding: 0 !important; }
+            #detailView { border: none !important; box-shadow: none !important; margin: 0 !important; }
+            #detailImageContainer { height: 250px !important; margin-bottom: 20px !important; border-radius: 12px; overflow: hidden; }
+            .lg\:col-span-2, .lg\:col-span-3 { grid-column: span 1 / span 1 !important; } /* Untereinander beim Drucken */
+            .page-break-inside-avoid { page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
     <!-- LADEBILDSCHIRM -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center">
+    <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
     <!-- ANSICHT 0: LOGIN & REGISTRIERUNG -->
-    <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
                 <img src="logomr78brutalist.png" alt="mr 78 Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
@@ -76,7 +93,7 @@
     </div>
 
     <!-- HEADER (App Navigation) -->
-    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300">
+    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
             <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Meine Rezepte</h1>
@@ -103,10 +120,10 @@
     </header>
 
     <!-- HAUPTBEREICH -->
-    <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative">
+    <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ANSICHT 1: LISTENANSICHT -->
-        <div id="listView" class="max-w-6xl mx-auto block">
+        <div id="listView" class="max-w-6xl mx-auto block print:hidden">
             <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2" id="filterTagsContainer">
                 <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
             </div>
@@ -126,13 +143,17 @@
         </div>
 
         <!-- ANSICHT 2: REZEPT DETAILS -->
-        <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+        <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
+            <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
                 <button class="backToHomeBtn flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Zurück
                 </button>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap justify-end">
+                    <button id="printRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Drucken
+                    </button>
                     <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         Bearbeiten
@@ -145,60 +166,63 @@
             </div>
             
             <!-- Bild-Header -->
-            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200">
+            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-64">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
             </div>
 
-            <div class="p-6 md:p-10">
-                <div class="flex flex-wrap gap-2 mb-4" id="detailTags"></div>
+            <div class="p-6 md:p-10 print:p-0 print:pt-6">
+                <div class="flex flex-wrap items-center gap-2 mb-4" id="detailTags"></div>
+                
                 <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight" id="detailTitle">Rezept Titel</h2>
 
-                <!-- ZEITEN (Prep, Cook, Total) -->
-                <div id="detailTimesContainer" class="flex flex-wrap gap-4 mb-8 hidden">
-                    <div id="timePrepBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <div>
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Vorbereitung</p>
-                            <p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p>
+                <!-- ZEITEN & BEWERTUNG -->
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden">
+                        <div id="timePrepBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Vorbereitung</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p>
+                            </div>
                         </div>
-                    </div>
-                    <div id="timeCookBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
-                        <div>
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zubereitung</p>
-                            <p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p>
+                        <div id="timeCookBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zubereitung</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p>
+                            </div>
                         </div>
-                    </div>
-                    <div id="timeTotalBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden">
-                        <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <div>
-                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zeit Gesamt</p>
-                            <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
+                        <div id="timeTotalBox" class="bg-white border border-gray-300 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Zeit Gesamt</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Nährwerte (Makros) -->
-                <div id="detailNutritionContainer" class="mb-8 hidden">
-                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <div id="detailNutritionContainer" class="mb-8 hidden page-break-inside-avoid">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm print:shadow-none print:border-gray-400">
                         <h3 class="text-base font-bold text-gray-900 whitespace-nowrap flex items-center gap-2 m-0">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Protein:</span>
                                 <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
                                 <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Fett:</span>
                                 <span id="detailFat" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
@@ -206,22 +230,31 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-1 print:gap-8">
                     
                     <!-- Zutaten Container -->
-                    <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm">
-                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER & WAKE LOCK (Formatierung repariert) -->
+                    <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:bg-transparent print:border-gray-400 print:shadow-none page-break-inside-avoid">
+                        
+                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER, WAKE LOCK & EXPORT -->
                         <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3">
                             <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap">
-                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 Zutaten
                             </h3>
-                            <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2 print:hidden">
+                                
+                                <!-- FEATURE 5: Einkaufsliste kopieren -->
+                                <button id="copyIngredientsBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-blue-600 transition-colors" title="Zutaten als Liste kopieren">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                    <span class="hidden xl:inline" id="copyIngredientsText">Kopieren</span>
+                                </button>
+
                                 <!-- FEATURE 2: Wake Lock Button -->
                                 <button id="wakeLockBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-yellow-600 transition-colors" title="Display beim Kochen anlassen">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                    <span class="hidden sm:inline" id="wakeLockText">Display anlassen</span>
+                                    <span class="hidden sm:inline" id="wakeLockText">Wach</span>
                                 </button>
+                                
                                 <!-- Portions Rechner -->
                                 <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-gray-300 shadow-sm text-sm">
                                     <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
@@ -233,6 +266,7 @@
                                     </button>
                                 </div>
                             </div>
+                            <div class="hidden print:block font-bold text-gray-600">Für <span id="printPortionsCount">4</span> Portionen</div>
                         </div>
                         
                         <ul class="space-y-1" id="detailIngredients"></ul>
@@ -241,14 +275,22 @@
                     <!-- Zubereitung Container -->
                     <div class="lg:col-span-3">
                         <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-3">
-                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Zubereitung
                         </h3>
-                        <!-- INTERAKTIVE ZUBEREITUNG (wird dynamisch mit JS befüllt) -->
                         <div class="space-y-2" id="detailInstructions"></div>
 
+                        <!-- FEATURE 3: Persönliche Notizen -->
+                        <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner">
+                            <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                Meine Notizen
+                            </h4>
+                            <p id="detailNotesText" class="text-gray-800 whitespace-pre-wrap leading-relaxed italic"></p>
+                        </div>
+
                         <!-- Original Link -->
-                        <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden">
+                        <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden print:hidden">
                             <a id="detailSourceLink" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-red-600 transition-colors bg-gray-100 hover:bg-red-50 px-4 py-2.5 rounded-xl">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                 Original-Rezept öffnen
@@ -260,7 +302,7 @@
         </div>
 
         <!-- ANSICHT 3: FORMULAR -->
-        <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden">
+        <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToHomeBtn flex items-center gap-2 text-gray-700 hover:text-red-600 font-medium transition-colors bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -328,7 +370,34 @@
                         </div>
                     </div>
 
-                    <!-- NEU: Zeiten & Portionen -->
+                    <!-- FEATURE 4: Bewertung & Schwierigkeit -->
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <label class="block text-lg font-black text-gray-900 mb-4">Bewertung & Schwierigkeit</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Eigene Bewertung (Sterne)</label>
+                                <select id="formRating" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-900 font-medium cursor-pointer">
+                                    <option value="0">Keine Bewertung</option>
+                                    <option value="1">1 Stern - Naja</option>
+                                    <option value="2">2 Sterne - Ok</option>
+                                    <option value="3">3 Sterne - Gut</option>
+                                    <option value="4">4 Sterne - Sehr lecker</option>
+                                    <option value="5">5 Sterne - Mein Favorit!</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Schwierigkeitsgrad</label>
+                                <select id="formDifficulty" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-900 font-medium cursor-pointer">
+                                    <option value="">Nicht angegeben</option>
+                                    <option value="Einfach">Einfach</option>
+                                    <option value="Mittel">Mittel</option>
+                                    <option value="Schwer">Schwer</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zeiten & Portionen -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Zeiten & Portionen</label>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -437,6 +506,12 @@
                         <label class="block text-lg font-black text-gray-900 mb-2">Zubereitungsschritte <span class="text-red-600">*</span></label>
                         <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="1. Zwiebeln anbraten...&#10;2. Tomaten hinzugeben..."></textarea>
                     </div>
+                    
+                    <!-- FEATURE 3: Persönliche Notizen Eingabefeld -->
+                    <div>
+                        <label class="block text-lg font-black text-gray-900 mb-2">Persönliche Notizen (optional)</label>
+                        <textarea id="formNotes" rows="3" class="w-full px-4 py-3 bg-yellow-50/50 border border-yellow-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="z.B. Schmeckt noch besser mit etwas Chili..."></textarea>
+                    </div>
 
                     <!-- Original Link -->
                     <div>
@@ -487,11 +562,8 @@
         let currentEditRecipeId = null;
         let currentImageBase64 = null;
         
-        // Globale Variablen für den Portionsrechner
         let currentDetailRecipe = null;
         let currentDisplayPortions = 4;
-        
-        // FEATURE 2: Globale Variable für den Wake Lock (Wachhalter)
         let wakeLock = null;
 
         const views = {
@@ -505,21 +577,20 @@
         const searchInput = document.getElementById('searchInput');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // Bunte Tags, weicher Hintergrund, dunkle Schrift
         const tagColors = [
-            'bg-yellow-200 text-yellow-900 border border-yellow-300',
-            'bg-blue-200 text-blue-900 border border-blue-300',
-            'bg-green-200 text-green-900 border border-green-300',
-            'bg-pink-200 text-pink-900 border border-pink-300',
-            'bg-purple-200 text-purple-900 border border-purple-300',
-            'bg-orange-200 text-orange-900 border border-orange-300',
-            'bg-cyan-200 text-cyan-900 border border-cyan-300',
-            'bg-lime-200 text-lime-900 border border-lime-300',
-            'bg-indigo-200 text-indigo-900 border border-indigo-300',
-            'bg-rose-200 text-rose-900 border border-rose-300',
-            'bg-teal-200 text-teal-900 border border-teal-300',
-            'bg-amber-200 text-amber-900 border border-amber-300',
-            'bg-gray-200 text-gray-900 border border-gray-300'
+            'bg-blue-100 text-blue-800 border border-blue-200',
+            'bg-green-100 text-green-800 border border-green-200',
+            'bg-purple-100 text-purple-800 border border-purple-200',
+            'bg-yellow-100 text-yellow-800 border border-yellow-300',
+            'bg-pink-100 text-pink-800 border border-pink-200',
+            'bg-indigo-100 text-indigo-800 border border-indigo-200',
+            'bg-teal-100 text-teal-800 border border-teal-200',
+            'bg-orange-100 text-orange-800 border border-orange-200',
+            'bg-gray-200 text-gray-800 border border-gray-300',
+            'bg-cyan-100 text-cyan-800 border border-cyan-200',
+            'bg-lime-100 text-lime-800 border border-lime-300',
+            'bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200',
+            'bg-rose-100 text-rose-800 border border-rose-200'
         ];
         
         function getColorForTag(tag) {
@@ -532,16 +603,59 @@
             return tagColors[hash % tagColors.length];
         }
 
-        // ==========================================
+        // Hilfsfunktion: Sterne HTML generieren
+        function getStarsHtml(rating) {
+            if(!rating || rating === 0) return '';
+            let html = '<div class="flex items-center gap-0.5 text-yellow-400">';
+            for(let i=0; i<rating; i++) {
+                html += '<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        // FEATURE 6: Drucken
+        document.getElementById('printRecipeBtn').addEventListener('click', () => {
+            window.print();
+        });
+
+        // FEATURE 5: Einkaufsliste Kopieren
+        document.getElementById('copyIngredientsBtn').addEventListener('click', () => {
+            if(!currentDetailRecipe) return;
+            const btn = document.getElementById('copyIngredientsBtn');
+            const textSpan = document.getElementById('copyIngredientsText');
+            
+            let text = `Einkaufsliste: ${currentDetailRecipe.title}\n(für ${currentDisplayPortions} Portionen)\n\n`;
+            
+            const items = document.querySelectorAll('#detailIngredients li');
+            items.forEach(li => {
+                const name = li.querySelector('.ing-text').textContent.trim();
+                const amountBox = li.querySelector('.flex-shrink-0 span');
+                const amount = amountBox ? amountBox.textContent.trim() : '';
+                if(amount) text += `- ${amount} ${name}\n`;
+                else text += `- ${name}\n`;
+            });
+            
+            navigator.clipboard.writeText(text).then(() => {
+                textSpan.textContent = 'Kopiert!';
+                btn.classList.replace('text-gray-600', 'text-green-600');
+                setTimeout(() => {
+                    textSpan.textContent = 'Kopieren';
+                    btn.classList.replace('text-green-600', 'text-gray-600');
+                }, 2000);
+            }).catch(err => {
+                alert("Konnte Text nicht kopieren. Bitte markiere die Zutaten manuell.");
+            });
+        });
+
         // FEATURE 2: WAKE LOCK (Display anlassen)
-        // ==========================================
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
                 const btn = document.getElementById('wakeLockBtn');
                 btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
                 btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
-                document.getElementById('wakeLockText').textContent = 'Display bleibt an';
+                document.getElementById('wakeLockText').textContent = 'Wach';
             } catch (err) {
                 console.error('Wake Lock Fehler:', err);
                 alert("Dein Browser unterstützt diese Funktion leider noch nicht.");
@@ -556,7 +670,7 @@
             if(btn) {
                 btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
                 btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
-                document.getElementById('wakeLockText').textContent = 'Display anlassen';
+                document.getElementById('wakeLockText').textContent = 'Wach';
             }
         }
 
@@ -684,6 +798,7 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     
+                    // --- DATEN-NORMALISIERUNG INKLUSIVE BEWERTUNG, SCHWIERIGKEIT UND NOTIZEN ---
                     recipes.push({
                         id: doc.id,
                         title: data.title || '',
@@ -692,6 +807,9 @@
                         times: data.times || { prep: '', cook: '', total: '' },
                         ingredients: data.ingredients || [],
                         instructions: data.instructions || '',
+                        notes: data.notes || '', // FEATURE 3
+                        rating: data.rating ? parseInt(data.rating) : 0, // FEATURE 4
+                        difficulty: data.difficulty || '', // FEATURE 4
                         sourceUrl: data.sourceUrl || '',
                         nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '' },
                         imageBase64: data.imageBase64 || null,
@@ -863,6 +981,16 @@
                     cardHeader.appendChild(icon);
                 }
 
+                // FEATURE 4: Badges für Sterne und Schwierigkeit auf der Karte
+                let badgesHtml = '';
+                if(recipe.rating > 0 || recipe.difficulty) {
+                    badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
+                    if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
+                    if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
+                    badgesHtml += '</div>';
+                }
+                cardHeader.innerHTML += badgesHtml;
+
                 const cardBody = document.createElement('div');
                 cardBody.className = "p-5 flex-1 flex flex-col";
 
@@ -944,8 +1072,7 @@
                 recipe.ingredients.forEach(ing => {
                     const li = document.createElement('li');
                     
-                    // Interaktives Abhaken
-                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group";
+                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group page-break-inside-avoid print:px-0 print:mx-0";
                     
                     const scaledAmount = scaleIngredientAmount(ing.amount, ratio);
                     const unitStr = (ing.unit || '').trim();
@@ -955,12 +1082,12 @@
                     if (fullAmount) {
                         amountHtml = `
                         <div class="flex-shrink-0">
-                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block group-[.is-checked]:bg-gray-100 group-[.is-checked]:text-gray-400 group-[.is-checked]:shadow-none transition-all">${fullAmount}</span>
+                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block group-[.is-checked]:bg-gray-100 group-[.is-checked]:text-gray-400 group-[.is-checked]:shadow-none transition-all print:shadow-none print:border-gray-400">${fullAmount}</span>
                         </div>`;
                     }
 
                     const checkmarkHtml = `
-                    <svg class="ing-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="ing-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mr-1 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" stroke-width="2" class="opacity-100"></circle>
                     </svg>`;
 
@@ -993,6 +1120,7 @@
             if (currentDisplayPortions > 1 && currentDetailRecipe) {
                 currentDisplayPortions--;
                 document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
+                document.getElementById('printPortionsCount').textContent = currentDisplayPortions;
                 renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
             }
         });
@@ -1001,6 +1129,7 @@
             if (currentDetailRecipe) {
                 currentDisplayPortions++;
                 document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
+                document.getElementById('printPortionsCount').textContent = currentDisplayPortions;
                 renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
             }
         });
@@ -1028,6 +1157,21 @@
 
             const tagsContainer = document.getElementById('detailTags');
             tagsContainer.innerHTML = '';
+            
+            // FEATURE 4: Bewertung und Schwierigkeit neben den Tags anzeigen
+            if(recipe.difficulty) {
+                const diffSpan = document.createElement('span');
+                diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300`;
+                diffSpan.textContent = recipe.difficulty;
+                tagsContainer.appendChild(diffSpan);
+            }
+            if(recipe.rating > 0) {
+                const starSpan = document.createElement('span');
+                starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300`;
+                starSpan.innerHTML = getStarsHtml(recipe.rating);
+                tagsContainer.appendChild(starSpan);
+            }
+
             if (recipe.tags) {
                 recipe.tags.forEach(tag => {
                     const span = document.createElement('span');
@@ -1080,6 +1224,7 @@
             }
 
             document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
+            document.getElementById('printPortionsCount').textContent = currentDisplayPortions;
             renderDetailIngredientsList(recipe, currentDisplayPortions);
 
             // ZUBEREITUNG RENDERN (Interaktiv abhaken)
@@ -1087,21 +1232,19 @@
             instrContainer.innerHTML = '';
             
             if (recipe.instructions) {
-                // Splitte Text in einzelne Absätze auf
                 const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
-                
                 steps.forEach(step => {
                     const stepEl = document.createElement('div');
-                    stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none";
+                    stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0";
                     
                     const checkmarkHtml = `
-                    <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
                     </svg>`;
 
                     stepEl.innerHTML = `
                         ${checkmarkHtml}
-                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0">${step.trim()}</p>
+                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal">${step.trim()}</p>
                     `;
 
                     stepEl.addEventListener('click', function() {
@@ -1118,6 +1261,15 @@
 
                     instrContainer.appendChild(stepEl);
                 });
+            }
+
+            // FEATURE 3: PERSÖNLICHE NOTIZEN RENDERN
+            const notesContainer = document.getElementById('detailNotesContainer');
+            if(recipe.notes && recipe.notes.trim() !== '') {
+                notesContainer.classList.remove('hidden');
+                document.getElementById('detailNotesText').textContent = recipe.notes.trim();
+            } else {
+                notesContainer.classList.add('hidden');
             }
 
             const sourceContainer = document.getElementById('detailSourceContainer');
@@ -1173,6 +1325,9 @@
             document.getElementById('formCarbs').value = '';
             document.getElementById('formFat').value = '';
             document.getElementById('formSourceUrl').value = '';
+            document.getElementById('formNotes').value = ''; // Feature 3
+            document.getElementById('formRating').value = '0'; // Feature 4
+            document.getElementById('formDifficulty').value = ''; // Feature 4
         }
 
         document.getElementById('editRecipeBtn').addEventListener('click', () => {
@@ -1187,6 +1342,9 @@
             
             document.getElementById('formPortions').value = recipe.portions || '4';
             document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
+            document.getElementById('formNotes').value = recipe.notes || '';
+            document.getElementById('formRating').value = recipe.rating || '0';
+            document.getElementById('formDifficulty').value = recipe.difficulty || '';
 
             if(recipe.times) {
                 document.getElementById('formPrepTime').value = recipe.times.prep || '';
@@ -1428,6 +1586,9 @@
                 },
                 ingredients: ingredients,
                 instructions: document.getElementById('formInstructions').value,
+                notes: document.getElementById('formNotes').value,
+                rating: document.getElementById('formRating').value,
+                difficulty: document.getElementById('formDifficulty').value,
                 sourceUrl: document.getElementById('formSourceUrl').value,
                 nutrition: {
                     kcal: document.getElementById('formKcal').value,
