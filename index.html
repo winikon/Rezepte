@@ -27,6 +27,7 @@
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
         
+        /* Verstecke die Pfeile in Number-Inputs für sauberere Optik */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -209,13 +210,13 @@
                     
                     <!-- Zutaten Container -->
                     <div class="lg:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm">
-                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER & WAKE LOCK -->
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-4">
-                            <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER & WAKE LOCK (Formatierung repariert) -->
+                        <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3">
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap">
                                 <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 Zutaten
                             </h3>
-                            <div class="flex items-center gap-2 self-start sm:self-auto">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <!-- FEATURE 2: Wake Lock Button -->
                                 <button id="wakeLockBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-yellow-600 transition-colors" title="Display beim Kochen anlassen">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -243,7 +244,8 @@
                             <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Zubereitung
                         </h3>
-                        <div class="prose prose-red prose-lg max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed" id="detailInstructions"></div>
+                        <!-- INTERAKTIVE ZUBEREITUNG (wird dynamisch mit JS befüllt) -->
+                        <div class="space-y-2" id="detailInstructions"></div>
 
                         <!-- Original Link -->
                         <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden">
@@ -563,7 +565,6 @@
             else { requestWakeLock(); }
         });
 
-        // Wenn der Browser minimiert wurde, geht der Lock verloren. Hier holen wir ihn uns zurück:
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 wakeLock = await navigator.wakeLock.request('screen');
@@ -742,7 +743,7 @@
 
             if (viewName === 'list') {
                 document.getElementById('searchContainer').classList.remove('hidden');
-                releaseWakeLock(); // Wachhalter aus, wenn man die Liste ansieht
+                releaseWakeLock(); 
                 window.location.hash = '';
             } else {
                 document.getElementById('searchContainer').classList.add('hidden');
@@ -943,7 +944,7 @@
                 recipe.ingredients.forEach(ing => {
                     const li = document.createElement('li');
                     
-                    // FEATURE 1: Interaktives Abhaken (Cursor-pointer & Hover-Effekt)
+                    // Interaktives Abhaken
                     li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group";
                     
                     const scaledAmount = scaleIngredientAmount(ing.amount, ratio);
@@ -958,7 +959,6 @@
                         </div>`;
                     }
 
-                    // Leeres SVG für den Kreis (Checkbox)
                     const checkmarkHtml = `
                     <svg class="ing-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" stroke-width="2" class="opacity-100"></circle>
@@ -972,17 +972,13 @@
                         ${amountHtml}
                     `;
 
-                    // Klick-Logik zum Abhaken
                     li.addEventListener('click', function() {
                         this.classList.toggle('is-checked');
                         const svg = this.querySelector('.ing-checkbox');
-                        
                         if (this.classList.contains('is-checked')) {
-                            // Häkchen setzen
                             svg.classList.replace('text-gray-300', 'text-green-500');
                             svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
                         } else {
-                            // Zurück zum leeren Kreis
                             svg.classList.replace('text-green-500', 'text-gray-300');
                             svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
                         }
@@ -1071,7 +1067,6 @@
             if (hasTimes) timesContainer.classList.remove('hidden');
             else timesContainer.classList.add('hidden');
 
-
             // NÄHRWERTE RENDERN
             const nutContainer = document.getElementById('detailNutritionContainer');
             if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.fat)) {
@@ -1087,7 +1082,43 @@
             document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
             renderDetailIngredientsList(recipe, currentDisplayPortions);
 
-            document.getElementById('detailInstructions').textContent = recipe.instructions;
+            // ZUBEREITUNG RENDERN (Interaktiv abhaken)
+            const instrContainer = document.getElementById('detailInstructions');
+            instrContainer.innerHTML = '';
+            
+            if (recipe.instructions) {
+                // Splitte Text in einzelne Absätze auf
+                const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
+                
+                steps.forEach(step => {
+                    const stepEl = document.createElement('div');
+                    stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none";
+                    
+                    const checkmarkHtml = `
+                    <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+                    </svg>`;
+
+                    stepEl.innerHTML = `
+                        ${checkmarkHtml}
+                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0">${step.trim()}</p>
+                    `;
+
+                    stepEl.addEventListener('click', function() {
+                        this.classList.toggle('is-checked');
+                        const svg = this.querySelector('.step-checkbox');
+                        if (this.classList.contains('is-checked')) {
+                            svg.classList.replace('text-gray-300', 'text-green-500');
+                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                        } else {
+                            svg.classList.replace('text-green-500', 'text-gray-300');
+                            svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
+                        }
+                    });
+
+                    instrContainer.appendChild(stepEl);
+                });
+            }
 
             const sourceContainer = document.getElementById('detailSourceContainer');
             const sourceLink = document.getElementById('detailSourceLink');
