@@ -553,7 +553,22 @@
             recipesUnsubscribe = onSnapshot(recipesRef, (snapshot) => {
                 recipes = [];
                 snapshot.forEach(doc => {
-                    recipes.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    
+                    // --- ZUKUNFTSSICHERE DATEN-NORMALISIERUNG ---
+                    // Fehlende Felder in alten Rezepten werden hier automatisch mit leeren Standardwerten aufgefüllt.
+                    // Das verhindert Abstürze und bereitet die App perfekt auf zukünftige Erweiterungen vor!
+                    recipes.push({
+                        id: doc.id,
+                        title: data.title || '',
+                        tags: data.tags || [],
+                        ingredients: data.ingredients || [],
+                        instructions: data.instructions || '',
+                        sourceUrl: data.sourceUrl || '',
+                        nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '' },
+                        imageBase64: data.imageBase64 || null,
+                        createdAt: data.createdAt || new Date().toISOString()
+                    });
                 });
                 
                 renderRecipes();
@@ -905,14 +920,13 @@
             
             document.getElementById('formTitle').value = recipe.title;
             document.getElementById('formInstructions').value = recipe.instructions;
-            document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
             
-            if (recipe.nutrition) {
-                document.getElementById('formKcal').value = recipe.nutrition.kcal || '';
-                document.getElementById('formProtein').value = recipe.nutrition.protein || '';
-                document.getElementById('formCarbs').value = recipe.nutrition.carbs || '';
-                document.getElementById('formFat').value = recipe.nutrition.fat || '';
-            }
+            // Da wir die Daten beim Laden normalisieren, existieren diese Felder jetzt immer sicher!
+            document.getElementById('formSourceUrl').value = recipe.sourceUrl;
+            document.getElementById('formKcal').value = recipe.nutrition.kcal;
+            document.getElementById('formProtein').value = recipe.nutrition.protein;
+            document.getElementById('formCarbs').value = recipe.nutrition.carbs;
+            document.getElementById('formFat').value = recipe.nutrition.fat;
 
             if(recipe.imageBase64) {
                 currentImageBase64 = recipe.imageBase64;
