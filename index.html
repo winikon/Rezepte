@@ -2,8 +2,20 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Meine Rezept-App</title>
+    
+    <!-- MOBILE APP / PWA SETTINGS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Rezepte">
+    <link rel="apple-touch-icon" href="logomr78brutalist.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#E6E4DD">
+    
+    <!-- Dynamisches App Manifest für Android & Installation -->
+    <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"mr78 Rezepte","short_name":"Rezepte","start_url":".","display":"standalone","background_color":"#E6E4DD","theme_color":"#E6E4DD","icons":[{"src":"logomr78brutalist.png","sizes":"512x512","type":"image/png"}]}'>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Erzwingt, dass Hintergrundfarben (wie das Grau bei Zutaten) gedruckt werden */
@@ -24,6 +36,10 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Anpassung für iPhone Notch (Safe Areas) */
+        .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)); }
+        .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
 
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
@@ -103,7 +119,7 @@
     </div>
 
     <!-- HEADER (App Navigation) -->
-    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
+    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
             <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
@@ -133,7 +149,7 @@
     </header>
 
     <!-- HAUPTBEREICH -->
-    <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
+    <main id="mainContent" class="hidden flex-1 overflow-y-auto px-4 pt-6 safe-pb relative print:p-0 print:overflow-visible">
 
         <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
@@ -271,7 +287,6 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
-                            <!-- NEUE REIHENFOLGE -->
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
@@ -297,7 +312,6 @@
                     <!-- Zutaten Container -->
                     <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:p-5 print:shadow-none page-break-inside-avoid">
                         
-                        <!-- ZUTATEN HEADER MIT PORTIONSRECHNER, WAKE LOCK & EXPORT -->
                         <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3 print:pb-2 print:mb-2">
                             <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap">
                                 <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -360,7 +374,7 @@
             </div>
         </div>
 
-        <!-- FEATURE 1: ZEN KOCH-MODUS VIEW -->
+        <!-- ZEN KOCH-MODUS VIEW -->
         <div id="zenModeView" class="hidden fixed inset-0 bg-[#E6E4DD] z-[100] flex flex-col justify-between overflow-hidden">
             <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-md">
                 <button id="exitZenModeBtn" class="flex items-center gap-2 text-gray-300 hover:text-white font-bold">
@@ -391,7 +405,7 @@
             </div>
         </div>
 
-        <!-- FLOATING TIMER CONTAINER (Jetzt auf z-[110], liegt über Zen Modus) -->
+        <!-- FLOATING TIMER CONTAINER -->
         <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 print:hidden pointer-events-none *:pointer-events-auto"></div>
 
         <!-- ANSICHT 3: FORMULAR -->
@@ -604,7 +618,7 @@
                         <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="1. Zwiebeln anbraten...&#10;2. Tomaten hinzugeben..."></textarea>
                     </div>
                     
-                    <!-- Persönliche Notizen Eingabefeld -->
+                    <!-- Persönliche Notizen -->
                     <div>
                         <label class="block text-lg font-black text-gray-900 mb-2">Persönliche Notizen (optional)</label>
                         <textarea id="formNotes" rows="3" class="w-full px-4 py-3 bg-yellow-50/50 border border-yellow-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="z.B. Schmeckt noch besser mit etwas Chili..."></textarea>
@@ -618,8 +632,8 @@
 
                     <!-- Submit -->
                     <div class="pt-6 border-t border-gray-200 flex justify-end">
-                        <button type="submit" class="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors bg-white px-4 py-2.5 rounded-lg shadow-sm border border-gray-300">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <button type="submit" class="flex items-center gap-1.5 text-green-700 hover:text-green-900 hover:bg-green-50 font-medium text-sm transition-colors bg-white px-5 py-2.5 rounded-lg shadow-sm border border-green-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Rezept speichern
                         </button>
                     </div>
@@ -628,7 +642,6 @@
         </div>
     </main>
 
-    <!-- FIREBASE & LOGIK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -802,7 +815,6 @@
             }
         }
 
-        // BESSERES TIMER CSS (Button bleibt immer sauber in einer Zeile)
         function parseTextForTimers(text) {
             const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
             return text.replace(regex, (match, number, unit) => {
@@ -852,7 +864,6 @@
             });
         }
 
-        // EXTREM NERVIGER ALARMTON
         let alarmAudioCtx = null;
         function playAnnoyingAlarm() {
             try {
@@ -998,6 +1009,30 @@
                     btn.classList.replace('text-green-600', 'text-gray-600');
                 }, 2000);
             }).catch(err => alert("Konnte Text nicht kopieren."));
+        });
+
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                const btn = document.getElementById('wakeLockBtn');
+                btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
+                btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
+                document.getElementById('wakeLockText').textContent = 'Wach';
+            } catch (err) { console.error('Wake Lock Fehler:', err); }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
+            const btn = document.getElementById('wakeLockBtn');
+            if(btn) {
+                btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
+                btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
+                document.getElementById('wakeLockText').textContent = 'Wach';
+            }
+        }
+
+        document.getElementById('wakeLockBtn').addEventListener('click', () => {
+            if (wakeLock !== null) releaseWakeLock(); else requestWakeLock();
         });
 
         document.addEventListener('visibilitychange', async () => {
