@@ -46,6 +46,8 @@
             h2#detailTitle { font-size: 2rem !important; margin-bottom: 12px !important; line-height: 1.1 !important; }
             .page-break-inside-avoid { page-break-inside: avoid; }
         }
+
+        .fav-active svg { fill: #dc2626; color: #dc2626; }
     </style>
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
@@ -94,7 +96,7 @@
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
             <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
-            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Meine Rezepte</h1>
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         
         <div class="flex-1 max-w-xl relative" id="searchContainer">
@@ -103,6 +105,10 @@
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
+            <!-- FEATURE 4: Papierkorb Button -->
+            <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
             <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                 Import
@@ -120,52 +126,92 @@
     <!-- HAUPTBEREICH -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
-        <!-- ANSICHT 1: LISTENANSICHT (Verbreitert) -->
+        <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
-            <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2" id="filterTagsContainer">
-                <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+            <!-- Filter, Sortierung & Favoriten-Toggle -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1" id="filterTagsContainer">
+                    <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+                </div>
+                
+                <div class="flex items-center gap-3 flex-wrap">
+                    <!-- FEATURE 1: Favoriten Toggle -->
+                    <button id="toggleFavViewBtn" class="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 hover:text-red-600 hover:border-red-300 shadow-sm transition-all">
+                        <svg class="w-4 h-4 text-gray-400 transition-colors" id="favViewIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        Nur Favoriten
+                    </button>
+                    <!-- FEATURE 3: Sortieren -->
+                    <select id="sortSelect" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none shadow-sm cursor-pointer">
+                        <option value="newest">Neueste zuerst</option>
+                        <option value="az">A - Z</option>
+                        <option value="time">Kürzeste Dauer</option>
+                        <option value="kcal">Meiste Kalorien</option>
+                        <option value="protein">Meistes Protein</option>
+                    </select>
+                </div>
             </div>
+
             <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
                 <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
             </div>
-            <!-- Mehr Spalten auf großen Monitoren -->
+            
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6" id="recipeGrid"></div>
             
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4" id="emptyStateIcon">
                     <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900">Noch keine Rezepte</h3>
-                <p class="text-gray-600 mt-2 max-w-sm mx-auto">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
+                <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
         </div>
 
         <!-- ANSICHT 2: REZEPT DETAILS -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
-                <!-- ZURÜCK BUTTON: Exakt gleiche Größe und Styling wie die restlichen Buttons -->
+                <!-- ZURÜCK BUTTON -->
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Zurück
                 </button>
-                <div class="flex gap-2 flex-wrap justify-end">
+                <div class="flex gap-2 flex-wrap justify-end" id="detailActionBar">
+                    <!-- FEATURE 1: Favorit Button -->
+                    <button id="favRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        <span class="hidden sm:inline">Favorit</span>
+                    </button>
+                    <!-- FEATURE 2: Teilen Button -->
+                    <button id="shareRecipeBtn" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <span id="shareRecipeText">Teilen</span>
+                    </button>
+
                     <button id="printRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Drucken
+                        <span class="hidden sm:inline">Drucken</span>
                     </button>
-                    <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                    <button id="editRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        Bearbeiten
+                        <span class="hidden sm:inline">Bearbeiten</span>
                     </button>
-                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Löschen
+                        <span class="hidden sm:inline">Löschen</span>
+                    </button>
+
+                    <!-- Trash View Buttons (hidden by default) -->
+                    <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Wiederherstellen
+                    </button>
+                    <button id="hardDeleteRecipeBtn" class="hidden text-white bg-red-600 hover:bg-red-700 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Endgültig löschen
                     </button>
                 </div>
             </div>
             
-            <!-- Bild-Header -->
             <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
             </div>
@@ -222,12 +268,12 @@
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
                             </div>
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
-                                <span class="text-gray-500 font-medium text-sm">Protein:</span>
-                                <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
-                            </div>
-                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
                                 <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
+                                <span class="text-gray-500 font-medium text-sm">Protein:</span>
+                                <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
                             </div>
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
                                 <span class="text-gray-500 font-medium text-sm">Fett:</span>
@@ -311,7 +357,6 @@
         <!-- ANSICHT 3: FORMULAR -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
-                <!-- FORMULAR ZURÜCK BUTTON auch angepasst -->
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Abbrechen
@@ -441,12 +486,12 @@
                                 <input type="number" id="formKcal" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 450">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Protein (g)</label>
-                                <input type="number" id="formProtein" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 35">
-                            </div>
-                            <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Kohlenhydrate (g)</label>
                                 <input type="number" id="formCarbs" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 40">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Protein (g)</label>
+                                <input type="number" id="formProtein" min="0" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none" placeholder="z.B. 35">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Fett (g)</label>
@@ -578,6 +623,11 @@
         let currentDisplayPortions = 4;
         let wakeLock = null;
 
+        // Status-Variablen für die neuen Features
+        let showFavoritesOnly = false;
+        let showTrashView = false;
+        let currentSortOption = 'newest';
+
         const views = {
             login: document.getElementById('loginView'),
             list: document.getElementById('listView'),
@@ -625,16 +675,60 @@
             return html;
         }
 
-        document.getElementById('printRecipeBtn').addEventListener('click', () => {
-            window.print();
+        // ==========================================
+        // FEATURE 1 & 3: Favoriten und Sortierung Logic
+        // ==========================================
+        document.getElementById('toggleFavViewBtn').addEventListener('click', function() {
+            showFavoritesOnly = !showFavoritesOnly;
+            if(showFavoritesOnly) {
+                this.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
+                this.classList.remove('bg-white', 'border-gray-300', 'text-gray-700');
+                document.getElementById('favViewIcon').classList.replace('text-gray-400', 'text-red-500');
+            } else {
+                this.classList.remove('bg-red-50', 'border-red-300', 'text-red-700');
+                this.classList.add('bg-white', 'border-gray-300', 'text-gray-700');
+                document.getElementById('favViewIcon').classList.replace('text-red-500', 'text-gray-400');
+            }
+            renderRecipes();
         });
 
-        document.getElementById('copyIngredientsBtn').addEventListener('click', () => {
+        document.getElementById('sortSelect').addEventListener('change', function() {
+            currentSortOption = this.value;
+            renderRecipes();
+        });
+
+        document.getElementById('favRecipeBtn').addEventListener('click', async function() {
+            if(!currentDetailRecipe || !currentUser) return;
+            const newFavStatus = !currentDetailRecipe.isFavorite;
+            try {
+                const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipe.id);
+                await updateDoc(ref, { isFavorite: newFavStatus });
+                currentDetailRecipe.isFavorite = newFavStatus;
+                
+                // UI sofort aktualisieren
+                if(newFavStatus) {
+                    this.classList.add('fav-active');
+                    this.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
+                } else {
+                    this.classList.remove('fav-active');
+                    this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                }
+            } catch (e) { console.error("Fehler beim Favoriten speichern", e); }
+        });
+
+
+        // ==========================================
+        // FEATURE 2: Rezept komplett Teilen
+        // ==========================================
+        document.getElementById('shareRecipeBtn').addEventListener('click', async () => {
             if(!currentDetailRecipe) return;
-            const btn = document.getElementById('copyIngredientsBtn');
-            const textSpan = document.getElementById('copyIngredientsText');
+            const btn = document.getElementById('shareRecipeBtn');
+            const textSpan = document.getElementById('shareRecipeText');
             
-            let text = `Einkaufsliste: ${currentDetailRecipe.title}\n(für ${currentDisplayPortions} Portionen)\n\n`;
+            let text = `🍽️ *${currentDetailRecipe.title}*\n`;
+            if(currentDetailRecipe.times?.total) text += `⏱️ Gesamtzeit: ${currentDetailRecipe.times.total} Min.\n`;
+            if(currentDetailRecipe.nutrition?.kcal) text += `🔥 ${currentDetailRecipe.nutrition.kcal} kcal pro Portion\n`;
+            text += `\n🛒 *Zutaten (für ${currentDisplayPortions} Portionen):*\n`;
             
             const items = document.querySelectorAll('#detailIngredients li');
             items.forEach(li => {
@@ -645,6 +739,44 @@
                 else text += `- ${name}\n`;
             });
             
+            text += `\n👨‍🍳 *Zubereitung:*\n${currentDetailRecipe.instructions}\n`;
+            
+            if(currentDetailRecipe.sourceUrl) {
+                text += `\n🔗 Link zum Original-Rezept: ${currentDetailRecipe.sourceUrl}\n`;
+            }
+
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: currentDetailRecipe.title, text: text });
+                } else {
+                    await navigator.clipboard.writeText(text);
+                    textSpan.textContent = 'Kopiert!';
+                    btn.classList.replace('text-gray-700', 'text-green-600');
+                    setTimeout(() => {
+                        textSpan.textContent = 'Teilen';
+                        btn.classList.replace('text-green-600', 'text-gray-700');
+                    }, 2500);
+                }
+            } catch(e) { console.warn("Teilen abgebrochen oder fehlgeschlagen."); }
+        });
+
+
+        // DRUCKEN / EINKAUFSLISTE / WAKELOCK (bereits implementiert)
+        document.getElementById('printRecipeBtn').addEventListener('click', () => { window.print(); });
+
+        document.getElementById('copyIngredientsBtn').addEventListener('click', () => {
+            if(!currentDetailRecipe) return;
+            const btn = document.getElementById('copyIngredientsBtn');
+            const textSpan = document.getElementById('copyIngredientsText');
+            let text = `Einkaufsliste: ${currentDetailRecipe.title}\n(für ${currentDisplayPortions} Portionen)\n\n`;
+            const items = document.querySelectorAll('#detailIngredients li');
+            items.forEach(li => {
+                const name = li.querySelector('.ing-text').textContent.trim();
+                const amountBox = li.querySelector('.flex-shrink-0 span');
+                const amount = amountBox ? amountBox.textContent.trim() : '';
+                if(amount) text += `- ${amount} ${name}\n`;
+                else text += `- ${name}\n`;
+            });
             navigator.clipboard.writeText(text).then(() => {
                 textSpan.textContent = 'Kopiert!';
                 btn.classList.replace('text-gray-600', 'text-green-600');
@@ -652,9 +784,7 @@
                     textSpan.textContent = 'Kopieren';
                     btn.classList.replace('text-green-600', 'text-gray-600');
                 }, 2000);
-            }).catch(err => {
-                alert("Konnte Text nicht kopieren. Bitte markiere die Zutaten manuell.");
-            });
+            }).catch(err => alert("Konnte Text nicht kopieren."));
         });
 
         async function requestWakeLock() {
@@ -664,16 +794,11 @@
                 btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
                 btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
                 document.getElementById('wakeLockText').textContent = 'Wach';
-            } catch (err) {
-                console.error('Wake Lock Fehler:', err);
-                alert("Dein Browser unterstützt diese Funktion leider noch nicht.");
-            }
+            } catch (err) { console.error('Wake Lock Fehler:', err); }
         }
 
         function releaseWakeLock() {
-            if (wakeLock !== null) {
-                wakeLock.release().then(() => { wakeLock = null; });
-            }
+            if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
             const btn = document.getElementById('wakeLockBtn');
             if(btn) {
                 btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
@@ -683,8 +808,7 @@
         }
 
         document.getElementById('wakeLockBtn').addEventListener('click', () => {
-            if (wakeLock !== null) { releaseWakeLock(); } 
-            else { requestWakeLock(); }
+            if (wakeLock !== null) releaseWakeLock(); else requestWakeLock();
         });
 
         document.addEventListener('visibilitychange', async () => {
@@ -693,6 +817,10 @@
             }
         });
 
+
+        // ==========================================
+        // AUTHENTIFIZIERUNG (Login / Register)
+        // ==========================================
         let isLoginMode = true;
         const authForm = document.getElementById('authForm');
         const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
@@ -726,32 +854,18 @@
             authSubmitBtn.textContent = "Bitte warten...";
 
             try {
-                if (isLoginMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
+                if (isLoginMode) await signInWithEmailAndPassword(auth, email, password);
+                else await createUserWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                console.error("Auth error:", error);
                 authError.classList.remove('hidden');
-                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    authError.textContent = "Falsche E-Mail oder Passwort.";
-                } else if (error.code === 'auth/email-already-in-use') {
-                    authError.textContent = "Diese E-Mail ist bereits registriert.";
-                } else if (error.code === 'auth/weak-password') {
-                    authError.textContent = "Das Passwort muss mindestens 6 Zeichen lang sein.";
-                } else {
-                    authError.textContent = "Ein Fehler ist aufgetreten (" + error.message + ").";
-                }
+                authError.textContent = "Ein Fehler ist aufgetreten. Bitte Daten prüfen.";
                 authSubmitBtn.disabled = false;
                 authSubmitBtn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
             }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => {
-            if(confirm("Möchtest du dich wirklich abmelden?")) {
-                await signOut(auth);
-            }
+            if(confirm("Möchtest du dich wirklich abmelden?")) await signOut(auth);
         });
 
         onAuthStateChanged(auth, (user) => {
@@ -778,7 +892,6 @@
                 
                 loadingOverlay.classList.add('hidden');
                 views.login.classList.remove('hidden');
-                
                 authForm.reset();
                 authSubmitBtn.disabled = false;
                 authSubmitBtn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
@@ -814,7 +927,9 @@
                         sourceUrl: data.sourceUrl || '',
                         nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '' },
                         imageBase64: data.imageBase64 || null,
-                        createdAt: data.createdAt || new Date().toISOString()
+                        createdAt: data.createdAt || new Date().toISOString(),
+                        isFavorite: data.isFavorite || false, // FEATURE 1
+                        isDeleted: data.isDeleted || false   // FEATURE 4
                     });
                 });
                 
@@ -823,8 +938,7 @@
                 updateTagDatalist();
                 loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden der Rezepte:", error);
-                alert("Fehler beim Laden der Rezepte. Bitte Seite neu laden.");
+                console.error("Fehler beim Laden:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -834,8 +948,6 @@
                     if (data.list && data.list.length > 0) customIngredients = data.list;
                 }
                 updateIngredientDatalist();
-            }, (error) => {
-                console.error("Fehler beim Laden der Zutaten:", error);
             });
         }
 
@@ -844,7 +956,7 @@
             try {
                 const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
                 await setDoc(settingsRef, { list: newIngredientsList }, { merge: true });
-            } catch (e) { console.error("Zutaten Fehler:", e); }
+            } catch (e) {}
         }
 
         function showView(viewName) {
@@ -860,15 +972,36 @@
             if (viewName === 'list') {
                 document.getElementById('searchContainer').classList.remove('hidden');
                 releaseWakeLock(); 
-                window.location.hash = '';
+                // Router Logik für Papierkorb
+                if(showTrashView) {
+                    document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
+                    document.getElementById('listControls').classList.add('hidden');
+                    document.getElementById('emptyStateTitle').textContent = "Papierkorb ist leer";
+                    document.getElementById('emptyStateDesc').textContent = "Gelöschte Rezepte tauchen hier auf.";
+                    document.getElementById('trashViewBtn').classList.add('text-red-600', 'bg-red-50');
+                } else {
+                    document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
+                    document.getElementById('listControls').classList.remove('hidden');
+                    document.getElementById('emptyStateTitle').textContent = "Noch keine Rezepte";
+                    document.getElementById('emptyStateDesc').textContent = "Klicke oben auf 'Neu' oder 'Import'.";
+                    document.getElementById('trashViewBtn').classList.remove('text-red-600', 'bg-red-50');
+                }
+                renderRecipes();
             } else {
                 document.getElementById('searchContainer').classList.add('hidden');
             }
             window.scrollTo(0, 0);
         }
 
+        // FEATURE 4: Papierkorb Navigation
+        document.getElementById('trashViewBtn').addEventListener('click', () => {
+            window.location.hash = showTrashView ? '' : '#trash';
+        });
+
         window.addEventListener('hashchange', () => {
             if(!currentUser) return; 
+            
+            showTrashView = window.location.hash === '#trash';
             
             if (window.location.hash === '#new') {
                 resetForm();
@@ -896,13 +1029,15 @@
         document.getElementById('newRecipeBtn').addEventListener('click', () => { window.location.hash = '#new'; });
         document.getElementById('importBtn').addEventListener('click', () => { window.location.hash = '#import'; });
         document.querySelectorAll('.backToHomeBtn').forEach(btn => {
-            btn.addEventListener('click', () => { window.location.hash = ''; });
+            btn.addEventListener('click', () => { 
+                window.location.hash = showTrashView ? '#trash' : ''; 
+            });
         });
 
         function renderFilterTags() {
             const container = document.getElementById('filterTagsContainer');
             const allTags = new Set();
-            recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+            recipes.filter(r => !r.isDeleted).forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
 
             container.innerHTML = '<span class="text-sm font-bold text-gray-800 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>';
             
@@ -925,7 +1060,7 @@
         function updateActiveFilterUI() {
             const note = document.getElementById('activeFilterNote');
             const text = document.getElementById('activeFilterText');
-            if (activeFilter) {
+            if (activeFilter && !showTrashView) {
                 note.classList.remove('hidden');
                 text.innerHTML = `Zeige Rezepte für Kategorie: <strong class="ml-1">${activeFilter}</strong>`;
             } else {
@@ -948,16 +1083,48 @@
             grid.innerHTML = '';
             let count = 0;
 
-            const sortedRecipes = [...recipes].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            // Filter: Papierkorb vs Aktiv
+            let filteredRecipes = recipes.filter(r => showTrashView ? r.isDeleted : !r.isDeleted);
+            
+            // Filter: Nur Favoriten
+            if (!showTrashView && showFavoritesOnly) {
+                filteredRecipes = filteredRecipes.filter(r => r.isFavorite);
+            }
 
-            sortedRecipes.forEach(recipe => {
-                if (searchTerm && !recipe.title.toLowerCase().includes(searchTerm)) return;
-                if (activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return;
+            // Filter: Suchbegriff und Tags
+            filteredRecipes = filteredRecipes.filter(recipe => {
+                if (searchTerm && !recipe.title.toLowerCase().includes(searchTerm)) return false;
+                if (!showTrashView && activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return false;
+                return true;
+            });
 
+            // FEATURE 3: Sortieren
+            filteredRecipes.sort((a,b) => {
+                if(currentSortOption === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
+                if(currentSortOption === 'az') return a.title.localeCompare(b.title);
+                if(currentSortOption === 'time') {
+                    let ta = parseInt(a.times.total) || 9999;
+                    let tb = parseInt(b.times.total) || 9999;
+                    return ta - tb;
+                }
+                if(currentSortOption === 'kcal') {
+                    let ka = parseInt(a.nutrition.kcal) || 0;
+                    let kb = parseInt(b.nutrition.kcal) || 0;
+                    return kb - ka; // Absteigend
+                }
+                if(currentSortOption === 'protein') {
+                    let pa = parseInt(a.nutrition.protein) || 0;
+                    let pb = parseInt(b.nutrition.protein) || 0;
+                    return pb - pa; // Absteigend
+                }
+                return 0;
+            });
+
+            filteredRecipes.forEach(recipe => {
                 count++;
                 
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full";
+                card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
                 const cardHeader = document.createElement('div');
@@ -976,13 +1143,14 @@
                     cardHeader.appendChild(icon);
                 }
 
-                let badgesHtml = '';
-                if(recipe.rating > 0 || recipe.difficulty) {
-                    badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
-                    if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
-                    if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
-                    badgesHtml += '</div>';
+                // Badges für Sterne, Schwierigkeit UND Favoriten-Herz
+                let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
+                if(recipe.isFavorite && !showTrashView) {
+                    badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
                 }
+                if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
+                if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
+                badgesHtml += '</div>';
                 cardHeader.innerHTML += badgesHtml;
 
                 const cardBody = document.createElement('div');
@@ -994,7 +1162,7 @@
 
                 const tagsContainer = document.createElement('div');
                 tagsContainer.className = "flex flex-wrap gap-1.5 mb-2"; 
-                if (recipe.tags) {
+                if (recipe.tags && !showTrashView) {
                     recipe.tags.slice(0, 3).forEach(tag => {
                         const t = document.createElement('span');
                         t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${getColorForTag(tag)}`;
@@ -1040,17 +1208,33 @@
 
         searchInput.addEventListener('input', renderRecipes);
 
-        function scaleIngredientAmount(amountStr, ratio) {
-            if (!amountStr) return '';
-            let str = amountStr.toString().trim().replace(',', '.');
+        // ==========================================
+        // FEATURE 5: EINHEITEN-INTELLIGENZ
+        // ==========================================
+        function scaleAndFormatIngredient(amountStr, unitStr, ratio) {
+            let str = (amountStr || '').toString().trim().replace(',', '.');
             if (str.match(/^\d+\/\d+$/)) {
                 let parts = str.split('/');
                 str = (parseFloat(parts[0]) / parseFloat(parts[1])).toString();
             }
+            
             let val = parseFloat(str);
-            if (isNaN(val)) return amountStr; 
+            if (isNaN(val)) return { amt: amountStr, unt: unitStr }; 
+            
             let scaled = val * ratio;
-            return (Math.round(scaled * 10) / 10).toString().replace('.', ',');
+            let u = (unitStr || '').trim();
+            let lowerU = u.toLowerCase();
+            
+            // Inteligente Umrechnung ab 1000
+            if (lowerU === 'g' && scaled >= 1000) {
+                return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'kg' };
+            }
+            if (lowerU === 'ml' && scaled >= 1000) {
+                return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'l' };
+            }
+            
+            // Standard: Runden auf 1 Nachkommastelle
+            return { amt: (Math.round(scaled * 10) / 10).toString().replace('.', ','), unt: unitStr };
         }
 
         function renderDetailIngredientsList(recipe, portionsToDisplay) {
@@ -1066,9 +1250,8 @@
                     
                     li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group page-break-inside-avoid print:px-0 print:mx-0 print:py-1";
                     
-                    const scaledAmount = scaleIngredientAmount(ing.amount, ratio);
-                    const unitStr = (ing.unit || '').trim();
-                    const fullAmount = `${scaledAmount} ${unitStr}`.trim();
+                    const formatted = scaleAndFormatIngredient(ing.amount, ing.unit, ratio);
+                    const fullAmount = `${formatted.amt} ${formatted.unt}`.trim();
 
                     let amountHtml = '';
                     if (fullAmount) {
@@ -1136,6 +1319,37 @@
 
             currentDetailRecipeId = id;
             document.getElementById('detailTitle').textContent = recipe.title;
+            
+            // Buttons je nach Status (Aktiv oder Papierkorb) anzeigen
+            if(recipe.isDeleted) {
+                document.getElementById('editRecipeBtn').classList.add('hidden');
+                document.getElementById('deleteRecipeBtn').classList.add('hidden');
+                document.getElementById('printRecipeBtn').classList.add('hidden');
+                document.getElementById('shareRecipeBtn').classList.add('hidden');
+                document.getElementById('favRecipeBtn').classList.add('hidden');
+                
+                document.getElementById('restoreRecipeBtn').classList.remove('hidden');
+                document.getElementById('hardDeleteRecipeBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('editRecipeBtn').classList.remove('hidden');
+                document.getElementById('deleteRecipeBtn').classList.remove('hidden');
+                document.getElementById('printRecipeBtn').classList.remove('hidden');
+                document.getElementById('shareRecipeBtn').classList.remove('hidden');
+                document.getElementById('favRecipeBtn').classList.remove('hidden');
+                
+                document.getElementById('restoreRecipeBtn').classList.add('hidden');
+                document.getElementById('hardDeleteRecipeBtn').classList.add('hidden');
+                
+                // Favoriten Status setzen
+                const favBtn = document.getElementById('favRecipeBtn');
+                if(recipe.isFavorite) {
+                    favBtn.classList.add('fav-active');
+                    favBtn.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
+                } else {
+                    favBtn.classList.remove('fav-active');
+                    favBtn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                }
+            }
             
             const imgContainer = document.getElementById('detailImageContainer');
             const imgEl = document.getElementById('detailImage');
@@ -1278,13 +1492,42 @@
             showView('detail');
         }
 
+        // ==========================================
+        // FEATURE 4: PAPIERKORB-SCHUTZ
+        // ==========================================
+        
+        // Löschen verschiebt nur in den Papierkorb
         document.getElementById('deleteRecipeBtn').addEventListener('click', async () => {
-            if (confirm('Dieses Rezept unwiderruflich löschen?')) {
+            if (confirm('Rezept in den Papierkorb verschieben?')) {
+                if (currentDetailRecipeId && currentUser) {
+                    try {
+                        const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
+                        await updateDoc(ref, { isDeleted: true });
+                        window.location.hash = ''; 
+                    } catch (e) { alert("Fehler beim Löschen"); }
+                }
+            }
+        });
+
+        // Wiederherstellen aus Papierkorb
+        document.getElementById('restoreRecipeBtn').addEventListener('click', async () => {
+            if (currentDetailRecipeId && currentUser) {
+                try {
+                    const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
+                    await updateDoc(ref, { isDeleted: false });
+                    window.location.hash = '#trash'; // zurück zur Müllübersicht
+                } catch (e) { alert("Fehler beim Wiederherstellen"); }
+            }
+        });
+
+        // Endgültig löschen aus Papierkorb
+        document.getElementById('hardDeleteRecipeBtn').addEventListener('click', async () => {
+            if (confirm('Dieses Rezept ENDGÜLTIG und unwiderruflich löschen?')) {
                 if (currentDetailRecipeId && currentUser) {
                     try {
                         const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
                         await deleteDoc(ref);
-                        window.location.hash = ''; 
+                        window.location.hash = '#trash'; 
                     } catch (e) { alert("Fehler beim Löschen"); }
                 }
             }
@@ -1595,17 +1838,20 @@
 
             try {
                 if(currentEditRecipeId) {
+                    // Update auch wenn es im Papierkorb war (wird dabei NICHT aus dem Papierkorb geholt, nur Daten-Update)
                     const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentEditRecipeId);
                     await updateDoc(ref, recipeData);
                 } else {
                     recipeData.createdAt = new Date().toISOString();
+                    recipeData.isFavorite = false;
+                    recipeData.isDeleted = false;
                     const recipesRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes');
                     await addDoc(recipesRef, recipeData);
                 }
 
                 if (foundNewIngredients) await saveNewIngredientsToFirebase(updatedIngredientsList);
                 
-                window.location.hash = ''; 
+                window.location.hash = showTrashView ? '#trash' : ''; 
             } catch (error) {
                 console.error("Speicherfehler:", error);
                 alert("Fehler beim Speichern!");
@@ -1763,8 +2009,8 @@
                 document.getElementById('formSourceUrl').value = url;
 
                 if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
-                if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
                 if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
+                if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
                 if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
                 
                 if(portions) document.getElementById('formPortions').value = portions;
