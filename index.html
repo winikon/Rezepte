@@ -6,7 +6,6 @@
     <title>Meine Rezept-App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Erzwingt, dass Hintergrundfarben (wie das Grau bei Zutaten) gedruckt werden */
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
@@ -32,7 +31,6 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* OPTIMIERTE DRUCKANSICHT FÜR 1 SEITE */
         @media print {
             body { background-color: white !important; font-size: 11pt !important; }
             .print\:hidden { display: none !important; }
@@ -48,6 +46,12 @@
         }
 
         .fav-active svg { fill: #dc2626; color: #dc2626; }
+        
+        /* Floating Timer Styles */
+        .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .timer-ringing { animation: pulseRed 1s infinite; }
+        @keyframes pulseRed { 0% { background-color: #fee2e2; border-color: #f87171; } 50% { background-color: #fca5a5; border-color: #dc2626; color: white; } 100% { background-color: #fee2e2; border-color: #f87171; } }
     </style>
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
@@ -100,12 +104,12 @@
         </div>
         
         <div class="flex-1 max-w-xl relative" id="searchContainer">
-            <input type="text" id="searchInput" placeholder="Rezepte durchsuchen..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 focus:border-red-500 rounded-full focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner">
+            <!-- TIEFENSUCHE Info im Placeholder -->
+            <input type="text" id="searchInput" placeholder="Suchen in Titel, Tags & Zutaten..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 focus:border-red-500 rounded-full focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner">
             <svg class="w-5 h-5 text-gray-400 absolute left-4 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-            <!-- FEATURE 4: Papierkorb Button -->
             <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
@@ -128,19 +132,16 @@
 
         <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
-            <!-- Filter, Sortierung & Favoriten-Toggle -->
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1" id="filterTagsContainer">
                     <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
                 </div>
                 
                 <div class="flex items-center gap-3 flex-wrap">
-                    <!-- FEATURE 1: Favoriten Toggle -->
                     <button id="toggleFavViewBtn" class="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 hover:text-red-600 hover:border-red-300 shadow-sm transition-all">
                         <svg class="w-4 h-4 text-gray-400 transition-colors" id="favViewIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         Nur Favoriten
                     </button>
-                    <!-- FEATURE 3: Sortieren -->
                     <select id="sortSelect" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none shadow-sm cursor-pointer">
                         <option value="newest">Neueste zuerst</option>
                         <option value="az">A - Z</option>
@@ -170,23 +171,26 @@
         <!-- ANSICHT 2: REZEPT DETAILS -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
-                <!-- ZURÜCK BUTTON -->
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Zurück
                 </button>
                 <div class="flex gap-2 flex-wrap justify-end" id="detailActionBar">
-                    <!-- FEATURE 1: Favorit Button -->
+                    
+                    <!-- FEATURE 1: ZEN KOCHMODUS -->
+                    <button id="startZenModeBtn" class="text-white bg-gray-900 hover:bg-black font-bold text-sm flex items-center gap-1.5 px-4 py-2 rounded-lg transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="hidden sm:inline">Kochen Starten</span>
+                    </button>
+
                     <button id="favRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         <span class="hidden sm:inline">Favorit</span>
                     </button>
-                    <!-- FEATURE 2: Teilen Button -->
                     <button id="shareRecipeBtn" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        <span id="shareRecipeText">Teilen</span>
+                        <span id="shareRecipeText" class="hidden sm:inline">Teilen</span>
                     </button>
-
                     <button id="printRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                         <span class="hidden sm:inline">Drucken</span>
@@ -200,7 +204,7 @@
                         <span class="hidden sm:inline">Löschen</span>
                     </button>
 
-                    <!-- Trash View Buttons (hidden by default) -->
+                    <!-- Trash View Buttons -->
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -212,8 +216,11 @@
                 </div>
             </div>
             
-            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3">
+            <!-- Bild-Header -->
+            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3 relative group">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
+                <!-- Overlay Gradient für besseren Kontrast -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity print:hidden"></div>
             </div>
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
@@ -221,7 +228,7 @@
                 
                 <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight print:text-3xl print:mb-4" id="detailTitle">Rezept Titel</h2>
 
-                <!-- ZEITEN & BEWERTUNG -->
+                <!-- ZEITEN -->
                 <div class="flex flex-wrap gap-4 mb-8 print:mb-4">
                     <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden print:gap-3">
                         <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
@@ -263,6 +270,7 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
+                            <!-- NEUE REIHENFOLGE -->
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
@@ -296,19 +304,16 @@
                             </h3>
                             <div class="flex flex-wrap items-center gap-2 print:hidden">
                                 
-                                <!-- Einkaufsliste kopieren -->
                                 <button id="copyIngredientsBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-blue-600 transition-colors" title="Zutaten als Liste kopieren">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
                                     <span class="hidden xl:inline" id="copyIngredientsText">Kopieren</span>
                                 </button>
 
-                                <!-- Wake Lock Button -->
                                 <button id="wakeLockBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-yellow-600 transition-colors" title="Display beim Kochen anlassen">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                     <span class="hidden sm:inline" id="wakeLockText">Wach</span>
                                 </button>
                                 
-                                <!-- Portions Rechner -->
                                 <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-gray-300 shadow-sm text-sm">
                                     <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
@@ -333,7 +338,6 @@
                         </h3>
                         <div class="space-y-2 print:space-y-1" id="detailInstructions"></div>
 
-                        <!-- Persönliche Notizen -->
                         <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:mt-6 print:shadow-none print:border-gray-400 print:bg-white print:border-dashed print:p-4">
                             <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 print:text-gray-800">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -342,7 +346,6 @@
                             <p id="detailNotesText" class="text-gray-800 whitespace-pre-wrap leading-relaxed italic"></p>
                         </div>
 
-                        <!-- Original Link -->
                         <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden print:hidden">
                             <a id="detailSourceLink" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-red-600 transition-colors bg-gray-100 hover:bg-red-50 px-4 py-2.5 rounded-xl">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -353,6 +356,44 @@
                 </div>
             </div>
         </div>
+
+        <!-- FEATURE 1: ZEN KOCH-MODUS VIEW -->
+        <div id="zenModeView" class="hidden fixed inset-0 bg-[#E6E4DD] z-[100] flex flex-col justify-between overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-md">
+                <button id="exitZenModeBtn" class="flex items-center gap-2 text-gray-300 hover:text-white font-bold">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    Schließen
+                </button>
+                <div class="text-sm font-bold tracking-widest uppercase text-gray-400">Schritt <span id="zenCurrentStepNum" class="text-white text-lg">1</span> von <span id="zenTotalStepsNum">X</span></div>
+                
+                <!-- FEATURE 2: Text To Speech -->
+                <button id="ttsPlayBtn" class="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 font-bold bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                    Vorlesen
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 p-6 md:p-12 overflow-y-auto flex items-center justify-center relative">
+                <p id="zenInstructionText" class="text-3xl md:text-5xl font-black text-gray-900 leading-tight max-w-4xl mx-auto text-center"></p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="bg-white p-6 md:p-8 flex items-center justify-between border-t border-gray-300 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                <button id="zenPrevBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 px-8 rounded-2xl text-xl flex items-center gap-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
+                    Zurück
+                </button>
+                <button id="zenNextBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-12 rounded-2xl text-2xl flex items-center gap-3 shadow-xl transition-transform transform hover:-translate-y-1">
+                    Weiter
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- FLOATING TIMER CONTAINER -->
+        <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[90] flex flex-col gap-3 print:hidden"></div>
 
         <!-- ANSICHT 3: FORMULAR -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
@@ -623,16 +664,23 @@
         let currentDisplayPortions = 4;
         let wakeLock = null;
 
-        // Status-Variablen für die neuen Features
         let showFavoritesOnly = false;
         let showTrashView = false;
         let currentSortOption = 'newest';
+        
+        // FEATURE 1 & 2: Zen Mode Variablen
+        let zenSteps = [];
+        let currentZenStepIndex = 0;
+
+        // FEATURE 3: Timer Logik
+        let activeTimers = [];
 
         const views = {
             login: document.getElementById('loginView'),
             list: document.getElementById('listView'),
             detail: document.getElementById('detailView'),
-            form: document.getElementById('formView')
+            form: document.getElementById('formView'),
+            zen: document.getElementById('zenModeView')
         };
         const mainHeader = document.getElementById('mainHeader');
         const mainContent = document.getElementById('mainContent');
@@ -676,7 +724,162 @@
         }
 
         // ==========================================
-        // FEATURE 1 & 3: Favoriten und Sortierung Logic
+        // FEATURE 1 & 2: ZEN MODUS & Text-to-Speech
+        // ==========================================
+        document.getElementById('startZenModeBtn').addEventListener('click', () => {
+            if (!currentDetailRecipe || !currentDetailRecipe.instructions) return;
+            
+            zenSteps = currentDetailRecipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
+            if (zenSteps.length === 0) return;
+
+            currentZenStepIndex = 0;
+            document.getElementById('zenTotalStepsNum').textContent = zenSteps.length;
+            
+            views.detail.classList.add('hidden');
+            mainHeader.classList.add('hidden');
+            views.zen.classList.remove('hidden');
+            
+            requestWakeLock();
+            updateZenModeUI();
+        });
+
+        document.getElementById('exitZenModeBtn').addEventListener('click', () => {
+            window.speechSynthesis.cancel();
+            views.zen.classList.add('hidden');
+            views.detail.classList.remove('hidden');
+            mainHeader.classList.remove('hidden');
+            releaseWakeLock();
+        });
+
+        document.getElementById('zenPrevBtn').addEventListener('click', () => {
+            if (currentZenStepIndex > 0) {
+                currentZenStepIndex--;
+                updateZenModeUI();
+            }
+        });
+
+        document.getElementById('zenNextBtn').addEventListener('click', () => {
+            if (currentZenStepIndex < zenSteps.length - 1) {
+                currentZenStepIndex++;
+                updateZenModeUI();
+            } else {
+                document.getElementById('exitZenModeBtn').click(); // Beenden wenn letzter Schritt
+            }
+        });
+
+        document.getElementById('ttsPlayBtn').addEventListener('click', () => {
+            const text = zenSteps[currentZenStepIndex];
+            if (!text) return;
+            
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = 0.95; // Etwas langsamer für besseres Verständnis
+            window.speechSynthesis.speak(utterance);
+        });
+
+        function updateZenModeUI() {
+            window.speechSynthesis.cancel(); // Stoppt vorheriges Vorlesen beim Wechsel
+            document.getElementById('zenCurrentStepNum').textContent = currentZenStepIndex + 1;
+            document.getElementById('zenInstructionText').textContent = zenSteps[currentZenStepIndex];
+            
+            document.getElementById('zenPrevBtn').disabled = currentZenStepIndex === 0;
+            
+            const nextBtn = document.getElementById('zenNextBtn');
+            if (currentZenStepIndex === zenSteps.length - 1) {
+                nextBtn.innerHTML = `Fertig <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                nextBtn.classList.replace('bg-red-600', 'bg-green-600');
+                nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+            } else {
+                nextBtn.innerHTML = `Weiter <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>`;
+                nextBtn.classList.replace('bg-green-600', 'bg-red-600');
+                nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+            }
+        }
+
+        // ==========================================
+        // FEATURE 3: SMARTE TIMERS IM TEXT
+        // ==========================================
+        function parseTextForTimers(text) {
+            // Sucht nach "15 Min.", "2 Stunden", "10 Minuten"
+            const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
+            
+            return text.replace(regex, (match, number, unit) => {
+                let minutes = parseInt(number);
+                if (unit.toLowerCase().startsWith('st') || unit.toLowerCase() === 'h') {
+                    minutes = minutes * 60;
+                }
+                return `<span class="timer-trigger bg-blue-50 text-blue-700 font-black px-2 py-0.5 rounded cursor-pointer hover:bg-blue-100 hover:shadow-sm border border-blue-200 transition-all" data-time="${minutes}">${match} ⏱️</span>`;
+            });
+        }
+
+        function renderTimers() {
+            const container = document.getElementById('floatingTimerContainer');
+            container.innerHTML = '';
+            
+            activeTimers.forEach((timer, index) => {
+                const el = document.createElement('div');
+                const isFinished = timer.remaining <= 0;
+                
+                el.className = `timer-box flex items-center justify-between gap-4 p-3 rounded-xl border-2 shadow-lg backdrop-blur-md ${isFinished ? 'timer-ringing bg-red-100 border-red-500 text-red-900' : 'bg-gray-900/90 border-gray-700 text-white'}`;
+                
+                const mins = Math.floor(Math.abs(timer.remaining) / 60);
+                const secs = Math.abs(timer.remaining) % 60;
+                const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                el.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-70">Timer ${index + 1}</span>
+                        <span class="text-2xl font-black tabular-nums">${isFinished ? '-' : ''}${timeStr}</span>
+                    </div>
+                    <button class="stop-timer-btn p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                
+                el.querySelector('.stop-timer-btn').addEventListener('click', () => {
+                    clearInterval(timer.intervalId);
+                    activeTimers.splice(index, 1);
+                    renderTimers();
+                });
+                
+                container.appendChild(el);
+            });
+        }
+
+        function startTimer(minutes) {
+            const timer = { remaining: minutes * 60, intervalId: null };
+            
+            timer.intervalId = setInterval(() => {
+                timer.remaining--;
+                renderTimers();
+                
+                if(timer.remaining === 0) {
+                    // Audio Playback für den Alarm (kurzer Beep)
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        const ctx = new AudioContext();
+                        const osc = ctx.createOscillator();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(880, ctx.currentTime);
+                        osc.connect(ctx.destination);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.5);
+                    } catch(e){}
+                }
+            }, 1000);
+            
+            activeTimers.push(timer);
+            renderTimers();
+        }
+
+        // ==========================================
+        // FEATURE 4: DEEP SEARCH (Tiefensuche) & Auto Badges
+        // ==========================================
+        // Wurde in renderRecipes() implementiert
+
+        // ==========================================
+        // ROUTING & STANDARD LOGIK
         // ==========================================
         document.getElementById('toggleFavViewBtn').addEventListener('click', function() {
             showFavoritesOnly = !showFavoritesOnly;
@@ -705,7 +908,6 @@
                 await updateDoc(ref, { isFavorite: newFavStatus });
                 currentDetailRecipe.isFavorite = newFavStatus;
                 
-                // UI sofort aktualisieren
                 if(newFavStatus) {
                     this.classList.add('fav-active');
                     this.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
@@ -716,10 +918,6 @@
             } catch (e) { console.error("Fehler beim Favoriten speichern", e); }
         });
 
-
-        // ==========================================
-        // FEATURE 2: Rezept komplett Teilen
-        // ==========================================
         document.getElementById('shareRecipeBtn').addEventListener('click', async () => {
             if(!currentDetailRecipe) return;
             const btn = document.getElementById('shareRecipeBtn');
@@ -757,11 +955,9 @@
                         btn.classList.replace('text-green-600', 'text-gray-700');
                     }, 2500);
                 }
-            } catch(e) { console.warn("Teilen abgebrochen oder fehlgeschlagen."); }
+            } catch(e) {}
         });
 
-
-        // DRUCKEN / EINKAUFSLISTE / WAKELOCK (bereits implementiert)
         document.getElementById('printRecipeBtn').addEventListener('click', () => { window.print(); });
 
         document.getElementById('copyIngredientsBtn').addEventListener('click', () => {
@@ -787,40 +983,6 @@
             }).catch(err => alert("Konnte Text nicht kopieren."));
         });
 
-        async function requestWakeLock() {
-            try {
-                wakeLock = await navigator.wakeLock.request('screen');
-                const btn = document.getElementById('wakeLockBtn');
-                btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
-                btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
-                document.getElementById('wakeLockText').textContent = 'Wach';
-            } catch (err) { console.error('Wake Lock Fehler:', err); }
-        }
-
-        function releaseWakeLock() {
-            if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
-            const btn = document.getElementById('wakeLockBtn');
-            if(btn) {
-                btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
-                btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
-                document.getElementById('wakeLockText').textContent = 'Wach';
-            }
-        }
-
-        document.getElementById('wakeLockBtn').addEventListener('click', () => {
-            if (wakeLock !== null) releaseWakeLock(); else requestWakeLock();
-        });
-
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                wakeLock = await navigator.wakeLock.request('screen');
-            }
-        });
-
-
-        // ==========================================
-        // AUTHENTIFIZIERUNG (Login / Register)
-        // ==========================================
         let isLoginMode = true;
         const authForm = document.getElementById('authForm');
         const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
@@ -889,6 +1051,7 @@
                 views.list.classList.add('hidden');
                 views.detail.classList.add('hidden');
                 views.form.classList.add('hidden');
+                views.zen.classList.add('hidden'); // Zen Mode verstecken falls offen
                 
                 loadingOverlay.classList.add('hidden');
                 views.login.classList.remove('hidden');
@@ -912,7 +1075,6 @@
                 recipes = [];
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    
                     recipes.push({
                         id: doc.id,
                         title: data.title || '',
@@ -928,8 +1090,8 @@
                         nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '' },
                         imageBase64: data.imageBase64 || null,
                         createdAt: data.createdAt || new Date().toISOString(),
-                        isFavorite: data.isFavorite || false, // FEATURE 1
-                        isDeleted: data.isDeleted || false   // FEATURE 4
+                        isFavorite: data.isFavorite || false,
+                        isDeleted: data.isDeleted || false
                     });
                 });
                 
@@ -938,7 +1100,7 @@
                 updateTagDatalist();
                 loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden:", error);
+                console.error("Fehler beim Laden der Rezepte:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -964,6 +1126,7 @@
             views.list.classList.add('hidden');
             views.detail.classList.add('hidden');
             views.form.classList.add('hidden');
+            views.zen.classList.add('hidden');
             
             if(views[viewName]) {
                 views[viewName].classList.remove('hidden');
@@ -972,7 +1135,6 @@
             if (viewName === 'list') {
                 document.getElementById('searchContainer').classList.remove('hidden');
                 releaseWakeLock(); 
-                // Router Logik für Papierkorb
                 if(showTrashView) {
                     document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
                     document.getElementById('listControls').classList.add('hidden');
@@ -993,7 +1155,6 @@
             window.scrollTo(0, 0);
         }
 
-        // FEATURE 4: Papierkorb Navigation
         document.getElementById('trashViewBtn').addEventListener('click', () => {
             window.location.hash = showTrashView ? '' : '#trash';
         });
@@ -1083,22 +1244,24 @@
             grid.innerHTML = '';
             let count = 0;
 
-            // Filter: Papierkorb vs Aktiv
             let filteredRecipes = recipes.filter(r => showTrashView ? r.isDeleted : !r.isDeleted);
             
-            // Filter: Nur Favoriten
             if (!showTrashView && showFavoritesOnly) {
                 filteredRecipes = filteredRecipes.filter(r => r.isFavorite);
             }
 
-            // Filter: Suchbegriff und Tags
+            // FEATURE 4: Deep Search (durchsucht Titel, Tags UND Zutaten)
             filteredRecipes = filteredRecipes.filter(recipe => {
-                if (searchTerm && !recipe.title.toLowerCase().includes(searchTerm)) return false;
+                if (searchTerm) {
+                    const inTitle = recipe.title.toLowerCase().includes(searchTerm);
+                    const inTags = recipe.tags && recipe.tags.some(t => t.toLowerCase().includes(searchTerm));
+                    const inIngredients = recipe.ingredients && recipe.ingredients.some(i => i.name.toLowerCase().includes(searchTerm));
+                    if (!inTitle && !inTags && !inIngredients) return false;
+                }
                 if (!showTrashView && activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return false;
                 return true;
             });
 
-            // FEATURE 3: Sortieren
             filteredRecipes.sort((a,b) => {
                 if(currentSortOption === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
                 if(currentSortOption === 'az') return a.title.localeCompare(b.title);
@@ -1110,12 +1273,12 @@
                 if(currentSortOption === 'kcal') {
                     let ka = parseInt(a.nutrition.kcal) || 0;
                     let kb = parseInt(b.nutrition.kcal) || 0;
-                    return kb - ka; // Absteigend
+                    return kb - ka;
                 }
                 if(currentSortOption === 'protein') {
                     let pa = parseInt(a.nutrition.protein) || 0;
                     let pb = parseInt(b.nutrition.protein) || 0;
-                    return pb - pa; // Absteigend
+                    return pb - pa;
                 }
                 return 0;
             });
@@ -1143,7 +1306,6 @@
                     cardHeader.appendChild(icon);
                 }
 
-                // Badges für Sterne, Schwierigkeit UND Favoriten-Herz
                 let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
                 if(recipe.isFavorite && !showTrashView) {
                     badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
@@ -1162,21 +1324,40 @@
 
                 const tagsContainer = document.createElement('div');
                 tagsContainer.className = "flex flex-wrap gap-1.5 mb-2"; 
-                if (recipe.tags && !showTrashView) {
-                    recipe.tags.slice(0, 3).forEach(tag => {
+                
+                // FEATURE 5: Auto-Badges für Ernährung
+                let recipeTagsToRender = recipe.tags ? [...recipe.tags].slice(0, 3) : [];
+                
+                if (recipe.nutrition) {
+                    let protein = parseInt(recipe.nutrition.protein) || 0;
+                    let carbs = parseInt(recipe.nutrition.carbs) || 999;
+                    if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
                         const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${getColorForTag(tag)}`;
-                        t.textContent = tag;
-                        t.addEventListener('click', (e) => {
-                            e.stopPropagation(); 
-                            activeFilter = tag;
-                            updateActiveFilterUI();
-                            renderRecipes();
-                            renderFilterTags();
-                        });
+                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform bg-gray-800 text-white`;
+                        t.textContent = "High Protein 💪";
                         tagsContainer.appendChild(t);
-                    });
+                    }
+                    if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
+                        const t = document.createElement('span');
+                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform bg-green-700 text-white`;
+                        t.textContent = "Low Carb 🥗";
+                        tagsContainer.appendChild(t);
+                    }
                 }
+
+                recipeTagsToRender.forEach(tag => {
+                    const t = document.createElement('span');
+                    t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${getColorForTag(tag)}`;
+                    t.textContent = tag;
+                    t.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        activeFilter = tag;
+                        updateActiveFilterUI();
+                        renderRecipes();
+                        renderFilterTags();
+                    });
+                    tagsContainer.appendChild(t);
+                });
 
                 const footer = document.createElement('div');
                 footer.className = "mt-auto flex items-center gap-2 flex-wrap pt-3";
@@ -1206,11 +1387,7 @@
             else emptyState.classList.add('hidden');
         }
 
-        searchInput.addEventListener('input', renderRecipes);
-
-        // ==========================================
-        // FEATURE 5: EINHEITEN-INTELLIGENZ
-        // ==========================================
+        // FEATURE 5: Einheiten Intelligenz
         function scaleAndFormatIngredient(amountStr, unitStr, ratio) {
             let str = (amountStr || '').toString().trim().replace(',', '.');
             if (str.match(/^\d+\/\d+$/)) {
@@ -1225,7 +1402,6 @@
             let u = (unitStr || '').trim();
             let lowerU = u.toLowerCase();
             
-            // Inteligente Umrechnung ab 1000
             if (lowerU === 'g' && scaled >= 1000) {
                 return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'kg' };
             }
@@ -1233,7 +1409,6 @@
                 return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'l' };
             }
             
-            // Standard: Runden auf 1 Nachkommastelle
             return { amt: (Math.round(scaled * 10) / 10).toString().replace('.', ','), unt: unitStr };
         }
 
@@ -1320,13 +1495,13 @@
             currentDetailRecipeId = id;
             document.getElementById('detailTitle').textContent = recipe.title;
             
-            // Buttons je nach Status (Aktiv oder Papierkorb) anzeigen
             if(recipe.isDeleted) {
                 document.getElementById('editRecipeBtn').classList.add('hidden');
                 document.getElementById('deleteRecipeBtn').classList.add('hidden');
                 document.getElementById('printRecipeBtn').classList.add('hidden');
                 document.getElementById('shareRecipeBtn').classList.add('hidden');
                 document.getElementById('favRecipeBtn').classList.add('hidden');
+                document.getElementById('startZenModeBtn').classList.add('hidden');
                 
                 document.getElementById('restoreRecipeBtn').classList.remove('hidden');
                 document.getElementById('hardDeleteRecipeBtn').classList.remove('hidden');
@@ -1336,11 +1511,11 @@
                 document.getElementById('printRecipeBtn').classList.remove('hidden');
                 document.getElementById('shareRecipeBtn').classList.remove('hidden');
                 document.getElementById('favRecipeBtn').classList.remove('hidden');
+                document.getElementById('startZenModeBtn').classList.remove('hidden');
                 
                 document.getElementById('restoreRecipeBtn').classList.add('hidden');
                 document.getElementById('hardDeleteRecipeBtn').classList.add('hidden');
                 
-                // Favoriten Status setzen
                 const favBtn = document.getElementById('favRecipeBtn');
                 if(recipe.isFavorite) {
                     favBtn.classList.add('fav-active');
@@ -1451,12 +1626,26 @@
                         <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
                     </svg>`;
 
+                    // FEATURE 3: Timers im Text verlinken
+                    const textWithTimers = parseTextForTimers(step.trim());
+
                     stepEl.innerHTML = `
                         ${checkmarkHtml}
-                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${step.trim()}</p>
+                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${textWithTimers}</p>
                     `;
 
-                    stepEl.addEventListener('click', function() {
+                    // Event-Delegation für die Timer-Buttons innerhalb dieses Schritts
+                    stepEl.querySelectorAll('.timer-trigger').forEach(trigger => {
+                        trigger.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Verhindert das Abhaken des Schritts
+                            const mins = parseInt(trigger.getAttribute('data-time'));
+                            if(!isNaN(mins)) startTimer(mins);
+                        });
+                    });
+
+                    stepEl.addEventListener('click', function(e) {
+                        if(e.target.classList.contains('timer-trigger')) return; // Wenn Timer geklickt, nicht abhaken
+                        
                         this.classList.toggle('is-checked');
                         const svg = this.querySelector('.step-checkbox');
                         if (this.classList.contains('is-checked')) {
@@ -1492,11 +1681,6 @@
             showView('detail');
         }
 
-        // ==========================================
-        // FEATURE 4: PAPIERKORB-SCHUTZ
-        // ==========================================
-        
-        // Löschen verschiebt nur in den Papierkorb
         document.getElementById('deleteRecipeBtn').addEventListener('click', async () => {
             if (confirm('Rezept in den Papierkorb verschieben?')) {
                 if (currentDetailRecipeId && currentUser) {
@@ -1509,18 +1693,16 @@
             }
         });
 
-        // Wiederherstellen aus Papierkorb
         document.getElementById('restoreRecipeBtn').addEventListener('click', async () => {
             if (currentDetailRecipeId && currentUser) {
                 try {
                     const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
                     await updateDoc(ref, { isDeleted: false });
-                    window.location.hash = '#trash'; // zurück zur Müllübersicht
+                    window.location.hash = '#trash'; 
                 } catch (e) { alert("Fehler beim Wiederherstellen"); }
             }
         });
 
-        // Endgültig löschen aus Papierkorb
         document.getElementById('hardDeleteRecipeBtn').addEventListener('click', async () => {
             if (confirm('Dieses Rezept ENDGÜLTIG und unwiderruflich löschen?')) {
                 if (currentDetailRecipeId && currentUser) {
@@ -1838,7 +2020,6 @@
 
             try {
                 if(currentEditRecipeId) {
-                    // Update auch wenn es im Papierkorb war (wird dabei NICHT aus dem Papierkorb geholt, nur Daten-Update)
                     const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentEditRecipeId);
                     await updateDoc(ref, recipeData);
                 } else {
@@ -1861,9 +2042,9 @@
             }
         });
 
+        // Hilfsfunktionen für Import
         function parseIngredientString(str) {
             const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
-            
             if (match) {
                 let amount = (match[1] || '').trim();
                 let unitRaw = (match[2] || '').trim();
@@ -2009,8 +2190,8 @@
                 document.getElementById('formSourceUrl').value = url;
 
                 if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
-                if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
                 if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
+                if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
                 if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
                 
                 if(portions) document.getElementById('formPortions').value = portions;
