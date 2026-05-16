@@ -288,7 +288,6 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
-                            <!-- NEUE REIHENFOLGE -->
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
@@ -430,7 +429,6 @@
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Option 1: URL -->
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                             <p class="text-sm font-bold text-gray-800 mb-2">Variante 1: Von Webseite (z.B. Chefkoch)</p>
                             <div class="flex gap-2">
@@ -439,7 +437,6 @@
                             </div>
                         </div>
 
-                        <!-- Option 2: KI Bild Scan -->
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                             <p class="text-sm font-bold text-gray-800 mb-2">Variante 2: Foto vom Rezept (KI Scan)</p>
                             <label class="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 rounded-lg cursor-pointer transition-colors shadow-sm text-sm">
@@ -664,7 +661,7 @@
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- HIER IST DER GEMINI API KEY FÜR DAS FOTO-SCAN FEATURE ---
-        const apiKey = "AIzaSyCkynELoj8SwgYk9sG6Xq5f6BYHN1ogQyA"; 
+        const apiKey = ""; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
@@ -1177,7 +1174,7 @@
                 updateTagDatalist();
                 loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden der Rezepte:", error);
+                console.error("Fehler beim Laden:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -1559,7 +1556,6 @@
                 renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
             }
         });
-
 
         function openRecipeDetail(id) {
             const recipe = recipes.find(r => r.id === id);
@@ -2116,7 +2112,6 @@
             }
         });
 
-        // AI & URL Import Logik
         async function fetchWithRetry(url, options, retries = 5) {
             const delays = [1000, 2000, 4000, 8000, 16000];
             for (let i = 0; i < retries; i++) {
@@ -2170,7 +2165,7 @@
                             contents: [{
                                 role: "user",
                                 parts: [
-                                    { text: "Lies dieses Rezept aus und antworte AUSSCHLIESSLICH im folgenden JSON-Format ohne Markdown-Tags. { \"title\": \"Name des Rezepts\", \"portions\": 4, \"prepTime\": \"15\", \"cookTime\": \"30\", \"ingredients\": [ { \"amount\": \"200\", \"unit\": \"g\", \"name\": \"Mehl\" } ], \"instructions\": \"Zubereitungstext hier...\" }. Wenn du etwas nicht findest, lass es leer." },
+                                    { text: "Du bist eine KI, die Rezepte aus Bildern extrahiert. Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt. Verwende KEIN Markdown, keine Backticks und keinen Text außerhalb des JSON. Format: { \"title\": \"Name\", \"portions\": 4, \"prepTime\": \"15\", \"cookTime\": \"30\", \"ingredients\": [ { \"amount\": \"200\", \"unit\": \"g\", \"name\": \"Mehl\" } ], \"instructions\": \"1. Schritt...\\n2. Schritt...\" }. Wenn du etwas nicht findest, lass es leer." },
                                     { inlineData: { mimeType: "image/jpeg", data: base64Raw } }
                                 ]
                             }],
@@ -2178,6 +2173,12 @@
                                 responseMimeType: "application/json"
                             }
                         };
+
+                        if (!apiKey || apiKey === "") {
+                            statusEl.textContent = 'Fehler: Du musst im Code erst deinen Google API Key eintragen!';
+                            statusEl.className = 'text-sm mt-4 font-bold text-red-600 block';
+                            return;
+                        }
 
                         const responseData = await fetchWithRetry(
                             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
@@ -2188,7 +2189,9 @@
                             }
                         );
 
-                        const responseText = responseData.candidates[0].content.parts[0].text;
+                        let responseText = responseData.candidates[0].content.parts[0].text;
+                        responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                        
                         const recipe = JSON.parse(responseText);
 
                         if(recipe.title) document.getElementById('formTitle').value = recipe.title;
