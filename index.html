@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="Rezepte">
     
     <!-- Cache-Buster erzwingt den sofortigen Download der Logos auf dem Smartphone -->
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=10">
+    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=11">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     
@@ -104,7 +104,7 @@
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png?v=10" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
+                <img src="logomr78brutalist.png?v=11" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
@@ -137,7 +137,7 @@
     <!-- HAUPT NAVIGATION (HEADER) -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png?v=10" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
+            <img src="logomr78brutalist.png?v=11" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         
@@ -236,7 +236,7 @@
 
             <!-- Version Info -->
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 3.2 (Final Recovery) | Stand: 17.05.2026, 21:25 Uhr
+                Version: 1.8.0 (Rebuilt & Fixed) | Stand: 17.05.2026, 21:40 Uhr
             </div>
         </div>
 
@@ -322,9 +322,9 @@
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
                 
-                <!-- GF Banner Emilia -->
+                <!-- GF Banner Emilia in Detailansicht -->
                 <div id="detailGfBanner" class="hidden mb-6 flex justify-center md:justify-start print:justify-start transition-all duration-300 transform hover:scale-105">
-                    <img src="GFEmilia.png?v=10" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
+                    <img src="GFEmilia.png?v=11" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
@@ -373,6 +373,7 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
+                            <!-- Reihenfolge: Kcal, Kohlenhydrate, Zucker, Protein, Fett -->
                             <div class="bg-orange-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-orange-200 print:bg-transparent">
                                 <span class="text-orange-600 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-orange-900"></span>
@@ -486,7 +487,7 @@
                 <div class="w-48 h-48 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative flex items-center justify-center">
                     <img id="detailProdImage" src="" class="w-full h-full object-contain p-2 mix-blend-multiply">
                     <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden">
-                        <img src="GFEmilia.png?v=10" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
+                        <img src="GFEmilia.png?v=11" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
                     </div>
                 </div>
                 <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
@@ -560,7 +561,7 @@
                     <!-- GF TOGGLE -->
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=10" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=11" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -732,7 +733,7 @@
 
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=10" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=11" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -811,7 +812,6 @@
         let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest', currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
         let zenSteps = [], currentZenStepIndex = 0, activeTimers = [], wakeLock = null;
         
-        // SICHERSTELLEN, dass diese Variablen definiert sind
         let recipesUnsubscribe = null, settingsUnsubscribe = null, productsUnsubscribe = null;
 
         const loadingOverlay = document.getElementById('loadingOverlay');
@@ -828,6 +828,235 @@
                 productDetail: document.getElementById('productDetailView')
             };
         }
+
+        // ==========================================
+        // ZEN MODUS
+        // ==========================================
+        document.getElementById('startZenModeBtn')?.addEventListener('click', () => {
+            if (!currentDetailRecipe || !currentDetailRecipe.instructions) return;
+            zenSteps = currentDetailRecipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
+            if (zenSteps.length === 0) return;
+
+            currentZenStepIndex = 0;
+            const stepsNum = document.getElementById('zenTotalStepsNum');
+            if(stepsNum) stepsNum.textContent = zenSteps.length;
+            
+            const currentViews = getViews();
+            currentViews.detail?.classList.add('hidden');
+            document.getElementById('mainHeader')?.classList.add('hidden');
+            currentViews.zen?.classList.remove('hidden');
+            
+            if (typeof requestWakeLock === 'function') requestWakeLock();
+            updateZenModeUI();
+        });
+
+        document.getElementById('exitZenModeBtn')?.addEventListener('click', () => {
+            window.speechSynthesis.cancel();
+            const currentViews = getViews();
+            currentViews.zen?.classList.add('hidden');
+            currentViews.detail?.classList.remove('hidden');
+            document.getElementById('mainHeader')?.classList.remove('hidden');
+            if (typeof releaseWakeLock === 'function') releaseWakeLock();
+        });
+
+        document.getElementById('zenPrevBtn')?.addEventListener('click', () => {
+            if (currentZenStepIndex > 0) {
+                currentZenStepIndex--;
+                updateZenModeUI();
+            }
+        });
+
+        document.getElementById('zenNextBtn')?.addEventListener('click', () => {
+            if (currentZenStepIndex < zenSteps.length - 1) {
+                currentZenStepIndex++;
+                updateZenModeUI();
+            } else {
+                document.getElementById('exitZenModeBtn')?.click(); 
+            }
+        });
+
+        document.getElementById('ttsPlayBtn')?.addEventListener('click', () => {
+            const text = zenSteps[currentZenStepIndex];
+            if (!text) return;
+            
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = 0.95; 
+            window.speechSynthesis.speak(utterance);
+        });
+
+        function updateZenModeUI() {
+            window.speechSynthesis.cancel(); 
+            const zenCurrentStepNum = document.getElementById('zenCurrentStepNum');
+            if(zenCurrentStepNum) zenCurrentStepNum.textContent = currentZenStepIndex + 1;
+            
+            const stepText = zenSteps[currentZenStepIndex];
+            const textWithTimers = parseTextForTimers(stepText);
+            const instrContainer = document.getElementById('zenInstructionText');
+            if(instrContainer) {
+                instrContainer.innerHTML = textWithTimers;
+                instrContainer.querySelectorAll('.timer-trigger').forEach(trigger => {
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        const mins = parseInt(trigger.getAttribute('data-time'));
+                        if(!isNaN(mins)) startTimer(mins);
+                    });
+                });
+            }
+            
+            const zenPrevBtn = document.getElementById('zenPrevBtn');
+            if(zenPrevBtn) zenPrevBtn.disabled = currentZenStepIndex === 0;
+            
+            const nextBtn = document.getElementById('zenNextBtn');
+            if(nextBtn) {
+                if (currentZenStepIndex === zenSteps.length - 1) {
+                    nextBtn.innerHTML = `Fertig <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                    nextBtn.classList.replace('bg-red-600', 'bg-green-600');
+                    nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                } else {
+                    nextBtn.innerHTML = `Weiter <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>`;
+                    nextBtn.classList.replace('bg-green-600', 'bg-red-600');
+                    nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+                }
+            }
+        }
+
+        // ==========================================
+        // TIMERS
+        // ==========================================
+        function parseTextForTimers(text) {
+            if (!text) return '';
+            const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
+            return text.replace(regex, (match, number, unit) => {
+                let minutes = parseInt(number);
+                if (unit.toLowerCase().startsWith('st') || unit.toLowerCase() === 'h') {
+                    minutes = minutes * 60;
+                }
+                return `<button type="button" class="timer-trigger inline-flex items-center gap-1.5 whitespace-nowrap bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-xl shadow-sm border-2 border-blue-300 cursor-pointer hover:bg-blue-200 hover:-translate-y-0.5 active:translate-y-0 transition-all mx-1.5 align-middle print:hidden" data-time="${minutes}">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    ${match}
+                </button><span class="hidden print:inline font-bold">${match}</span>`;
+            });
+        }
+
+        function renderTimers() {
+            const container = document.getElementById('floatingTimerContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            activeTimers.forEach((timer, index) => {
+                const el = document.createElement('div');
+                const isFinished = timer.remaining <= 0;
+                
+                el.className = `timer-box flex items-center justify-between gap-4 p-3 rounded-xl border-2 shadow-lg backdrop-blur-md ${isFinished ? 'timer-ringing border-red-600 text-red-900' : 'bg-gray-900/90 border-gray-700 text-white'}`;
+                
+                const absRem = Math.abs(timer.remaining);
+                const mins = Math.floor(absRem / 60);
+                const secs = absRem % 60;
+                const timeStr = `${isFinished ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                el.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-70">Timer ${index + 1}</span>
+                        <span class="text-2xl font-black tabular-nums">${timeStr}</span>
+                    </div>
+                    <button class="stop-timer-btn p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                
+                el.querySelector('.stop-timer-btn').addEventListener('click', () => {
+                    clearInterval(timer.intervalId);
+                    activeTimers.splice(index, 1);
+                    renderTimers();
+                });
+                
+                container.appendChild(el);
+            });
+        }
+
+        let alarmAudioCtx = null;
+        function playAnnoyingAlarm() {
+            try {
+                if (!alarmAudioCtx) alarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (alarmAudioCtx.state === 'suspended') alarmAudioCtx.resume();
+                
+                let osc1 = alarmAudioCtx.createOscillator();
+                let gain1 = alarmAudioCtx.createGain();
+                osc1.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(900, alarmAudioCtx.currentTime);
+                gain1.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.15);
+                osc1.connect(gain1);
+                gain1.connect(alarmAudioCtx.destination);
+                osc1.start(alarmAudioCtx.currentTime);
+                osc1.stop(alarmAudioCtx.currentTime + 0.15);
+
+                let osc2 = alarmAudioCtx.createOscillator();
+                let gain2 = alarmAudioCtx.createGain();
+                osc2.type = 'sawtooth';
+                osc2.frequency.setValueAtTime(1100, alarmAudioCtx.currentTime + 0.2);
+                gain2.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime + 0.2);
+                gain2.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.35);
+                osc2.connect(gain2);
+                gain2.connect(alarmAudioCtx.destination);
+                osc2.start(alarmAudioCtx.currentTime + 0.2);
+                osc2.stop(alarmAudioCtx.currentTime + 0.35);
+            } catch(e) {}
+        }
+
+        function startTimer(minutes) {
+            const timer = { remaining: minutes * 60, intervalId: null };
+            
+            timer.intervalId = setInterval(() => {
+                timer.remaining--;
+                if(timer.remaining <= 0) {
+                    playAnnoyingAlarm();
+                }
+                renderTimers();
+            }, 1000);
+            
+            activeTimers.push(timer);
+            renderTimers();
+        }
+
+        // ==========================================
+        // WAKELOCK LOGIC
+        // ==========================================
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                const btn = document.getElementById('wakeLockBtn');
+                if(btn) {
+                    btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
+                    btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
+                    const wlTxt = document.getElementById('wakeLockText');
+                    if(wlTxt) wlTxt.textContent = 'Wach';
+                }
+            } catch (err) {}
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
+            const btn = document.getElementById('wakeLockBtn');
+            if(btn) {
+                btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
+                btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
+                const wlTxt = document.getElementById('wakeLockText');
+                if(wlTxt) wlTxt.textContent = 'Wach';
+            }
+        }
+
+        document.getElementById('wakeLockBtn')?.addEventListener('click', () => {
+            if (wakeLock !== null) releaseWakeLock(); else requestWakeLock();
+        });
+
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        });
 
         // ==========================================
         // CUSTOM MODALS & TOAST
@@ -966,6 +1195,9 @@
                     if(window.location.hash === '' || window.location.hash === '#trash') renderRecipes();
                     renderFilterTags(); 
                     updateTagDatalist();
+                    if (window.location.hash.startsWith('#recipe-')) {
+                        openRecipeDetail(window.location.hash.replace('#recipe-', ''));
+                    }
                 } catch(e) { console.error("Error loading recipes", e); } 
                 finally { loadingOverlay?.classList.add('hidden'); }
             });
@@ -1007,6 +1239,8 @@
             if (viewName === 'list') {
                 const searchCont = document.getElementById('searchContainer');
                 if(searchCont) searchCont.classList.remove('hidden');
+                
+                if (typeof releaseWakeLock === 'function') releaseWakeLock(); 
                 
                 const listCtrl = document.getElementById('listControls');
                 const trBtn = document.getElementById('trashViewBtn');
@@ -1239,7 +1473,7 @@
                         }
 
                         if (recipe.isGlutenFree) {
-                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=10" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
+                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=11" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
                         }
 
                         let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
@@ -1301,7 +1535,7 @@
                         const headerRow = document.createElement('div');
                         headerRow.className = "flex justify-between items-start gap-2 mb-1";
                         
-                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=10" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
+                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=11" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
                         headerRow.innerHTML = `<div class="flex-1 min-w-0"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">${recipe.title || ''}${titleGf}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>`;
 
                         let nutLine = '';
@@ -1351,7 +1585,7 @@
                 card.onclick = () => window.location.hash = `#product-${prod.id}`;
                 card.innerHTML = `
                     <div class="h-32 bg-gray-100 flex justify-center items-center relative p-2 border-b border-gray-200 overflow-hidden">
-                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=10" class="absolute top-2 left-2 h-6 w-auto rounded shadow border border-white/50 z-10" onerror="this.style.display='none'">` : ''}
+                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=11" class="absolute top-2 left-2 h-6 w-auto rounded shadow border border-white/50 z-10" onerror="this.style.display='none'">` : ''}
                         ${prod.imageBase64 ? `<img src="${prod.imageBase64}" class="h-full w-full object-contain mix-blend-multiply">` : '<span class="text-4xl opacity-20">🥫</span>'}
                     </div>
                     <div class="p-3 flex-1 flex flex-col justify-between">
