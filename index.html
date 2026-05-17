@@ -69,7 +69,6 @@
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
-    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
@@ -139,44 +138,68 @@
         </div>
     </header>
 
-    <!-- HAUPTBEREICH -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
-            <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2" id="filterTagsContainer">
-                <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1" id="filterTagsContainer">
+                    <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+                </div>
+                
+                <div class="flex items-center gap-3 flex-wrap">
+                    <!-- NEU: VIEW TOGGLE (Raster/Liste) -->
+                    <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
+                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        </button>
+                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                        </button>
+                    </div>
+
+                    <button id="toggleFavViewBtn" class="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 hover:text-red-600 hover:border-red-300 shadow-sm transition-all">
+                        <svg class="w-4 h-4 text-gray-400 transition-colors" id="favViewIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        Nur Favoriten
+                    </button>
+                    <select id="sortSelect" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none shadow-sm cursor-pointer">
+                        <option value="newest">Neueste zuerst</option>
+                        <option value="az">A - Z</option>
+                        <option value="time">Kürzeste Dauer</option>
+                        <option value="kcal">Meiste Kalorien</option>
+                        <option value="protein">Meistes Protein</option>
+                    </select>
+                </div>
             </div>
+
             <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
                 <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6" id="recipeGrid"></div>
+            <div id="recipeGrid"></div>
             
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4" id="emptyStateIcon">
                     <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900">Noch keine Rezepte</h3>
-                <p class="text-gray-600 mt-2 max-w-sm mx-auto">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
+                <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
 
-            <!-- VERSIONS-STEMPEL -->
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: Zen-Mode Classic v1.1 (Chefkoch Fix) | Stand: 17.05.2026, 09:40 Uhr
+                Version: Zen-Mode Classic v1.2 (+ Listenansicht) | Stand: 17.05.2026, 10:05 Uhr
             </div>
         </div>
 
         <!-- ANSICHT 2: REZEPT DETAILS -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
-                <!-- ZURÜCK BUTTON -->
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Zurück
                 </button>
-                <div class="flex gap-2 flex-wrap justify-end">
+                <div class="flex gap-2 flex-wrap justify-end" id="detailActionBar">
                     <button id="startZenModeBtn" class="text-white bg-gray-900 hover:bg-black font-bold text-sm flex items-center gap-1.5 px-4 py-2 rounded-lg transition-colors shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span class="hidden sm:inline">Kochen Starten</span>
@@ -191,17 +214,18 @@
                     </button>
                     <button id="printRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Drucken
+                        <span class="hidden sm:inline">Drucken</span>
                     </button>
-                    <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                    <button id="editRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        Bearbeiten
+                        <span class="hidden sm:inline">Bearbeiten</span>
                     </button>
-                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Löschen
+                        <span class="hidden sm:inline">Löschen</span>
                     </button>
-                    
+
+                    <!-- Trash View Buttons -->
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -213,8 +237,9 @@
                 </div>
             </div>
             
-            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3">
+            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3 relative group">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity print:hidden"></div>
             </div>
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
@@ -657,6 +682,9 @@
         let showTrashView = false;
         let currentSortOption = 'newest';
         
+        // NEU: View Mode State
+        let currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
+        
         let zenSteps = [];
         let currentZenStepIndex = 0;
 
@@ -709,6 +737,43 @@
             }
             html += '</div>';
             return html;
+        }
+
+        // ==========================================
+        // VIEW TOGGLE LOGIC (NEU)
+        // ==========================================
+        const viewGridBtn = document.getElementById('viewGridBtn');
+        const viewListBtn = document.getElementById('viewListBtn');
+
+        function updateViewToggleUI() {
+            if(!viewGridBtn || !viewListBtn) return;
+            if (currentViewMode === 'grid') {
+                viewGridBtn.classList.add('bg-gray-200', 'text-gray-800');
+                viewGridBtn.classList.remove('text-gray-500', 'hover:bg-gray-100');
+                viewListBtn.classList.remove('bg-gray-200', 'text-gray-800');
+                viewListBtn.classList.add('text-gray-500', 'hover:bg-gray-100');
+            } else {
+                viewListBtn.classList.add('bg-gray-200', 'text-gray-800');
+                viewListBtn.classList.remove('text-gray-500', 'hover:bg-gray-100');
+                viewGridBtn.classList.remove('bg-gray-200', 'text-gray-800');
+                viewGridBtn.classList.add('text-gray-500', 'hover:bg-gray-100');
+            }
+        }
+
+        if(viewGridBtn && viewListBtn) {
+            viewGridBtn.addEventListener('click', () => {
+                currentViewMode = 'grid';
+                localStorage.setItem('recipeAppViewMode', 'grid');
+                updateViewToggleUI();
+                renderRecipes();
+            });
+            viewListBtn.addEventListener('click', () => {
+                currentViewMode = 'list';
+                localStorage.setItem('recipeAppViewMode', 'list');
+                updateViewToggleUI();
+                renderRecipes();
+            });
+            updateViewToggleUI();
         }
 
         // ==========================================
@@ -1364,6 +1429,13 @@
             const emptyState = document.getElementById('emptyState');
             if(!grid || !emptyState) return;
             
+            // Ansicht anpassen
+            if (currentViewMode === 'grid') {
+                grid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6";
+            } else {
+                grid.className = "grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4";
+            }
+
             const sInput = document.getElementById('searchInput');
             const searchTerm = sInput ? sInput.value.toLowerCase() : '';
 
@@ -1412,98 +1484,156 @@
                 count++;
                 
                 const card = document.createElement('div');
-                card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
-                const cardHeader = document.createElement('div');
-                cardHeader.className = "h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden border-b border-gray-200";
-                
-                if (recipe.imageBase64) {
-                    const img = document.createElement('img');
-                    img.src = recipe.imageBase64;
-                    img.className = "w-full h-full object-cover";
-                    cardHeader.appendChild(img);
-                } else {
-                    cardHeader.className += " bg-gradient-to-br from-gray-100 to-gray-200";
-                    const icon = document.createElement('div');
-                    icon.className = "w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800";
-                    icon.textContent = recipe.title.charAt(0).toUpperCase();
-                    cardHeader.appendChild(icon);
-                }
-
-                let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
-                if(recipe.isFavorite && !showTrashView) {
-                    badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
-                }
-                if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
-                if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
-                badgesHtml += '</div>';
-                cardHeader.innerHTML += badgesHtml;
-
-                const cardBody = document.createElement('div');
-                cardBody.className = "p-5 flex-1 flex flex-col";
-
-                const title = document.createElement('h3');
-                title.className = "text-xl font-bold text-gray-900 mb-3 line-clamp-2";
-                title.textContent = recipe.title;
-
-                const tagsContainer = document.createElement('div');
-                tagsContainer.className = "flex flex-wrap gap-1.5 mb-2"; 
-                
+                // VORBEREITUNG DER TAGS FÜR BEIDE ANSICHTEN
                 let recipeTagsToRender = recipe.tags ? [...recipe.tags].slice(0, 3) : [];
-                
                 if (recipe.nutrition) {
                     let protein = parseInt(recipe.nutrition.protein) || 0;
                     let carbs = parseInt(recipe.nutrition.carbs) || 999;
                     if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
-                        const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform bg-gray-800 text-white`;
-                        t.textContent = "High Protein 💪";
-                        tagsContainer.appendChild(t);
+                        recipeTagsToRender.unshift("High Protein 💪");
                     }
                     if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
-                        const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform bg-green-700 text-white`;
-                        t.textContent = "Low Carb 🥗";
-                        tagsContainer.appendChild(t);
+                        recipeTagsToRender.unshift("Low Carb 🥗");
                     }
                 }
 
-                recipeTagsToRender.forEach(tag => {
-                    const t = document.createElement('span');
-                    t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${getColorForTag(tag)}`;
-                    t.textContent = tag;
-                    t.addEventListener('click', (e) => {
-                        e.stopPropagation(); 
-                        activeFilter = tag;
-                        updateActiveFilterUI();
-                        renderRecipes();
-                        renderFilterTags();
+                if (currentViewMode === 'grid') {
+                    // --- KACHEL ANSICHT ---
+                    card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                    
+                    const cardHeader = document.createElement('div');
+                    cardHeader.className = "h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden border-b border-gray-200";
+                    
+                    if (recipe.imageBase64) {
+                        const img = document.createElement('img');
+                        img.src = recipe.imageBase64;
+                        img.className = "w-full h-full object-cover";
+                        cardHeader.appendChild(img);
+                    } else {
+                        cardHeader.className += " bg-gradient-to-br from-gray-100 to-gray-200";
+                        const icon = document.createElement('div');
+                        icon.className = "w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800";
+                        icon.textContent = recipe.title.charAt(0).toUpperCase();
+                        cardHeader.appendChild(icon);
+                    }
+
+                    let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
+                    if(recipe.isFavorite && !showTrashView) {
+                        badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
+                    }
+                    if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
+                    if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
+                    badgesHtml += '</div>';
+                    cardHeader.innerHTML += badgesHtml;
+
+                    const cardBody = document.createElement('div');
+                    cardBody.className = "p-5 flex-1 flex flex-col";
+
+                    const title = document.createElement('h3');
+                    title.className = "text-xl font-bold text-gray-900 mb-3 line-clamp-2";
+                    title.textContent = recipe.title;
+
+                    const tagsContainer = document.createElement('div');
+                    tagsContainer.className = "flex flex-wrap gap-1.5 mb-2"; 
+                    
+                    recipeTagsToRender.forEach(tag => {
+                        const t = document.createElement('span');
+                        let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
+                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white' : 'bg-green-700 text-white') : getColorForTag(tag);
+                        
+                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${colorClass}`;
+                        t.textContent = tag;
+                        t.addEventListener('click', (e) => {
+                            e.stopPropagation(); 
+                            if(!isSpecial) {
+                                activeFilter = tag;
+                                updateActiveFilterUI();
+                                renderRecipes();
+                                renderFilterTags();
+                            }
+                        });
+                        tagsContainer.appendChild(t);
                     });
-                    tagsContainer.appendChild(t);
-                });
 
-                const footer = document.createElement('div');
-                footer.className = "mt-auto flex items-center gap-2 flex-wrap pt-3";
-                
-                let timeHtml = '';
-                if(recipe.times && recipe.times.total) {
-                    timeHtml = `<div class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 border border-gray-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total} Min</div>`;
+                    const footer = document.createElement('div');
+                    footer.className = "mt-auto flex items-center gap-2 flex-wrap pt-3";
+                    
+                    let timeHtml = '';
+                    if(recipe.times && recipe.times.total) {
+                        timeHtml = `<div class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 border border-gray-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total} Min</div>`;
+                    }
+                    
+                    let proteinHtml = '';
+                    if(recipe.nutrition && recipe.nutrition.protein) {
+                        proteinHtml = `<div class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold border border-gray-200">${recipe.nutrition.protein}g Protein</div>`;
+                    }
+
+                    footer.innerHTML = timeHtml + proteinHtml;
+
+                    cardBody.appendChild(title);
+                    cardBody.appendChild(tagsContainer);
+                    cardBody.appendChild(footer);
+                    
+                    card.appendChild(cardHeader);
+                    card.appendChild(cardBody);
+                } else {
+                    // --- LISTEN ANSICHT ---
+                    card.className = `bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-28 ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                    
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = "h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 bg-gray-200 rounded-xl relative overflow-hidden border border-gray-200 mr-4";
+                    
+                    if (recipe.imageBase64) {
+                        const img = document.createElement('img');
+                        img.src = recipe.imageBase64;
+                        img.className = "w-full h-full object-cover";
+                        imgContainer.appendChild(img);
+                    } else {
+                        imgContainer.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800";
+                        imgContainer.textContent = recipe.title.charAt(0).toUpperCase();
+                    }
+
+                    const infoContainer = document.createElement('div');
+                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-center py-1";
+
+                    const title = document.createElement('h3');
+                    title.className = "text-base sm:text-lg font-bold text-gray-900 truncate mb-1";
+                    title.textContent = recipe.title;
+
+                    const tagsContainer = document.createElement('div');
+                    tagsContainer.className = "flex flex-wrap gap-1.5 mt-1 overflow-hidden h-6";
+
+                    recipeTagsToRender.forEach(tag => {
+                        const t = document.createElement('span');
+                        let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
+                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white border-transparent' : 'bg-green-700 text-white border-transparent') : getColorForTag(tag);
+                        
+                        t.className = `text-[10px] px-2 py-0.5 rounded font-bold truncate max-w-[100px] border ${colorClass}`;
+                        t.textContent = tag;
+                        tagsContainer.appendChild(t);
+                    });
+
+                    infoContainer.appendChild(title);
+                    infoContainer.appendChild(tagsContainer);
+
+                    const metaContainer = document.createElement('div');
+                    metaContainer.className = "hidden sm:flex flex-col items-end justify-center gap-2 min-w-[60px]";
+
+                    if (recipe.isFavorite && !showTrashView) {
+                        metaContainer.innerHTML += `<svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>`;
+                    }
+
+                    if(recipe.times && recipe.times.total) {
+                         metaContainer.innerHTML += `<span class="text-xs font-bold text-gray-500 flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total}m</span>`;
+                    }
+
+                    card.appendChild(imgContainer);
+                    card.appendChild(infoContainer);
+                    card.appendChild(metaContainer);
                 }
-                
-                let proteinHtml = '';
-                if(recipe.nutrition && recipe.nutrition.protein) {
-                    proteinHtml = `<div class="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold border border-gray-200">${recipe.nutrition.protein}g Protein</div>`;
-                }
 
-                footer.innerHTML = timeHtml + proteinHtml;
-
-                cardBody.appendChild(title);
-                cardBody.appendChild(tagsContainer);
-                cardBody.appendChild(footer);
-                
-                card.appendChild(cardHeader);
-                card.appendChild(cardBody);
                 grid.appendChild(card);
             });
 
@@ -2216,7 +2346,7 @@
         }
 
         // ==========================================
-        // URL IMPORT (Extrem Robuster JSON-LD Scraper)
+        // URL IMPORT (Klassisch via JSON-LD)
         // ==========================================
         function parseIsoDuration(duration) {
             if(!duration || typeof duration !== 'string') return '';
@@ -2235,15 +2365,13 @@
         }
 
         function extractRecipeFromJsonLd(data) {
-            let bestRecipe = null;
+            let recipeObj = null;
             const search = (obj) => {
-                if (!obj) return;
+                if (!obj || recipeObj) return;
                 if (typeof obj === 'object') {
                     if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
-                        // Wir suchen bevorzugt ein Recipe, das auch Anleitung und Zutaten enthält
-                        if (!bestRecipe || (obj.recipeIngredient && obj.recipeInstructions)) {
-                            bestRecipe = obj;
-                        }
+                        recipeObj = obj;
+                        return;
                     }
                     for (let key in obj) search(obj[key]);
                 } else if (Array.isArray(obj)) {
@@ -2251,7 +2379,7 @@
                 }
             };
             search(data);
-            return bestRecipe;
+            return recipeObj;
         }
 
         const startImpBtn = document.getElementById('startImportBtn');
@@ -2263,7 +2391,7 @@
 
                 if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-                statusEl.textContent = 'Versuche Daten abzurufen... (Das kann kurz dauern)';
+                statusEl.textContent = 'Versuche Daten abzurufen...';
                 statusEl.classList.remove('hidden');
                 statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
@@ -2312,27 +2440,11 @@
                             if (r) {
                                 title = r.name || title;
 
-                                // Komplexe Verschachtelungen (wie bei Chefkoch) auflösen
-                                let instText = '';
-                                const parseInst = (instArray) => {
-                                    instArray.forEach(step => {
-                                        if (typeof step === 'string') {
-                                            instText += step + '\n\n';
-                                        } else if (step.text) {
-                                            instText += step.text + '\n\n';
-                                        } else if (step.itemListElement && Array.isArray(step.itemListElement)) {
-                                            if (step.name) instText += step.name + ':\n';
-                                            parseInst(step.itemListElement);
-                                        }
-                                    });
-                                };
-
                                 if (r.recipeInstructions) {
                                     if (typeof r.recipeInstructions === 'string') {
                                         instructions = r.recipeInstructions;
                                     } else if (Array.isArray(r.recipeInstructions)) {
-                                        parseInst(r.recipeInstructions);
-                                        instructions = instText;
+                                        instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
                                     }
                                 }
 
