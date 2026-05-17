@@ -66,7 +66,7 @@
 
         .fav-active svg { fill: #dc2626; color: #dc2626; }
         
-        /* Floating Timer Styles (Mit aggressiverem roten Blinken) */
+        /* Floating Timer Styles */
         .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .timer-ringing { animation: pulseRed 1s infinite; }
@@ -288,7 +288,6 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
-                            <!-- NEUE REIHENFOLGE -->
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
@@ -651,8 +650,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Google API Key wurde hier vollständig entfernt, da das Feature zurückgebaut wurde.
 
         const firebaseConfig = {
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
@@ -1227,7 +1224,7 @@
                 updateTagDatalist();
                 if(loadingOverlay) loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden der Rezepte:", error);
+                console.error("Fehler beim Laden:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -2245,6 +2242,28 @@
             });
         }
 
+        // ==========================================
+        // FEATURE: URL IMPORT (Erweitert & Robuster)
+        // ==========================================
+        
+        function extractRecipeFromJsonLd(data) {
+            let recipeObj = null;
+            const search = (obj) => {
+                if (!obj || recipeObj) return;
+                if (typeof obj === 'object') {
+                    if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
+                        recipeObj = obj;
+                        return;
+                    }
+                    for (let key in obj) search(obj[key]);
+                } else if (Array.isArray(obj)) {
+                    obj.forEach(item => search(item));
+                }
+            };
+            search(data);
+            return recipeObj;
+        }
+
         const startImportBtn = document.getElementById('startImportBtn');
         if (startImportBtn) {
             startImportBtn.addEventListener('click', async () => {
@@ -2278,7 +2297,7 @@
                 }
 
                 if (!html) {
-                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
+                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert (z.B. wegen eines Captchas).';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                     return;
                 }
@@ -2294,22 +2313,14 @@
                     let ingredientsList = [];
                     let nutritionData = {};
 
+                    // 1. VERSUCH: JSON-LD (Standard für Rezepte)
                     const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
                     for (const script of ldScripts) {
                         try {
                             const data = JSON.parse(script.textContent);
-                            
-                            const recipes = Array.isArray(data) 
-                                ? data.filter(item => item['@type'] === 'Recipe') 
-                                : (data['@type'] === 'Recipe' ? [data] : []);
+                            const r = extractRecipeFromJsonLd(data);
 
-                            if(recipes.length === 0 && data['@graph']) {
-                                const graphRecipes = data['@graph'].filter(item => item['@type'] === 'Recipe');
-                                if(graphRecipes.length > 0) recipes.push(...graphRecipes);
-                            }
-
-                            if (recipes.length > 0) {
-                                const r = recipes[0];
+                            if (r) {
                                 title = r.name || title;
 
                                 if (r.recipeInstructions) {
@@ -2343,17 +2354,28 @@
                         } catch(e) {}
                     }
 
+                    // 2. VERSUCH: Manuelles Auslesen aus dem HTML-Code (Wenn JSON-LD fehlt)
                     if (!title) {
-                        title = docObj.querySelector('h1')?.textContent.trim();
+                        const h1 = docObj.querySelector('h1');
+                        if (h1) title = h1.textContent.trim();
                     }
                     
                     if (!instructions) {
-                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
+                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation, .recipe-steps');
                         if (instructionBlocks.length > 0) {
                             instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
                         }
                     }
 
+                    if (ingredientsList.length === 0) {
+                        // Suche nach typischen Zutatenlisten
+                        const ingBlocks = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, li[itemprop="recipeIngredient"]');
+                        if (ingBlocks.length > 0) {
+                            ingBlocks.forEach(el => ingredientsList.push(el.textContent.trim()));
+                        }
+                    }
+
+                    // Formular befüllen
                     if(title) document.getElementById('formTitle').value = title;
                     if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                     
@@ -2369,6 +2391,7 @@
                     if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
                     if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
 
+                    // Zutaten ins Formular übertragen
                     if(ingredientsList.length > 0) {
                         const list = document.getElementById('ingredientsList');
                         const rows = list.querySelectorAll('.ingredient-row');
@@ -2398,16 +2421,18 @@
                         statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
                         statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
                     } else {
-                        statusEl.textContent = 'Webseite wurde geladen, aber es konnten keine Rezeptdaten gefunden werden.';
+                        // Wichtig: Wir stürzen nicht mehr ab, sondern geben eine höfliche Meldung
+                        statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
                         statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
                     }
 
                 } catch(e) {
-                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten.';
+                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten (Format nicht kompatibel).';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                 }
             });
         }
+
     </script>
 </body>
 </html>
