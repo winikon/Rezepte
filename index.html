@@ -19,7 +19,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Erzwingt, dass Hintergrundfarben gedruckt werden */
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
@@ -49,7 +48,6 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* OPTIMIERTE DRUCKANSICHT FÜR 1 SEITE */
         @media print {
             body { background-color: white !important; font-size: 11pt !important; }
             .print\:hidden { display: none !important; }
@@ -422,6 +420,7 @@
 
             <div class="p-6 md:p-10">
                 
+                <!-- NEU: IMPORT BEREICH MIT 2 OPTIONEN (URL ODER KI-BILD) -->
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
                     <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
@@ -429,6 +428,7 @@
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Option 1: URL -->
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                             <p class="text-sm font-bold text-gray-800 mb-2">Variante 1: Von Webseite (z.B. Chefkoch)</p>
                             <div class="flex gap-2">
@@ -437,6 +437,7 @@
                             </div>
                         </div>
 
+                        <!-- Option 2: KI Bild Scan -->
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                             <p class="text-sm font-bold text-gray-800 mb-2">Variante 2: Foto vom Rezept (KI Scan)</p>
                             <label class="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2.5 rounded-lg cursor-pointer transition-colors shadow-sm text-sm">
@@ -655,6 +656,7 @@
         </div>
     </main>
 
+    <!-- FIREBASE & LOGIK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1174,7 +1176,7 @@
                 updateTagDatalist();
                 loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden:", error);
+                console.error("Fehler beim Laden der Rezepte:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -2112,13 +2114,19 @@
             }
         });
 
+        // ==========================================
+        // API CALLS (KI & IMPORT)
+        // ==========================================
         async function fetchWithRetry(url, options, retries = 5) {
             const delays = [1000, 2000, 4000, 8000, 16000];
             for (let i = 0; i < retries; i++) {
                 try {
                     const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return await response.json();
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error ? data.error.message : `HTTP error! status: ${response.status}`);
+                    }
+                    return data;
                 } catch (error) {
                     if (i === retries - 1) throw error;
                     await new Promise(res => setTimeout(res, delays[i]));
@@ -2126,286 +2134,290 @@
             }
         }
 
-        document.getElementById('aiImageInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const statusEl = document.getElementById('importStatus');
-            statusEl.textContent = 'Bild wird analysiert... (Das dauert einen Moment) 🤖';
-            statusEl.classList.remove('hidden');
-            statusEl.className = 'text-sm mt-4 font-bold text-blue-600 block';
+        const aiImageInput = document.getElementById('aiImageInput');
+        if (aiImageInput) {
+            aiImageInput.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const statusEl = document.getElementById('importStatus');
+                statusEl.textContent = 'Bild wird analysiert... (Das dauert einen Moment) 🤖';
+                statusEl.classList.remove('hidden');
+                statusEl.className = 'text-sm mt-4 font-bold text-blue-600 block';
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const maxSize = 1200; 
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const maxSize = 1200; 
 
-                    if (width > height && width > maxSize) {
-                        height *= maxSize / width;
-                        width = maxSize;
-                    } else if (height > maxSize) {
-                        width *= maxSize / height;
-                        height = maxSize;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const base64Full = canvas.toDataURL('image/jpeg', 0.7);
-                    const base64Raw = base64Full.split(',')[1];
-                    
-                    try {
-                        const payload = {
-                            contents: [{
-                                role: "user",
-                                parts: [
-                                    { text: "Du bist eine KI, die Rezepte aus Bildern extrahiert. Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt. Verwende KEIN Markdown, keine Backticks und keinen Text außerhalb des JSON. Format: { \"title\": \"Name\", \"portions\": 4, \"prepTime\": \"15\", \"cookTime\": \"30\", \"ingredients\": [ { \"amount\": \"200\", \"unit\": \"g\", \"name\": \"Mehl\" } ], \"instructions\": \"1. Schritt...\\n2. Schritt...\" }. Wenn du etwas nicht findest, lass es leer." },
-                                    { inlineData: { mimeType: "image/jpeg", data: base64Raw } }
-                                ]
-                            }],
-                            generationConfig: {
-                                responseMimeType: "application/json"
-                            }
-                        };
-
-                        if (!apiKey || apiKey === "") {
-                            statusEl.textContent = 'Fehler: Du musst im Code erst deinen Google API Key eintragen!';
-                            statusEl.className = 'text-sm mt-4 font-bold text-red-600 block';
-                            return;
+                        if (width > height && width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        } else if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
                         }
 
-                        const responseData = await fetchWithRetry(
-                            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-                            {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(payload)
-                            }
-                        );
-
-                        let responseText = responseData.candidates[0].content.parts[0].text;
-                        responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
                         
-                        const recipe = JSON.parse(responseText);
-
-                        if(recipe.title) document.getElementById('formTitle').value = recipe.title;
-                        if(recipe.portions) document.getElementById('formPortions').value = recipe.portions;
-                        if(recipe.prepTime) document.getElementById('formPrepTime').value = recipe.prepTime;
-                        if(recipe.cookTime) document.getElementById('formCookTime').value = recipe.cookTime;
-                        if(recipe.instructions) document.getElementById('formInstructions').value = recipe.instructions;
-
-                        if(recipe.ingredients && recipe.ingredients.length > 0) {
-                            const list = document.getElementById('ingredientsList');
-                            const rows = list.querySelectorAll('.ingredient-row');
-                            for(let i=1; i<rows.length; i++) rows[i].remove();
-
-                            const firstRow = list.querySelector('.ingredient-row');
-                            
-                            recipe.ingredients.forEach((ing, index) => {
-                                let targetRow;
-                                if(index === 0) {
-                                    targetRow = firstRow;
-                                } else {
-                                    targetRow = firstRow.cloneNode(true);
-                                    attachRemoveEventToRow(targetRow);
-                                    list.appendChild(targetRow);
+                        const base64Full = canvas.toDataURL('image/jpeg', 0.7);
+                        const base64Raw = base64Full.split(',')[1];
+                        
+                        try {
+                            const payload = {
+                                contents: [{
+                                    role: "user",
+                                    parts: [
+                                        { text: "Du bist eine KI, die Rezepte aus Bildern extrahiert. Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt. Verwende KEIN Markdown, keine Backticks und keinen Text außerhalb des JSON. Format: { \"title\": \"Name\", \"portions\": 4, \"prepTime\": \"15\", \"cookTime\": \"30\", \"ingredients\": [ { \"amount\": \"200\", \"unit\": \"g\", \"name\": \"Mehl\" } ], \"instructions\": \"1. Schritt...\\n2. Schritt...\" }. Wenn du etwas nicht findest, lass es leer." },
+                                        { inlineData: { mimeType: "image/jpeg", data: base64Raw } }
+                                    ]
+                                }],
+                                generationConfig: {
+                                    responseMimeType: "application/json"
                                 }
-                                targetRow.querySelector('.ingredient-name').value = ing.name || '';
-                                targetRow.querySelector('.ingredient-amount').value = ing.amount || '';
+                            };
+
+                            if (!apiKey || apiKey === "") {
+                                statusEl.textContent = 'Fehler: Du musst im Code erst deinen Google API Key eintragen!';
+                                statusEl.className = 'text-sm mt-4 font-bold text-red-600 block';
+                                return;
+                            }
+
+                            const responseData = await fetchWithRetry(
+                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+                                {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(payload)
+                                }
+                            );
+
+                            let responseText = responseData.candidates[0].content.parts[0].text;
+                            responseText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+                            
+                            const recipe = JSON.parse(responseText);
+
+                            if(recipe.title) document.getElementById('formTitle').value = recipe.title;
+                            if(recipe.portions) document.getElementById('formPortions').value = recipe.portions;
+                            if(recipe.prepTime) document.getElementById('formPrepTime').value = recipe.prepTime;
+                            if(recipe.cookTime) document.getElementById('formCookTime').value = recipe.cookTime;
+                            if(recipe.instructions) document.getElementById('formInstructions').value = recipe.instructions;
+
+                            if(recipe.ingredients && recipe.ingredients.length > 0) {
+                                const list = document.getElementById('ingredientsList');
+                                const rows = list.querySelectorAll('.ingredient-row');
+                                for(let i=1; i<rows.length; i++) rows[i].remove();
+
+                                const firstRow = list.querySelector('.ingredient-row');
                                 
-                                const unitSelect = targetRow.querySelector('.ingredient-unit');
-                                let foundUnit = '';
-                                if(ing.unit) {
-                                    const opt = Array.from(unitSelect.options).find(o => o.value.toLowerCase() === ing.unit.toLowerCase());
-                                    if(opt) foundUnit = opt.value;
-                                }
-                                unitSelect.value = foundUnit;
-                            });
-                        }
-
-                        statusEl.textContent = 'Rezept erfolgreich von der KI eingelesen! ✨';
-                        statusEl.className = 'text-sm mt-4 font-bold text-green-600 block';
-
-                    } catch(err) {
-                        console.error(err);
-                        statusEl.textContent = 'KI-Scan fehlgeschlagen. Bitte versuche ein anderes Foto.';
-                        statusEl.className = 'text-sm mt-4 font-bold text-red-600 block';
-                    }
-                }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        });
-
-        document.getElementById('startImportBtn').addEventListener('click', async () => {
-            let url = document.getElementById('importUrlInput').value.trim();
-            const statusEl = document.getElementById('importStatus');
-            if(!url) return;
-
-            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-
-            statusEl.textContent = 'Versuche Daten abzurufen... (Das kann kurz dauern)';
-            statusEl.classList.remove('hidden');
-            statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
-
-            const proxies = [
-                `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
-            ];
-
-            let html = null;
-
-            for (let proxy of proxies) {
-                try {
-                    const response = await fetch(proxy);
-                    if (proxy.includes('allorigins')) {
-                        const data = await response.json();
-                        if (data.contents) { html = data.contents; break; }
-                    } else {
-                        if (response.ok) { html = await response.text(); break; }
-                    }
-                } catch (e) { console.warn("Proxy fehlschlag", proxy); }
-            }
-
-            if (!html) {
-                statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
-                statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
-                return;
-            }
-
-            try {
-                const parser = new DOMParser();
-                const docObj = parser.parseFromString(html, 'text/html');
-
-                let title = '';
-                let instructions = '';
-                let portions = '';
-                let timesData = {};
-                let ingredientsList = [];
-                let nutritionData = {};
-
-                const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
-                for (const script of ldScripts) {
-                    try {
-                        const data = JSON.parse(script.textContent);
-                        
-                        const recipes = Array.isArray(data) 
-                            ? data.filter(item => item['@type'] === 'Recipe') 
-                            : (data['@type'] === 'Recipe' ? [data] : []);
-
-                        if(recipes.length === 0 && data['@graph']) {
-                            const graphRecipes = data['@graph'].filter(item => item['@type'] === 'Recipe');
-                            if(graphRecipes.length > 0) recipes.push(...graphRecipes);
-                        }
-
-                        if (recipes.length > 0) {
-                            const r = recipes[0];
-                            title = r.name || title;
-
-                            if (r.recipeInstructions) {
-                                if (typeof r.recipeInstructions === 'string') {
-                                    instructions = r.recipeInstructions;
-                                } else if (Array.isArray(r.recipeInstructions)) {
-                                    instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
-                                }
+                                recipe.ingredients.forEach((ing, index) => {
+                                    let targetRow;
+                                    if(index === 0) {
+                                        targetRow = firstRow;
+                                    } else {
+                                        targetRow = firstRow.cloneNode(true);
+                                        attachRemoveEventToRow(targetRow);
+                                        list.appendChild(targetRow);
+                                    }
+                                    targetRow.querySelector('.ingredient-name').value = ing.name || '';
+                                    targetRow.querySelector('.ingredient-amount').value = ing.amount || '';
+                                    
+                                    const unitSelect = targetRow.querySelector('.ingredient-unit');
+                                    let foundUnit = '';
+                                    if(ing.unit) {
+                                        const opt = Array.from(unitSelect.options).find(o => o.value.toLowerCase() === ing.unit.toLowerCase());
+                                        if(opt) foundUnit = opt.value;
+                                    }
+                                    unitSelect.value = foundUnit;
+                                });
                             }
 
-                            if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
-                                ingredientsList = r.recipeIngredient;
+                            statusEl.textContent = 'Rezept erfolgreich von der KI eingelesen! ✨';
+                            statusEl.className = 'text-sm mt-4 font-bold text-green-600 block';
+
+                        } catch(err) {
+                            console.error(err);
+                            statusEl.textContent = 'KI-Fehler: ' + err.message;
+                            statusEl.className = 'text-sm mt-4 font-bold text-red-600 block';
+                        }
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            });
+        }
+
+        const startImportBtn = document.getElementById('startImportBtn');
+        if (startImportBtn) {
+            startImportBtn.addEventListener('click', async () => {
+                let url = document.getElementById('importUrlInput').value.trim();
+                const statusEl = document.getElementById('importStatus');
+                if(!url) return;
+
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+                statusEl.textContent = 'Versuche Daten abzurufen... (Das kann kurz dauern)';
+                statusEl.classList.remove('hidden');
+                statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
+
+                const proxies = [
+                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+                ];
+
+                let html = null;
+
+                for (let proxy of proxies) {
+                    try {
+                        const response = await fetch(proxy);
+                        if (proxy.includes('allorigins')) {
+                            const data = await response.json();
+                            if (data.contents) { html = data.contents; break; }
+                        } else {
+                            if (response.ok) { html = await response.text(); break; }
+                        }
+                    } catch (e) {}
+                }
+
+                if (!html) {
+                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
+                    statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
+                    return;
+                }
+
+                try {
+                    const parser = new DOMParser();
+                    const docObj = parser.parseFromString(html, 'text/html');
+
+                    let title = '';
+                    let instructions = '';
+                    let portions = '';
+                    let timesData = {};
+                    let ingredientsList = [];
+                    let nutritionData = {};
+
+                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
+                    for (const script of ldScripts) {
+                        try {
+                            const data = JSON.parse(script.textContent);
+                            
+                            const recipes = Array.isArray(data) 
+                                ? data.filter(item => item['@type'] === 'Recipe') 
+                                : (data['@type'] === 'Recipe' ? [data] : []);
+
+                            if(recipes.length === 0 && data['@graph']) {
+                                const graphRecipes = data['@graph'].filter(item => item['@type'] === 'Recipe');
+                                if(graphRecipes.length > 0) recipes.push(...graphRecipes);
+                            }
+
+                            if (recipes.length > 0) {
+                                const r = recipes[0];
+                                title = r.name || title;
+
+                                if (r.recipeInstructions) {
+                                    if (typeof r.recipeInstructions === 'string') {
+                                        instructions = r.recipeInstructions;
+                                    } else if (Array.isArray(r.recipeInstructions)) {
+                                        instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
+                                    }
+                                }
+
+                                if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
+                                    ingredientsList = r.recipeIngredient;
+                                }
+                                
+                                if (r.recipeYield) {
+                                    portions = extractNumber(r.recipeYield);
+                                }
+
+                                if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
+                                if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
+                                if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
+
+                                if (r.nutrition) {
+                                    nutritionData.kcal = extractNumber(r.nutrition.calories);
+                                    nutritionData.protein = extractNumber(r.nutrition.proteinContent);
+                                    nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
+                                    nutritionData.fat = extractNumber(r.nutrition.fatContent);
+                                }
+                                break; 
+                            }
+                        } catch(e) {}
+                    }
+
+                    if (!title) {
+                        title = docObj.querySelector('h1')?.textContent.trim();
+                    }
+                    
+                    if (!instructions) {
+                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
+                        if (instructionBlocks.length > 0) {
+                            instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
+                        }
+                    }
+
+                    if(title) document.getElementById('formTitle').value = title;
+                    if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
+                    
+                    document.getElementById('formSourceUrl').value = url;
+
+                    if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
+                    if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
+                    if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
+                    if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
+                    
+                    if(portions) document.getElementById('formPortions').value = portions;
+                    if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
+                    if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
+                    if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
+
+                    if(ingredientsList.length > 0) {
+                        const list = document.getElementById('ingredientsList');
+                        const rows = list.querySelectorAll('.ingredient-row');
+                        for(let i=1; i<rows.length; i++) rows[i].remove();
+
+                        const firstRow = list.querySelector('.ingredient-row');
+                        
+                        ingredientsList.forEach((ingStr, index) => {
+                            const parsed = parseIngredientString(ingStr);
+                            let targetRow;
+                            
+                            if(index === 0) {
+                                targetRow = firstRow;
+                            } else {
+                                targetRow = firstRow.cloneNode(true);
+                                attachRemoveEventToRow(targetRow);
+                                list.appendChild(targetRow);
                             }
                             
-                            if (r.recipeYield) {
-                                portions = extractNumber(r.recipeYield);
-                            }
-
-                            if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
-                            if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
-                            if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
-
-                            if (r.nutrition) {
-                                nutritionData.kcal = extractNumber(r.nutrition.calories);
-                                nutritionData.protein = extractNumber(r.nutrition.proteinContent);
-                                nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
-                                nutritionData.fat = extractNumber(r.nutrition.fatContent);
-                            }
-                            break; 
-                        }
-                    } catch(e) {}
-                }
-
-                if (!title) {
-                    title = docObj.querySelector('h1')?.textContent.trim();
-                }
-                
-                if (!instructions) {
-                    const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
-                    if (instructionBlocks.length > 0) {
-                        instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
+                            targetRow.querySelector('.ingredient-name').value = parsed.name;
+                            targetRow.querySelector('.ingredient-amount').value = parsed.amount;
+                            targetRow.querySelector('.ingredient-unit').value = parsed.unit;
+                        });
                     }
+
+                    if(title || instructions || ingredientsList.length > 0) {
+                        statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
+                        statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
+                    } else {
+                        statusEl.textContent = 'Webseite wurde geladen, aber es konnten keine Rezeptdaten gefunden werden.';
+                        statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
+                    }
+
+                } catch(e) {
+                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten.';
+                    statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                 }
-
-                if(title) document.getElementById('formTitle').value = title;
-                if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
-                
-                document.getElementById('formSourceUrl').value = url;
-
-                if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
-                if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
-                if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
-                if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
-                
-                if(portions) document.getElementById('formPortions').value = portions;
-                if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
-                if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
-                if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
-
-                if(ingredientsList.length > 0) {
-                    const list = document.getElementById('ingredientsList');
-                    const rows = list.querySelectorAll('.ingredient-row');
-                    for(let i=1; i<rows.length; i++) rows[i].remove();
-
-                    const firstRow = list.querySelector('.ingredient-row');
-                    
-                    ingredientsList.forEach((ingStr, index) => {
-                        const parsed = parseIngredientString(ingStr);
-                        let targetRow;
-                        
-                        if(index === 0) {
-                            targetRow = firstRow;
-                        } else {
-                            targetRow = firstRow.cloneNode(true);
-                            attachRemoveEventToRow(targetRow);
-                            list.appendChild(targetRow);
-                        }
-                        
-                        targetRow.querySelector('.ingredient-name').value = parsed.name;
-                        targetRow.querySelector('.ingredient-amount').value = parsed.amount;
-                        targetRow.querySelector('.ingredient-unit').value = parsed.unit;
-                    });
-                }
-
-                if(title || instructions || ingredientsList.length > 0) {
-                    statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
-                    statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
-                } else {
-                    statusEl.textContent = 'Webseite wurde geladen, aber es konnten keine Rezeptdaten gefunden werden.';
-                    statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
-                }
-
-            } catch(e) {
-                console.error(e);
-                statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten.';
-                statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
-            }
-        });
-
+            });
+        }
     </script>
 </body>
 </html>
