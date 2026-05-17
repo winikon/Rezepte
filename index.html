@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Meine Rezept-App</title>
     
-    <!-- MOBILE APP / PWA SETTINGS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
-    
-    <!-- Cache-Buster ?v=6 erzwingt den sofortigen Download der Logos auf dem Smartphone -->
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=6">
+    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=8">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     
@@ -20,7 +17,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
         
@@ -30,7 +26,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Versteckt den grauen Balken bei Filtern */
+        /* Versteckt den hässlichen grauen Balken unter den Filter-Tags */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -38,7 +34,8 @@
             border: 4px solid #f3f3f3; 
             border-top: 4px solid #dc2626; 
             border-radius: 50%;
-            width: 40px; height: 40px; 
+            width: 40px; 
+            height: 40px; 
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -47,6 +44,7 @@
         .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
 
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
+        .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
         
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -67,7 +65,6 @@
 
         .fav-active svg { fill: #dc2626; color: #dc2626; }
         
-        /* Timer Animationen */
         .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .timer-ringing { animation: pulseRed 1s infinite; }
@@ -80,32 +77,15 @@
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
-    <!-- CUSTOM MODALS (Ersetzt die Browser-Alerts) -->
-    <div id="customModal" class="hidden fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl transform scale-100 transition-transform">
-            <h3 id="customModalText" class="text-xl font-bold text-gray-900 mb-8 text-center leading-tight"></h3>
-            <div class="flex gap-4 justify-center">
-                <button id="customModalCancel" class="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors">Abbrechen</button>
-                <button id="customModalConfirm" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-red-500/30">Ja, OK</button>
-            </div>
-        </div>
-    </div>
-    <div id="customToast" class="hidden fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900/95 backdrop-blur text-white px-6 py-3 rounded-full font-bold shadow-2xl z-[200] transition-all duration-300 translate-y-10 opacity-0 flex items-center gap-2">
-        <span id="customToastIcon">✅</span>
-        <span id="customToastText">Gespeichert!</span>
-    </div>
-
-    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
-    <!-- LOGIN ANSICHT -->
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png?v=6" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
+                <img src="logomr78brutalist.png" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
@@ -135,10 +115,9 @@
         </div>
     </div>
 
-    <!-- HAUPT NAVIGATION (HEADER) -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png?v=6" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
+            <img src="logomr78brutalist.png" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         
@@ -148,52 +127,41 @@
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-            <!-- SPEISEKAMMER BUTTON -->
             <button id="navProductsBtn" class="flex-shrink-0 bg-white hover:bg-orange-50 text-orange-700 font-bold py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-orange-200 shadow-sm" title="Produkte & Speisekammer">
                 <span class="text-lg leading-none">🥫</span>
                 <span class="hidden sm:inline">Produkte</span>
             </button>
 
-            <!-- PAPIERKORB -->
             <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
             
-            <!-- IMPORT -->
             <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                 Import
             </button>
 
-            <!-- NEUES REZEPT -->
             <button id="newRecipeBtn" class="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-red-500/30 transition-all flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Neu
             </button>
 
-            <!-- LOGOUT -->
             <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Abmelden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
         </div>
     </header>
 
-    <!-- ZENTRALER MAIN CONTAINER -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 1: LISTENANSICHT REZEPTE -->
-        <!-- ========================================================================= -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
                 
-                <!-- Filterbereich (Tags) -->
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer">
                     <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
                 </div>
                 
                 <div class="flex items-center gap-3 flex-wrap">
-                    <!-- UMSCHALTER: KACHEL / LISTE -->
                     <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
                         <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Tags)">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
@@ -217,16 +185,13 @@
                 </div>
             </div>
 
-            <!-- Wenn ein Filter aktiv ist -->
             <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
                 <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
             </div>
             
-            <!-- Grid für Rezepte -->
             <div id="recipeGrid"></div>
             
-            <!-- Leerer Zustand -->
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
                 <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span class="text-4xl text-gray-400">🍽️</span>
@@ -235,15 +200,11 @@
                 <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
 
-            <!-- Version Info -->
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 2.2 Ultimate (Uncompressed) | Stand: 17.05.2026, 20:00 Uhr
+                Version: 1.8.0 (Full Recovery) | Stand: 17.05.2026, 20:15 Uhr
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 2: PRODUKTE (SPEISEKAMMER) LISTE -->
-        <!-- ========================================================================= -->
         <div id="productsListView" class="max-w-[1600px] w-full mx-auto hidden print:hidden">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
@@ -265,13 +226,10 @@
                     <span class="text-3xl">🥫</span>
                 </div>
                 <h3 class="text-xl font-bold text-gray-900">Noch keine Produkte</h3>
-                <p class="text-gray-600 mt-2 max-w-sm mx-auto font-medium">Nutze die Taste oben, um dein erstes Produkt anzulegen.</p>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto font-medium">Nutze dein Handy, um Barcodes zu scannen und Zutaten hier zu speichern.</p>
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 3: REZEPT DETAILS -->
-        <!-- ========================================================================= -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
@@ -304,7 +262,6 @@
                         Löschen
                     </button>
                     
-                    <!-- Buttons für Papierkorb Ansicht -->
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -323,16 +280,14 @@
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
                 
-                <!-- GF Banner Emilia -->
                 <div id="detailGfBanner" class="hidden mb-6 flex justify-center md:justify-start print:justify-start transition-all duration-300 transform hover:scale-105">
-                    <img src="GFEmilia.png?v=6" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
+                    <img src="GFEmilia.png?v=8" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
                 
                 <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight print:text-3xl print:mb-4" id="detailTitle">Rezept Titel</h2>
 
-                <!-- ZEITEN -->
                 <div class="flex flex-wrap gap-4 mb-8 print:mb-4">
                     <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden print:gap-3">
                         <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
@@ -366,7 +321,6 @@
                     </div>
                 </div>
 
-                <!-- Nährwerte -->
                 <div id="detailNutritionContainer" class="mb-8 hidden page-break-inside-avoid print:mb-6">
                     <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm print:shadow-none print:border-gray-400 print:p-3">
                         <h3 class="text-base font-bold text-gray-900 whitespace-nowrap flex items-center gap-2 m-0">
@@ -400,7 +354,6 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-5 print:gap-6">
                     
-                    <!-- Zutaten Container -->
                     <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:p-5 print:shadow-none page-break-inside-avoid">
                         
                         <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3 print:pb-2 print:mb-2">
@@ -433,7 +386,6 @@
                         <ul class="space-y-1" id="detailIngredients"></ul>
                     </div>
 
-                    <!-- Zubereitung Container -->
                     <div class="lg:col-span-3 print:col-span-3">
                         <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-3 print:mb-3 print:pb-2">
                             <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -441,7 +393,6 @@
                         </h3>
                         <div class="space-y-2 print:space-y-1" id="detailInstructions"></div>
 
-                        <!-- Persönliche Notizen -->
                         <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:mt-6 print:shadow-none print:border-gray-400 print:bg-white print:border-dashed print:p-4">
                             <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 print:text-gray-800">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -450,7 +401,6 @@
                             <p id="detailNotesText" class="text-gray-800 whitespace-pre-wrap leading-relaxed italic"></p>
                         </div>
 
-                        <!-- Original Link -->
                         <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden print:hidden">
                             <a id="detailSourceLink" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-red-600 transition-colors bg-gray-100 hover:bg-red-50 px-4 py-2.5 rounded-xl">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -462,9 +412,6 @@
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 4: PRODUKT DETAILS (SPEISEKAMMER) -->
-        <!-- ========================================================================= -->
         <div id="productDetailView" class="max-w-2xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
@@ -487,7 +434,7 @@
                 <div class="w-48 h-48 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative flex items-center justify-center">
                     <img id="detailProdImage" src="" class="w-full h-full object-contain p-2 mix-blend-multiply">
                     <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden">
-                        <img src="GFEmilia.png?v=6" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
+                        <img src="GFEmilia.png?v=8" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
                     </div>
                 </div>
                 <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
@@ -504,9 +451,6 @@
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 5: REZEPT FORMULAR (NEU / BEARBEITEN) -->
-        <!-- ========================================================================= -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
@@ -531,7 +475,6 @@
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
-                    <!-- Bild Upload -->
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2">Rezeptbild</label>
                         <div class="flex items-center gap-6">
@@ -558,15 +501,13 @@
                         <input type="text" id="formTitle" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 shadow-sm" placeholder="z.B. Schnelle Lasagne">
                     </div>
 
-                    <!-- GF TOGGLE -->
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=6" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=8" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
 
-                    <!-- Tags -->
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-1">Kategorien / Tags</label>
                         <div class="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-red-600 shadow-sm" id="tagInputContainer">
@@ -576,7 +517,6 @@
                         </div>
                     </div>
 
-                    <!-- Bewertung & Schwierigkeit -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Bewertung & Schwierigkeit</label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -603,7 +543,6 @@
                         </div>
                     </div>
 
-                    <!-- Zeiten -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Zeiten & Portionen</label>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -615,7 +554,6 @@
                         </div>
                     </div>
 
-                    <!-- Nährwerte -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Nährwerte (pro Portion)</label>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -627,7 +565,6 @@
                         </div>
                     </div>
 
-                    <!-- Zutaten -->
                     <div class="bg-[#E6E4DD]/40 p-5 rounded-2xl border border-gray-300 shadow-inner">
                         <div class="flex items-center justify-between mb-4">
                             <label class="block text-lg font-black text-gray-900">Zutaten</label>
@@ -644,7 +581,6 @@
                         </div>
                     </div>
 
-                    <!-- Anleitung -->
                     <div>
                         <label class="block text-lg font-black text-gray-900 mb-2">Zubereitungsschritte <span class="text-red-600">*</span></label>
                         <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="1. Zwiebeln anbraten..."></textarea>
@@ -669,9 +605,6 @@
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 6: PRODUKT FORMULAR (NEU) -->
-        <!-- ========================================================================= -->
         <div id="productFormView" class="max-w-3xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
@@ -732,7 +665,7 @@
 
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=6" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=8" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -751,9 +684,6 @@
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- ANSICHT 7: ZEN MODE -->
-        <!-- ========================================================================= -->
         <div id="zenModeView" class="hidden fixed inset-0 bg-[#E6E4DD] z-[100] flex flex-col justify-between overflow-hidden">
             <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-md">
                 <button id="exitZenModeBtn" class="flex items-center gap-2 text-gray-300 hover:text-white font-bold">
@@ -792,7 +722,9 @@
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ", authDomain: "rezepte-5cf2b.firebaseapp.com", projectId: "rezepte-5cf2b", storageBucket: "rezepte-5cf2b.firebasestorage.app", messagingSenderId: "309619660672", appId: "1:309619660672:web:59523676acc8b294415365", measurementId: "G-7VGKEKCWDV" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig); 
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
         const appNamespace = 'meine-rezepte-app'; 
 
         let currentUser = null, recipes = [], products = [], customIngredients = [], currentRecipeTags = [];
@@ -801,8 +733,6 @@
         let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest', currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
         let zenSteps = [], currentZenStepIndex = 0, activeTimers = [], wakeLock = null;
 
-        const mainHeader = document.getElementById('mainHeader');
-        const mainContent = document.getElementById('mainContent');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
         // Dynamisches Holen der DOM Elemente zur Vermeidung von Null-Errors
@@ -892,7 +822,7 @@
         let isLoginMode = true;
         document.getElementById('toggleAuthModeBtn')?.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
-            document.getElementById('authError')?.classList.add('hidden');
+            const errEl = document.getElementById('authError'); if(errEl) errEl.classList.add('hidden');
             document.getElementById('loginTitle').textContent = isLoginMode ? "Willkommen zurück" : "Konto erstellen";
             document.getElementById('loginSubtitle').textContent = isLoginMode ? "Melde dich an, um deine Rezepte zu sehen." : "Sichere deine Rezepte dauerhaft.";
             document.getElementById('authSubmitBtn').textContent = isLoginMode ? "Einloggen" : "Registrieren";
@@ -904,14 +834,16 @@
             const em = document.getElementById('authEmail').value;
             const pw = document.getElementById('authPassword').value;
             const btn = document.getElementById('authSubmitBtn');
-            document.getElementById('authError')?.classList.add('hidden');
+            const errEl = document.getElementById('authError'); if(errEl) errEl.classList.add('hidden');
             btn.disabled = true; btn.innerHTML = 'Warten...';
             try {
                 if (isLoginMode) await signInWithEmailAndPassword(auth, em, pw);
                 else await createUserWithEmailAndPassword(auth, em, pw);
             } catch (err) {
-                document.getElementById('authError').classList.remove('hidden');
-                document.getElementById('authError').textContent = "Fehler bei der Anmeldung. Bitte prüfen.";
+                if(errEl) {
+                    errEl.classList.remove('hidden');
+                    errEl.textContent = "Fehler bei der Anmeldung. Bitte prüfen.";
+                }
                 btn.disabled = false; btn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
             }
         });
@@ -920,22 +852,20 @@
 
         onAuthStateChanged(auth, (user) => {
             const currentViews = getViews();
+            const mh = document.getElementById('mainHeader');
+            const mc = document.getElementById('mainContent');
             if (user) {
                 currentUser = user;
                 loadingOverlay?.classList.remove('hidden');
                 currentViews.login?.classList.add('hidden');
-                mainHeader?.classList.remove('hidden');
-                mainHeader?.classList.add('flex');
-                mainContent?.classList.remove('hidden');
-                mainContent?.classList.add('flex-1');
+                if(mh) { mh.classList.remove('hidden'); mh.classList.add('flex'); }
+                if(mc) { mc.classList.remove('hidden'); mc.classList.add('flex-1'); }
                 startDatabaseListeners();
                 window.location.hash = ''; 
             } else {
                 currentUser = null;
-                mainHeader?.classList.add('hidden');
-                mainHeader?.classList.remove('flex');
-                mainContent?.classList.add('hidden');
-                mainContent?.classList.remove('flex-1');
+                if(mh) { mh.classList.add('hidden'); mh.classList.remove('flex'); }
+                if(mc) { mc.classList.add('hidden'); mc.classList.remove('flex-1'); }
                 Object.values(currentViews).forEach(v => v?.classList.add('hidden'));
                 loadingOverlay?.classList.add('hidden');
                 currentViews.login?.classList.remove('hidden');
@@ -1020,18 +950,18 @@
             
             if (h === '#new') { 
                 resetForm(); 
-                document.getElementById('formHeaderTitle').textContent = "Neues Rezept"; 
+                const ft = document.getElementById('formHeaderTitle'); if(ft) ft.textContent = "Neues Rezept"; 
                 document.getElementById('importSection')?.classList.remove('hidden'); 
                 showView('form'); 
             }
             else if (h === '#import') { 
                 resetForm(); 
-                document.getElementById('formHeaderTitle').textContent = "Rezept Importieren"; 
+                const ft = document.getElementById('formHeaderTitle'); if(ft) ft.textContent = "Rezept Importieren"; 
                 document.getElementById('importSection')?.classList.remove('hidden'); 
                 showView('form'); 
             }
             else if (h === '#edit') { 
-                document.getElementById('formHeaderTitle').textContent = "Rezept bearbeiten"; 
+                const ft = document.getElementById('formHeaderTitle'); if(ft) ft.textContent = "Rezept bearbeiten"; 
                 document.getElementById('importSection')?.classList.add('hidden'); 
                 showView('form'); 
             }
@@ -1041,11 +971,11 @@
             }
             else if (h === '#new-product') { 
                 resetProductForm(); 
-                document.getElementById('productFormTitle').textContent = "Neues Produkt"; 
+                const pt = document.getElementById('productFormTitle'); if(pt) pt.textContent = "Neues Produkt"; 
                 showView('productForm'); 
             }
             else if (h === '#edit-product') { 
-                document.getElementById('productFormTitle').textContent = "Produkt bearbeiten"; 
+                const pt = document.getElementById('productFormTitle'); if(pt) pt.textContent = "Produkt bearbeiten"; 
                 showView('productForm'); 
             }
             else if (h.startsWith('#product-')) {
@@ -1216,7 +1146,7 @@
                         }
 
                         if (recipe.isGlutenFree) {
-                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=6" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
+                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=8" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
                         }
 
                         let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
@@ -1278,7 +1208,7 @@
                         const headerRow = document.createElement('div');
                         headerRow.className = "flex justify-between items-start gap-2 mb-1";
                         
-                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=6" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
+                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=8" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
                         headerRow.innerHTML = `<div class="flex-1 min-w-0"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">${recipe.title || ''}${titleGf}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>`;
 
                         let nutLine = '';
@@ -1765,9 +1695,10 @@
             const datalist = document.getElementById('ingredientSuggestions');
             if(!datalist) return;
             datalist.innerHTML = '';
-            // Produkte + Standard in Autocomplete
+            // Produkte + Custom Ingredients im Autocomplete
             const prodNames = products.map(p => p.name).filter(n => n && n.length > 0);
             const allIngs = new Set([...customIngredients, ...prodNames]);
+            
             const sorted = Array.from(allIngs).sort((a, b) => a.localeCompare(b, 'de'));
             sorted.forEach(ing => {
                 const option = document.createElement('option');
@@ -1802,7 +1733,10 @@
             currentRecipeTags.forEach(tag => {
                 const el = document.createElement('div');
                 el.className = `flex items-center gap-1 px-2.5 py-1 rounded-md text-sm font-bold ${getColorForTag(tag)}`;
-                el.innerHTML = `${tag}<button type="button" class="text-current opacity-60 hover:opacity-100 ml-1 focus:outline-none" onclick="removeFormTag('${tag}')">&times;</button>`;
+                el.innerHTML = `
+                    ${tag}
+                    <button type="button" class="text-current opacity-60 hover:opacity-100 ml-1 focus:outline-none" onclick="removeFormTag('${tag}')">&times;</button>
+                `;
                 container.appendChild(el);
             });
         }
@@ -1900,6 +1834,7 @@
                         const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
                         ingredients.push({ name: formattedName, amount, unit });
                         
+                        // Speisekammer-Produkte nicht als Custom-Ingredient speichern
                         const isProduct = products.some(p => p.name && p.name.toLowerCase() === formattedName.toLowerCase());
                         if (!isProduct && !updatedIngredientsList.includes(formattedName)) {
                             updatedIngredientsList.push(formattedName);
