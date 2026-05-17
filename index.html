@@ -74,7 +74,6 @@
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
-    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
@@ -144,7 +143,6 @@
         </div>
     </header>
 
-    <!-- HAUPTBEREICH -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ANSICHT 1: LISTENANSICHT -->
@@ -197,7 +195,7 @@
             </div>
 
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 1.5 Stabil (Tag & Nährwert Split) | Stand: 17.05.2026, 11:20 Uhr
+                Version: 1.5 Stabil (Zöliakie/GF Feature) | Stand: 17.05.2026, 14:00 Uhr
             </div>
         </div>
 
@@ -254,6 +252,15 @@
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
                 <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
                 
+                <!-- GF Banner in Detailansicht -->
+                <div id="detailGfBanner" class="hidden bg-amber-100 border border-amber-300 text-amber-900 px-4 py-3 rounded-xl mb-6 flex items-center gap-3 shadow-sm print:shadow-none print:border-amber-400">
+                    <span class="text-2xl">🌾</span>
+                    <div>
+                        <span class="block text-lg font-bold">Glutenfrei</span>
+                        <span class="text-sm opacity-90">Dieses Rezept ist als sicher für Zöliakie markiert.</span>
+                    </div>
+                </div>
+
                 <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight print:text-3xl print:mb-4" id="detailTitle">Rezept Titel</h2>
 
                 <!-- ZEITEN -->
@@ -387,6 +394,40 @@
             </div>
         </div>
 
+        <!-- ZEN KOCH-MODUS VIEW -->
+        <div id="zenModeView" class="hidden fixed inset-0 bg-[#E6E4DD] z-[100] flex flex-col justify-between overflow-hidden">
+            <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-md">
+                <button id="exitZenModeBtn" class="flex items-center gap-2 text-gray-300 hover:text-white font-bold">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    Schließen
+                </button>
+                <div class="text-sm font-bold tracking-widest uppercase text-gray-400">Schritt <span id="zenCurrentStepNum" class="text-white text-lg">1</span> von <span id="zenTotalStepsNum">X</span></div>
+                
+                <button id="ttsPlayBtn" class="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 font-bold bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                    Vorlesen
+                </button>
+            </div>
+            
+            <div class="flex-1 p-6 md:p-12 overflow-y-auto flex items-center justify-center relative">
+                <p id="zenInstructionText" class="text-3xl md:text-5xl font-black text-gray-900 leading-tight max-w-4xl mx-auto text-center"></p>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 flex items-center justify-between border-t border-gray-300 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                <button id="zenPrevBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 px-8 rounded-2xl text-xl flex items-center gap-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
+                    Zurück
+                </button>
+                <button id="zenNextBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-12 rounded-2xl text-2xl flex items-center gap-3 shadow-xl transition-transform transform hover:-translate-y-1">
+                    Weiter
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- FLOATING TIMER CONTAINER -->
+        <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 print:hidden pointer-events-none *:pointer-events-auto"></div>
+
         <!-- ANSICHT 3: FORMULAR -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
@@ -400,7 +441,7 @@
 
             <div class="p-6 md:p-10">
                 
-                <!-- IMPORT BEREICH -->
+                <!-- IMPORT BEREICH (NUR URL) -->
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
                     <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
@@ -445,6 +486,18 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-1">Rezept Name <span class="text-red-600">*</span></label>
                         <input type="text" id="formTitle" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-colors text-xl font-bold text-gray-900 shadow-sm" placeholder="z.B. Schnelle Lasagne">
+                    </div>
+
+                    <!-- GF TOGGLE -->
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">🌾</span>
+                            <div>
+                                <p class="font-bold text-amber-900">Glutenfrei</p>
+                                <p class="text-xs text-amber-700">Sicher bei Zöliakie</p>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-amber-600 rounded focus:ring-amber-500 border-amber-300 pointer-events-none">
                     </div>
 
                     <!-- Tags -->
@@ -514,7 +567,6 @@
                     <!-- Nährwerte -->
                     <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
                         <label class="block text-lg font-black text-gray-900 mb-4">Nährwerte (pro Portion)</label>
-                        <!-- HIER WURDE ZUCKER HINZUGEFÜGT (5 Spalten) -->
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1">Kalorien (kcal)</label>
@@ -1252,7 +1304,8 @@
                         imageBase64: data.imageBase64 || null,
                         createdAt: data.createdAt || new Date().toISOString(),
                         isFavorite: data.isFavorite || false,
-                        isDeleted: data.isDeleted || false
+                        isDeleted: data.isDeleted || false,
+                        isGlutenFree: data.isGlutenFree || false
                     });
                 });
                 
@@ -1496,8 +1549,10 @@
                 const card = document.createElement('div');
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
+                let recipeTagsToRender = recipe.tags ? [...recipe.tags] : [];
+
                 if (currentViewMode === 'grid') {
-                    // --- KACHEL ANSICHT (Fokus: Bild & Tags, OHNE Nährwerte) ---
+                    // --- KACHEL ANSICHT (Fokus: Bild, Tags & GF-Badge) ---
                     card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
 
                     const cardHeader = document.createElement('div');
@@ -1514,6 +1569,14 @@
                         icon.className = "w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800";
                         icon.textContent = recipe.title.charAt(0).toUpperCase();
                         cardHeader.appendChild(icon);
+                    }
+
+                    // ZÖLIAKIE / GF BADGE
+                    if (recipe.isGlutenFree) {
+                        const gfBadge = document.createElement('div');
+                        gfBadge.className = "absolute top-3 left-3 bg-amber-400/95 backdrop-blur text-amber-950 text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md border border-amber-300 flex items-center gap-1 z-10";
+                        gfBadge.innerHTML = '<span class="text-sm">🌾</span> GF';
+                        cardHeader.appendChild(gfBadge);
                     }
 
                     let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
@@ -1536,35 +1599,18 @@
                     const tagsContainer = document.createElement('div');
                     tagsContainer.className = "flex flex-wrap gap-1.5 mt-auto"; 
                     
-                    let recipeTagsToRender = recipe.tags ? [...recipe.tags] : [];
-                    
-                    if (recipe.nutrition) {
-                        let protein = parseInt(recipe.nutrition.protein) || 0;
-                        let carbs = parseInt(recipe.nutrition.carbs) || 999;
-                        if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
-                            recipeTagsToRender.unshift("High Protein 💪");
-                        }
-                        if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
-                            recipeTagsToRender.unshift("Low Carb 🥗");
-                        }
-                    }
-
-                    // In Grid nur max 3 Tags zeigen
                     recipeTagsToRender.slice(0, 3).forEach(tag => {
                         const t = document.createElement('span');
-                        let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
-                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white border-transparent' : 'bg-green-700 text-white border-transparent') : getColorForTag(tag);
+                        let colorClass = getColorForTag(tag);
                         
                         t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${colorClass}`;
                         t.textContent = tag;
                         t.addEventListener('click', (e) => {
                             e.stopPropagation(); 
-                            if(!isSpecial) {
-                                activeFilter = tag;
-                                updateActiveFilterUI();
-                                renderRecipes();
-                                renderFilterTags();
-                            }
+                            activeFilter = tag;
+                            updateActiveFilterUI();
+                            renderRecipes();
+                            renderFilterTags();
                         });
                         tagsContainer.appendChild(t);
                     });
@@ -1580,7 +1626,7 @@
                     card.appendChild(cardBody);
                     
                 } else {
-                    // --- LISTEN ANSICHT (Fokus: Nur Nährwerte, keine Tags) ---
+                    // --- LISTEN ANSICHT (Fokus: Nährwerte & GF Badge) ---
                     card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-auto min-h-[90px] ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
                     
                     const imgContainer = document.createElement('div');
@@ -1594,6 +1640,14 @@
                     } else {
                         imgContainer.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800";
                         imgContainer.textContent = recipe.title.charAt(0).toUpperCase();
+                    }
+
+                    // ZÖLIAKIE / GF BADGE
+                    if (recipe.isGlutenFree) {
+                        const gfBadge = document.createElement('div');
+                        gfBadge.className = "absolute top-1 left-1 bg-amber-400/95 backdrop-blur text-amber-950 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-300 z-10 flex items-center gap-0.5";
+                        gfBadge.innerHTML = '<span>🌾</span> GF';
+                        imgContainer.appendChild(gfBadge);
                     }
 
                     const infoContainer = document.createElement('div');
@@ -1619,7 +1673,6 @@
                         <div class="flex-shrink-0 text-right whitespace-nowrap">${metaHtml}</div>
                     `;
 
-                    // Bunte Nährwertleiste in der Liste (statt Tags)
                     let nutritionLine = '';
                     if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.sugar || recipe.nutrition.fat)) {
                         nutritionLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">`;
@@ -1814,6 +1867,13 @@
             } else {
                 imgContainer?.classList.add('hidden');
                 if(imgEl) imgEl.src = '';
+            }
+
+            // GF Banner einblenden
+            const gfBanner = document.getElementById('detailGfBanner');
+            if(gfBanner) {
+                if(recipe.isGlutenFree) gfBanner.classList.remove('hidden');
+                else gfBanner.classList.add('hidden');
             }
 
             const tagsContainer = document.getElementById('detailTags');
@@ -2054,6 +2114,7 @@
             if(document.getElementById('formNotes')) document.getElementById('formNotes').value = ''; 
             if(document.getElementById('formRating')) document.getElementById('formRating').value = '0'; 
             if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = ''; 
+            if(document.getElementById('formGlutenFree')) document.getElementById('formGlutenFree').checked = false;
         }
 
         const editRecBtn = document.getElementById('editRecipeBtn');
@@ -2075,6 +2136,7 @@
                 if(document.getElementById('formNotes')) document.getElementById('formNotes').value = recipe.notes || '';
                 if(document.getElementById('formRating')) document.getElementById('formRating').value = recipe.rating || '0';
                 if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = recipe.difficulty || '';
+                if(document.getElementById('formGlutenFree')) document.getElementById('formGlutenFree').checked = recipe.isGlutenFree || false;
 
                 if(recipe.times) {
                     if(document.getElementById('formPrepTime')) document.getElementById('formPrepTime').value = recipe.times.prep || '';
@@ -2349,6 +2411,7 @@
                     rating: document.getElementById('formRating').value,
                     difficulty: document.getElementById('formDifficulty').value,
                     sourceUrl: document.getElementById('formSourceUrl').value,
+                    isGlutenFree: document.getElementById('formGlutenFree').checked,
                     nutrition: {
                         kcal: document.getElementById('formKcal').value,
                         protein: document.getElementById('formProtein').value,
@@ -2385,7 +2448,7 @@
         }
 
         // ==========================================
-        // URL IMPORT (Extrem Robuster JSON-LD Scraper)
+        // URL IMPORT (Klassisch via JSON-LD)
         // ==========================================
         function parseIsoDuration(duration) {
             if(!duration || typeof duration !== 'string') return '';
@@ -2453,8 +2516,8 @@
                 statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
                 const proxies = [
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(url)}`
+                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
                 ];
 
                 let html = null;
@@ -2488,7 +2551,6 @@
                     let ingredientsList = [];
                     let nutritionData = {};
 
-                    // 1. JSON-LD SCAN (z.B. Chefkoch, Betty Bossi)
                     const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"], script#__NEXT_DATA__');
                     for (const script of ldScripts) {
                         try {
@@ -2538,6 +2600,7 @@
                                     if(r.nutrition.calories) nutritionData.kcal = extractNumber(r.nutrition.calories);
                                     if(r.nutrition.proteinContent) nutritionData.protein = extractNumber(r.nutrition.proteinContent);
                                     if(r.nutrition.carbohydrateContent) nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
+                                    if(r.nutrition.sugarContent) nutritionData.sugar = extractNumber(r.nutrition.sugarContent);
                                     if(r.nutrition.fatContent) nutritionData.fat = extractNumber(r.nutrition.fatContent);
                                 }
                                 break; 
@@ -2545,7 +2608,6 @@
                         } catch(e) {}
                     }
 
-                    // 2. HTML FALLBACK (Falls JSON-LD kaputt/unvollständig ist)
                     if (!title) {
                         const h1 = docObj.querySelector('h1');
                         if (h1) title = h1.textContent.trim();
@@ -2587,14 +2649,21 @@
                     if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
                     if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
                     if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
+                    if(nutritionData.sugar) document.getElementById('formSugar').value = nutritionData.sugar;
                     if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
                     
+                    // Automatischer Check für Zöliakie
+                    if (html.toLowerCase().includes('glutenfrei') || html.toLowerCase().includes('gluten-free') || title.toLowerCase().includes('glutenfrei')) {
+                        document.getElementById('formGlutenFree').checked = true;
+                    } else {
+                        document.getElementById('formGlutenFree').checked = false;
+                    }
+
                     if(portions) document.getElementById('formPortions').value = portions;
                     if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
                     if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
                     if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
 
-                    // Zutaten ins Formular übertragen
                     if(ingredientsList.length > 0) {
                         const list = document.getElementById('ingredientsList');
                         const rows = list.querySelectorAll('.ingredient-row');
