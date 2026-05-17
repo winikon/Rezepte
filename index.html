@@ -27,7 +27,6 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Versteckt den hässlichen grauen Balken unter den Filter-Tags */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -74,7 +73,6 @@
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
-    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
@@ -127,6 +125,12 @@
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
+            <!-- NEU: PRODUKTE (SPEISEKAMMER) BUTTON -->
+            <button id="navProductsBtn" class="flex-shrink-0 bg-white hover:bg-orange-50 text-orange-700 font-bold py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-orange-200 shadow-sm" title="Produkte & Speisekammer">
+                <span class="text-lg leading-none">🥫</span>
+                <span class="hidden sm:inline">Produkte</span>
+            </button>
+
             <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
@@ -146,17 +150,15 @@
 
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
-        <!-- ANSICHT 1: LISTENANSICHT -->
+        <!-- ANSICHT 1: REZEPTE LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
                 
-                <!-- Filterbereich -->
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer">
                     <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
                 </div>
                 
                 <div class="flex items-center gap-3 flex-wrap">
-                    <!-- VIEW TOGGLE (Raster/Liste) -->
                     <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
                         <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Tags)">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
@@ -196,11 +198,166 @@
             </div>
 
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 1.6 Stabil (GF Emilia Edition) | Stand: 17.05.2026, 14:50 Uhr
+                Version: 1.7 Stabil (+ Produkte Datenbank) | Stand: 17.05.2026, 15:35 Uhr
             </div>
         </div>
 
+        <!-- ========================================================================= -->
+        <!-- ANSICHT: PRODUKTE (SPEISEKAMMER) LISTE -->
+        <!-- ========================================================================= -->
+        <div id="productsListView" class="max-w-[1600px] w-full mx-auto hidden print:hidden">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 flex items-center gap-3">
+                        <span class="text-4xl">🥫</span> Speisekammer
+                    </h2>
+                    <p class="text-gray-600 mt-1">Hier speicherst du Saucen, Glazes und Spezialzutaten.</p>
+                </div>
+                <button id="newProductBtn" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-5 rounded-full shadow-md transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Neues Produkt
+                </button>
+            </div>
+
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+
+            <div id="emptyProductsState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
+                <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">🥫</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Noch keine Produkte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto">Scanne Barcodes, um deine Zutaten hier für zukünftige Rezepte zu speichern.</p>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT: PRODUKT FORMULAR -->
+        <!-- ========================================================================= -->
+        <div id="productFormView" class="max-w-3xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
+             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Abbrechen
+                </button>
+                <h3 class="font-bold text-gray-900" id="productFormTitle">Neues Produkt</h3>
+                <div class="w-24"></div> 
+            </div>
+
+            <div class="p-6 md:p-10">
+                <!-- Barcode API Scan Bereich -->
+                <div class="mb-10 bg-orange-50 p-6 rounded-2xl border border-orange-200 shadow-inner">
+                    <h3 class="font-bold text-orange-900 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                        Daten automatisch laden (Wie Yuka)
+                    </h3>
+                    <p class="text-sm text-orange-800 mb-4">Tippe die Strichcode-Nummer (EAN) der Verpackung ab. Wir laden Bild und Zutaten aus der Open Food Facts Datenbank.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="barcodeInput" placeholder="z.B. 4005500332211" class="flex-1 px-4 py-3 bg-white border border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none shadow-sm font-mono tracking-widest">
+                        <button type="button" id="fetchBarcodeBtn" class="bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap flex items-center gap-2">
+                            Suchen
+                        </button>
+                    </div>
+                    <p id="barcodeStatus" class="text-sm mt-3 font-medium hidden"></p>
+                </div>
+
+                <form id="productForm" class="space-y-8">
+                    <div class="flex items-center gap-6">
+                        <div id="prodImagePreviewContainer" class="w-32 h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden relative group shrink-0">
+                            <span id="prodImagePlaceholder" class="text-gray-400 flex flex-col items-center">
+                                <span class="text-3xl mb-1">📷</span>
+                            </span>
+                            <img id="prodImagePreview" src="" class="hidden w-full h-full object-cover">
+                            <button type="button" id="removeProdImageBtn" class="hidden absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                        <div class="flex-1">
+                            <label class="cursor-pointer bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2.5 px-5 rounded-xl transition-colors inline-block shadow-sm">
+                                <span>Foto auswählen...</span>
+                                <input type="file" id="prodImageInput" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-1">Produkt Name <span class="text-red-600">*</span></label>
+                            <input type="text" id="prodName" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm" placeholder="z.B. Sweet Apple BBQ Glaze">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-1">Marke</label>
+                            <input type="text" id="prodBrand" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm" placeholder="z.B. Stubbs">
+                        </div>
+                    </div>
+
+                    <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
+                        <div class="flex items-center gap-4">
+                            <img src="GFEmilia.png" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                        </div>
+                        <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-black text-gray-900 mb-2">Zutatenliste des Produkts</label>
+                        <textarea id="prodIngredients" rows="6" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="Zutaten laut Verpackung..."></textarea>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit" class="flex items-center gap-1.5 text-orange-800 hover:text-orange-900 hover:bg-orange-50 font-medium text-sm transition-colors bg-white px-5 py-2.5 rounded-lg shadow-sm border border-orange-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Produkt speichern
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT: PRODUKT DETAILS -->
+        <!-- ========================================================================= -->
+        <div id="productDetailView" class="max-w-3xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
+            <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Zurück
+                </button>
+                <div class="flex gap-2">
+                    <button id="editProductBtn" class="text-orange-600 hover:bg-orange-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Bearbeiten
+                    </button>
+                    <button id="deleteProductBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Löschen
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-10 flex flex-col items-center text-center border-b border-gray-200 bg-gray-50/50">
+                <div class="w-40 h-40 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative">
+                    <img id="detailProdImage" src="" class="w-full h-full object-contain p-2">
+                    <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden">
+                        <img src="GFEmilia.png" class="h-6 w-auto rounded shadow-sm border border-gray-200">
+                    </div>
+                </div>
+                <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
+                <p class="text-lg text-gray-500 font-bold" id="detailProdBrand">Marke</p>
+                
+                <div class="mt-4 bg-gray-200 text-gray-600 font-mono px-3 py-1 rounded text-xs tracking-widest hidden" id="detailProdBarcode"></div>
+            </div>
+
+            <div class="p-6 md:p-10">
+                <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Zutaten laut Hersteller
+                </h3>
+                <p id="detailProdIngredients" class="text-gray-700 leading-relaxed bg-[#f4f3ef] p-5 rounded-xl border border-gray-200 text-sm font-medium"></p>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
         <!-- ANSICHT 2: REZEPT DETAILS -->
+        <!-- ========================================================================= -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
@@ -442,19 +599,16 @@
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
                     <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        Rezept Importieren
+                        Rezept aus dem Internet importieren
                     </h3>
-                    
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                            <p class="text-sm font-bold text-gray-800 mb-2">Von Webseite (z.B. Chefkoch)</p>
-                            <div class="flex gap-2">
-                                <input type="url" id="importUrlInput" placeholder="https://..." class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-sm">
-                                <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm">Laden</button>
-                            </div>
-                        </div>
+                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung, Zeiten und Nährwerte automatisch aus.</p>
+                    <div class="flex gap-2">
+                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
+                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                            Auslesen
+                        </button>
                     </div>
-                    <p id="importStatus" class="text-sm mt-4 font-medium hidden"></p>
+                    <p id="importStatus" class="text-sm mt-3 font-medium hidden"></p>
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
@@ -699,12 +853,15 @@
 
         let currentUser = null;
         let recipes = []; 
+        let products = []; // NEU: Produkte Array
         let customIngredients = ["Mehl", "Zucker", "Milch", "Eier", "Butter", "Salz", "Pfeffer", "Zwiebel", "Knoblauch", "Olivenöl"]; 
         let currentRecipeTags = []; 
         let activeFilter = null;
         let currentDetailRecipeId = null;
         let currentEditRecipeId = null;
         let currentImageBase64 = null;
+        let currentProdImageBase64 = null; // NEU
+        let currentEditProductId = null; // NEU
         
         let currentDetailRecipe = null;
         let currentDisplayPortions = 4;
@@ -726,7 +883,10 @@
             list: document.getElementById('listView'),
             detail: document.getElementById('detailView'),
             form: document.getElementById('formView'),
-            zen: document.getElementById('zenModeView')
+            zen: document.getElementById('zenModeView'),
+            productsList: document.getElementById('productsListView'),
+            productForm: document.getElementById('productFormView'),
+            productDetail: document.getElementById('productDetailView')
         };
         
         const mainHeader = document.getElementById('mainHeader');
@@ -1260,6 +1420,9 @@
                 views.detail?.classList.add('hidden');
                 views.form?.classList.add('hidden');
                 views.zen?.classList.add('hidden');
+                views.productsList?.classList.add('hidden');
+                views.productForm?.classList.add('hidden');
+                views.productDetail?.classList.add('hidden');
                 
                 if(loadingOverlay) loadingOverlay.classList.add('hidden');
                 views.login?.classList.remove('hidden');
@@ -1271,15 +1434,18 @@
                 
                 if (recipesUnsubscribe) recipesUnsubscribe();
                 if (settingsUnsubscribe) settingsUnsubscribe();
+                if (productsUnsubscribe) productsUnsubscribe();
             }
         });
 
         let recipesUnsubscribe = null;
         let settingsUnsubscribe = null;
+        let productsUnsubscribe = null; // NEU
 
         function startDatabaseListeners() {
             if (!currentUser) return;
 
+            // 1. REZEPTE
             const recipesRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes');
             recipesUnsubscribe = onSnapshot(recipesRef, (snapshot) => {
                 recipes = [];
@@ -1306,7 +1472,7 @@
                     });
                 });
                 
-                renderRecipes();
+                if(window.location.hash === '' || window.location.hash === '#trash') renderRecipes();
                 renderFilterTags();
                 updateTagDatalist();
                 if(loadingOverlay) loadingOverlay.classList.add('hidden');
@@ -1314,6 +1480,7 @@
                 console.error("Fehler beim Laden:", error);
             });
 
+            // 2. SETTINGS / ZUTATEN
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
             settingsUnsubscribe = onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -1321,6 +1488,27 @@
                     if (data.list && data.list.length > 0) customIngredients = data.list;
                 }
                 updateIngredientDatalist();
+            });
+
+            // 3. PRODUKTE (NEU)
+            const productsRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products');
+            productsUnsubscribe = onSnapshot(productsRef, (snapshot) => {
+                products = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    products.push({
+                        id: doc.id,
+                        name: data.name || '',
+                        brand: data.brand || '',
+                        barcode: data.barcode || '',
+                        ingredients: data.ingredients || '',
+                        isGlutenFree: data.isGlutenFree || false,
+                        imageBase64: data.imageBase64 || null,
+                        createdAt: data.createdAt || new Date().toISOString()
+                    });
+                });
+                if(window.location.hash === '#products') renderProducts();
+                updateIngredientDatalist(); // Produkte auch im Rezept-Autocomplete zeigen
             });
         }
 
@@ -1333,7 +1521,7 @@
         }
 
         // ==========================================
-        // ROUTING & ANSICHTEN
+        // ROUTING & ANSICHTEN (Erweitert für Produkte)
         // ==========================================
         function showView(viewName) {
             views.login?.classList.add('hidden');
@@ -1341,6 +1529,9 @@
             views.detail?.classList.add('hidden');
             views.form?.classList.add('hidden');
             views.zen?.classList.add('hidden');
+            views.productsList?.classList.add('hidden');
+            views.productForm?.classList.add('hidden');
+            views.productDetail?.classList.add('hidden');
             
             if(views[viewName]) {
                 views[viewName].classList.remove('hidden');
@@ -1389,6 +1580,10 @@
             });
         }
 
+        // Neuer Produkte-Nav-Button
+        const navProductsBtn = document.getElementById('navProductsBtn');
+        if(navProductsBtn) navProductsBtn.addEventListener('click', () => { window.location.hash = '#products'; });
+
         window.addEventListener('hashchange', () => {
             if(!currentUser) return; 
             
@@ -1414,6 +1609,19 @@
                 const importSection = document.getElementById('importSection');
                 if(importSection) importSection.classList.add('hidden');
                 showView('form');
+            } else if (window.location.hash === '#products') {
+                showView('productsList');
+                renderProducts();
+            } else if (window.location.hash === '#new-product') {
+                resetProductForm();
+                document.getElementById('productFormTitle').textContent = "Neues Produkt";
+                showView('productForm');
+            } else if (window.location.hash === '#edit-product') {
+                document.getElementById('productFormTitle').textContent = "Produkt bearbeiten";
+                showView('productForm');
+            } else if (window.location.hash.startsWith('#product-')) {
+                const id = window.location.hash.replace('#product-', '');
+                openProductDetail(id);
             } else if (window.location.hash.startsWith('#recipe-')) {
                 const id = window.location.hash.replace('#recipe-', '');
                 openRecipeDetail(id);
@@ -1436,6 +1644,380 @@
                 window.location.hash = showTrashView ? '#trash' : ''; 
             });
         });
+
+        document.querySelectorAll('.backToProductsBtn').forEach(btn => {
+            btn.addEventListener('click', () => { window.location.hash = '#products'; });
+        });
+
+        const newProdBtn = document.getElementById('newProductBtn');
+        if(newProdBtn) newProdBtn.addEventListener('click', () => { window.location.hash = '#new-product'; });
+
+        // ==========================================
+        // PRODUKTE LOGIK (NEU)
+        // ==========================================
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyProductsState');
+            if(!grid || !emptyState) return;
+            
+            grid.innerHTML = '';
+            let count = 0;
+
+            const sortedProducts = [...products].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            sortedProducts.forEach(prod => {
+                count++;
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-orange-200 overflow-hidden cursor-pointer flex flex-col transform hover:-translate-y-1";
+                card.addEventListener('click', () => { window.location.hash = `#product-${prod.id}`; });
+
+                const imgBox = document.createElement('div');
+                imgBox.className = "h-40 bg-gray-100 relative flex items-center justify-center border-b border-gray-200 overflow-hidden";
+                
+                if (prod.imageBase64) {
+                    const img = document.createElement('img');
+                    img.src = prod.imageBase64;
+                    img.className = "w-full h-full object-contain p-2";
+                    imgBox.appendChild(img);
+                } else {
+                    const icon = document.createElement('span');
+                    icon.className = "text-4xl opacity-30";
+                    icon.textContent = "🥫";
+                    imgBox.appendChild(icon);
+                }
+
+                if (prod.isGlutenFree) {
+                    const gfBadge = document.createElement('div');
+                    gfBadge.className = "absolute top-2 left-2 z-10";
+                    gfBadge.innerHTML = '<img src="GFEmilia.png" class="h-6 w-auto rounded shadow-sm border border-white/50" onerror="this.style.display=\'none\'">';
+                    imgBox.appendChild(gfBadge);
+                }
+
+                const infoBox = document.createElement('div');
+                infoBox.className = "p-4 flex-1 flex flex-col justify-between";
+                
+                infoBox.innerHTML = `
+                    <div>
+                        <h3 class="font-bold text-gray-900 leading-tight line-clamp-2">${prod.name}</h3>
+                        ${prod.brand ? `<p class="text-xs text-orange-700 font-bold mt-1 uppercase tracking-wider">${prod.brand}</p>` : ''}
+                    </div>
+                `;
+
+                card.appendChild(imgBox);
+                card.appendChild(infoBox);
+                grid.appendChild(card);
+            });
+
+            if (count === 0) emptyState.classList.remove('hidden');
+            else emptyState.classList.add('hidden');
+        }
+
+        function openProductDetail(id) {
+            const prod = products.find(p => p.id === id);
+            if(!prod) { window.location.hash = '#products'; return; }
+            
+            currentEditProductId = id;
+
+            const nameEl = document.getElementById('detailProdName');
+            if(nameEl) nameEl.textContent = prod.name;
+            
+            const brandEl = document.getElementById('detailProdBrand');
+            if(brandEl) {
+                if(prod.brand) {
+                    brandEl.textContent = prod.brand;
+                    brandEl.classList.remove('hidden');
+                } else {
+                    brandEl.classList.add('hidden');
+                }
+            }
+
+            const barcodeEl = document.getElementById('detailProdBarcode');
+            if(barcodeEl) {
+                if(prod.barcode) {
+                    barcodeEl.textContent = "EAN: " + prod.barcode;
+                    barcodeEl.classList.remove('hidden');
+                } else {
+                    barcodeEl.classList.add('hidden');
+                }
+            }
+
+            const imgEl = document.getElementById('detailProdImage');
+            if(imgEl) {
+                if(prod.imageBase64) imgEl.src = prod.imageBase64;
+                else imgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="1"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+            }
+
+            const gfBadge = document.getElementById('detailProdGfBadge');
+            if(gfBadge) {
+                if(prod.isGlutenFree) gfBadge.classList.remove('hidden');
+                else gfBadge.classList.add('hidden');
+            }
+
+            const ingEl = document.getElementById('detailProdIngredients');
+            if(ingEl) {
+                if(prod.ingredients && prod.ingredients.trim() !== '') {
+                    ingEl.textContent = prod.ingredients;
+                    ingEl.classList.remove('text-gray-400', 'italic');
+                } else {
+                    ingEl.textContent = "Keine Zutaten hinterlegt.";
+                    ingEl.classList.add('text-gray-400', 'italic');
+                }
+            }
+
+            showView('productDetail');
+        }
+
+        const editProdBtn = document.getElementById('editProductBtn');
+        if(editProdBtn) {
+            editProdBtn.addEventListener('click', () => {
+                const prod = products.find(p => p.id === currentEditProductId);
+                if(!prod) return;
+
+                resetProductForm();
+                
+                if(document.getElementById('prodName')) document.getElementById('prodName').value = prod.name || '';
+                if(document.getElementById('prodBrand')) document.getElementById('prodBrand').value = prod.brand || '';
+                if(document.getElementById('barcodeInput')) document.getElementById('barcodeInput').value = prod.barcode || '';
+                if(document.getElementById('prodIngredients')) document.getElementById('prodIngredients').value = prod.ingredients || '';
+                if(document.getElementById('prodGlutenFree')) document.getElementById('prodGlutenFree').checked = prod.isGlutenFree || false;
+                
+                if(prod.imageBase64) {
+                    currentProdImageBase64 = prod.imageBase64;
+                    updateProdImagePreviewUI();
+                }
+
+                window.location.hash = '#edit-product';
+            });
+        }
+
+        const delProdBtn = document.getElementById('deleteProductBtn');
+        if(delProdBtn) {
+            delProdBtn.addEventListener('click', async () => {
+                if (confirm('Produkt wirklich löschen?')) {
+                    if (currentEditProductId && currentUser) {
+                        try {
+                            const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products', currentEditProductId);
+                            await deleteDoc(ref);
+                            window.location.hash = '#products'; 
+                        } catch (e) { alert("Fehler beim Löschen"); }
+                    }
+                }
+            });
+        }
+
+        function resetProductForm() {
+            const form = document.getElementById('productForm');
+            if(form) form.reset();
+            currentEditProductId = null;
+            currentProdImageBase64 = null;
+            if(document.getElementById('barcodeInput')) document.getElementById('barcodeInput').value = '';
+            if(document.getElementById('barcodeStatus')) document.getElementById('barcodeStatus').classList.add('hidden');
+            if(document.getElementById('prodGlutenFree')) document.getElementById('prodGlutenFree').checked = false;
+            updateProdImagePreviewUI();
+        }
+
+        // Produkt Foto Upload
+        const prodImageInput = document.getElementById('prodImageInput');
+        const removeProdImageBtn = document.getElementById('removeProdImageBtn');
+
+        if (prodImageInput) {
+            prodImageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const maxSize = 800; 
+
+                        if (width > height && width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        } else if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        currentProdImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                        updateProdImagePreviewUI();
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        if (removeProdImageBtn) {
+            removeProdImageBtn.addEventListener('click', () => {
+                currentProdImageBase64 = null;
+                if(prodImageInput) prodImageInput.value = '';
+                updateProdImagePreviewUI();
+            });
+        }
+
+        function updateProdImagePreviewUI() {
+            const preview = document.getElementById('prodImagePreview');
+            const placeholder = document.getElementById('prodImagePlaceholder');
+            const removeBtn = document.getElementById('removeProdImageBtn');
+
+            if(!preview || !placeholder || !removeBtn) return;
+
+            if (currentProdImageBase64) {
+                preview.src = currentProdImageBase64;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                removeBtn.classList.remove('hidden');
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                removeBtn.classList.add('hidden');
+            }
+        }
+
+        // Produkt Speichern
+        const productForm = document.getElementById('productForm');
+        if(productForm) {
+            productForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentUser) return;
+
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Speichern...';
+                submitBtn.disabled = true;
+
+                const prodData = {
+                    name: document.getElementById('prodName').value.trim(),
+                    brand: document.getElementById('prodBrand').value.trim(),
+                    barcode: document.getElementById('barcodeInput').value.trim(),
+                    ingredients: document.getElementById('prodIngredients').value.trim(),
+                    isGlutenFree: document.getElementById('prodGlutenFree').checked,
+                    imageBase64: currentProdImageBase64
+                };
+
+                try {
+                    if(currentEditProductId) {
+                        const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products', currentEditProductId);
+                        await updateDoc(ref, prodData);
+                    } else {
+                        prodData.createdAt = new Date().toISOString();
+                        const prodRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products');
+                        await addDoc(prodRef, prodData);
+                    }
+                    window.location.hash = '#products'; 
+                } catch (error) {
+                    alert("Fehler beim Speichern!");
+                } finally {
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        // OPEN FOOD FACTS API (YUKA STYLE)
+        const fetchBarcodeBtn = document.getElementById('fetchBarcodeBtn');
+        if(fetchBarcodeBtn) {
+            fetchBarcodeBtn.addEventListener('click', async () => {
+                const barcode = document.getElementById('barcodeInput').value.trim();
+                const statusEl = document.getElementById('barcodeStatus');
+                
+                if(!barcode) {
+                    statusEl.textContent = "Bitte erst Barcode eingeben.";
+                    statusEl.className = "text-sm mt-3 font-medium text-red-600 block";
+                    return;
+                }
+
+                statusEl.textContent = 'Suche in der globalen Datenbank...';
+                statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
+
+                try {
+                    const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+                    const data = await res.json();
+                    
+                    if (data.status === 1 && data.product) {
+                        const p = data.product;
+                        
+                        const name = p.product_name_de || p.product_name || '';
+                        const brand = p.brands || '';
+                        const ingredients = p.ingredients_text_de || p.ingredients_text || '';
+                        
+                        if(name) document.getElementById('prodName').value = name;
+                        if(brand) document.getElementById('prodBrand').value = brand;
+                        if(ingredients) document.getElementById('prodIngredients').value = ingredients;
+                        
+                        if(p.allergens_tags) {
+                            if(p.allergens_tags.includes('en:gluten')) {
+                                document.getElementById('prodGlutenFree').checked = false;
+                            } else {
+                                // Nur ein Indiz, der User sollte trotzdem prüfen
+                            }
+                        }
+
+                        // Bild laden und umwandeln
+                        const imgUrl = p.image_front_url || p.image_url;
+                        if (imgUrl) {
+                            statusEl.textContent = 'Lade Produktbild...';
+                            
+                            // Proxy für Bild wegen CORS
+                            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`;
+                            
+                            const imgRes = await fetch(proxyUrl);
+                            const blob = await imgRes.blob();
+                            
+                            const reader = new FileReader();
+                            reader.onloadend = function() {
+                                currentProdImageBase64 = reader.result;
+                                updateProdImagePreviewUI();
+                                statusEl.textContent = 'Produkt gefunden und importiert! ✅';
+                                statusEl.className = 'text-sm mt-3 font-bold text-green-600 block';
+                            }
+                            reader.readAsDataURL(blob);
+                        } else {
+                            statusEl.textContent = 'Produkt gefunden (ohne Bild).';
+                            statusEl.className = 'text-sm mt-3 font-bold text-green-600 block';
+                        }
+                    } else {
+                        statusEl.textContent = 'Produkt nicht gefunden. Bitte manuell eingeben.';
+                        statusEl.className = 'text-sm mt-3 font-medium text-gray-600 block';
+                    }
+                } catch(e) {
+                    statusEl.textContent = 'Fehler bei der Suche.';
+                    statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
+                }
+            });
+        }
+
+
+        // ==========================================
+        // AUTOCOMPLETE FÜR REZEPTE UPDATE
+        // ==========================================
+        function updateIngredientDatalist() {
+            const datalist = document.getElementById('ingredientSuggestions');
+            if(!datalist) return;
+            datalist.innerHTML = '';
+            
+            // Kombiniere Standard-Zutaten + Eigene Zutaten + Eigene Produkte!
+            const prodNames = products.map(p => p.name).filter(n => n.length > 0);
+            const allIngs = new Set([...customIngredients, ...prodNames]);
+            
+            const sorted = Array.from(allIngs).sort((a, b) => a.localeCompare(b, 'de'));
+            sorted.forEach(ing => {
+                const option = document.createElement('option');
+                option.value = ing;
+                datalist.appendChild(option);
+            });
+        }
 
         function renderFilterTags() {
             const container = document.getElementById('filterTagsContainer');
@@ -1482,1250 +2064,6 @@
                 updateActiveFilterUI();
                 renderRecipes();
                 renderFilterTags();
-            });
-        }
-
-        function renderRecipes() {
-            const grid = document.getElementById('recipeGrid');
-            const emptyState = document.getElementById('emptyState');
-            if(!grid || !emptyState) return;
-            
-            if (currentViewMode === 'grid') {
-                grid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6";
-            } else {
-                grid.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4";
-            }
-
-            const sInput = document.getElementById('searchInput');
-            const searchTerm = sInput ? sInput.value.toLowerCase() : '';
-
-            grid.innerHTML = '';
-            let count = 0;
-
-            let filteredRecipes = recipes.filter(r => showTrashView ? r.isDeleted : !r.isDeleted);
-            
-            if (!showTrashView && showFavoritesOnly) {
-                filteredRecipes = filteredRecipes.filter(r => r.isFavorite);
-            }
-
-            filteredRecipes = filteredRecipes.filter(recipe => {
-                if (searchTerm) {
-                    const inTitle = recipe.title.toLowerCase().includes(searchTerm);
-                    const inTags = recipe.tags && recipe.tags.some(t => t.toLowerCase().includes(searchTerm));
-                    const inIngredients = recipe.ingredients && recipe.ingredients.some(i => i.name.toLowerCase().includes(searchTerm));
-                    if (!inTitle && !inTags && !inIngredients) return false;
-                }
-                if (!showTrashView && activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return false;
-                return true;
-            });
-
-            filteredRecipes.sort((a,b) => {
-                if(currentSortOption === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
-                if(currentSortOption === 'az') return a.title.localeCompare(b.title);
-                if(currentSortOption === 'time') {
-                    let ta = parseInt(a.times.total) || 9999;
-                    let tb = parseInt(b.times.total) || 9999;
-                    return ta - tb;
-                }
-                if(currentSortOption === 'kcal') {
-                    let ka = parseInt(a.nutrition.kcal) || 0;
-                    let kb = parseInt(b.nutrition.kcal) || 0;
-                    return kb - ka;
-                }
-                if(currentSortOption === 'protein') {
-                    let pa = parseInt(a.nutrition.protein) || 0;
-                    let pb = parseInt(b.nutrition.protein) || 0;
-                    return pb - pa;
-                }
-                return 0;
-            });
-
-            filteredRecipes.forEach(recipe => {
-                count++;
-                
-                const card = document.createElement('div');
-                card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
-
-                // Vorbereitung der Tags
-                let recipeTagsToRender = recipe.tags ? [...recipe.tags] : [];
-                if (recipe.nutrition) {
-                    let protein = parseInt(recipe.nutrition.protein) || 0;
-                    let carbs = parseInt(recipe.nutrition.carbs) || 999;
-                    if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
-                        recipeTagsToRender.unshift("High Protein 💪");
-                    }
-                    if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
-                        recipeTagsToRender.unshift("Low Carb 🥗");
-                    }
-                }
-
-                if (currentViewMode === 'grid') {
-                    // --- KACHEL ANSICHT ---
-                    card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
-
-                    const cardHeader = document.createElement('div');
-                    cardHeader.className = "h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden border-b border-gray-200 shrink-0";
-                    
-                    if (recipe.imageBase64) {
-                        const img = document.createElement('img');
-                        img.src = recipe.imageBase64;
-                        img.className = "w-full h-full object-cover";
-                        cardHeader.appendChild(img);
-                    } else {
-                        cardHeader.className += " bg-gradient-to-br from-gray-100 to-gray-200";
-                        const icon = document.createElement('div');
-                        icon.className = "w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800";
-                        icon.textContent = recipe.title.charAt(0).toUpperCase();
-                        cardHeader.appendChild(icon);
-                    }
-
-                    // ZÖLIAKIE / GF BADGE
-                    if (recipe.isGlutenFree) {
-                        const gfBadge = document.createElement('div');
-                        gfBadge.className = "absolute top-2 left-2 z-10";
-                        gfBadge.innerHTML = '<img src="GFEmilia.png" alt="Glutenfrei" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display=\'none\'">';
-                        cardHeader.appendChild(gfBadge);
-                    }
-
-                    let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
-                    if(recipe.isFavorite && !showTrashView) {
-                        badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
-                    }
-                    if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
-                    if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
-                    if(recipe.times && recipe.times.total) badgesHtml += `<div class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-700/50">${recipe.times.total} Min</div>`;
-                    badgesHtml += '</div>';
-                    cardHeader.innerHTML += badgesHtml;
-
-                    const cardBody = document.createElement('div');
-                    cardBody.className = "p-5 flex-1 flex flex-col justify-between";
-
-                    const title = document.createElement('h3');
-                    title.className = "text-xl font-bold text-gray-900 mb-3 line-clamp-2";
-                    title.textContent = recipe.title;
-
-                    const tagsContainer = document.createElement('div');
-                    tagsContainer.className = "flex flex-wrap gap-1.5 mt-auto"; 
-                    
-                    recipeTagsToRender.slice(0, 3).forEach(tag => {
-                        const t = document.createElement('span');
-                        let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
-                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white border-transparent' : 'bg-green-700 text-white border-transparent') : getColorForTag(tag);
-                        
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${colorClass}`;
-                        t.textContent = tag;
-                        t.addEventListener('click', (e) => {
-                            e.stopPropagation(); 
-                            if(!isSpecial) {
-                                activeFilter = tag;
-                                updateActiveFilterUI();
-                                renderRecipes();
-                                renderFilterTags();
-                            }
-                        });
-                        tagsContainer.appendChild(t);
-                    });
-
-                    cardBody.innerHTML = `
-                        <div>
-                            ${title.outerHTML}
-                            ${tagsContainer.outerHTML}
-                        </div>
-                    `;
-                    
-                    card.appendChild(cardHeader);
-                    card.appendChild(cardBody);
-                    
-                } else {
-                    // --- LISTEN ANSICHT ---
-                    card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-auto min-h-[90px] ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
-                    
-                    const imgContainer = document.createElement('div');
-                    imgContainer.className = "h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 bg-gray-200 rounded-lg relative overflow-hidden border border-gray-200 mr-4";
-                    
-                    if (recipe.imageBase64) {
-                        const img = document.createElement('img');
-                        img.src = recipe.imageBase64;
-                        img.className = "w-full h-full object-cover";
-                        imgContainer.appendChild(img);
-                    } else {
-                        imgContainer.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800";
-                        imgContainer.textContent = recipe.title.charAt(0).toUpperCase();
-                    }
-
-                    const infoContainer = document.createElement('div');
-                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-center py-0.5";
-
-                    const headerRow = document.createElement('div');
-                    headerRow.className = "flex justify-between items-start gap-2 mb-1";
-                    
-                    const titleWrapper = document.createElement('div');
-                    titleWrapper.className = "flex items-center gap-2 overflow-hidden flex-1";
-
-                    const title = document.createElement('h3');
-                    title.className = "text-sm sm:text-base font-bold text-gray-900 leading-tight truncate";
-                    title.textContent = recipe.title;
-                    titleWrapper.appendChild(title);
-
-                    // GF Banner Inline im Titel
-                    if (recipe.isGlutenFree) {
-                        const gfImg = document.createElement('img');
-                        gfImg.src = "GFEmilia.png";
-                        gfImg.className = "h-4 sm:h-5 w-auto flex-shrink-0 rounded shadow-sm border border-black/10";
-                        gfImg.onerror = () => gfImg.style.display = 'none';
-                        titleWrapper.appendChild(gfImg);
-                    }
-
-                    let metaHtml = '';
-                    if (recipe.isFavorite && !showTrashView) {
-                        metaHtml += `<svg class="w-4 h-4 text-red-500 fill-current inline-block mr-1" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>`;
-                    }
-                    if(recipe.times && recipe.times.total) {
-                        metaHtml += `<span class="text-[10px] font-bold text-gray-500 inline-flex items-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total}m</span>`;
-                    }
-                    
-                    headerRow.innerHTML = `
-                        <div class="flex-1 min-w-0">${titleWrapper.outerHTML}</div>
-                        <div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>
-                    `;
-
-                    let nutritionLine = '';
-                    if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.sugar || recipe.nutrition.fat)) {
-                        nutritionLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">`;
-                        if (recipe.nutrition.kcal) nutritionLine += `<span class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.kcal} kcal</span>`;
-                        if (recipe.nutrition.carbs) nutritionLine += `<span class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.carbs}g KH</span>`;
-                        if (recipe.nutrition.sugar) nutritionLine += `<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g Zucker</span>`;
-                        if (recipe.nutrition.protein) nutritionLine += `<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.protein}g Prot</span>`;
-                        if (recipe.nutrition.fat) nutritionLine += `<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fat}g Fett</span>`;
-                        nutritionLine += `</div>`;
-                    }
-
-                    infoContainer.appendChild(headerRow);
-                    if(nutritionLine) infoContainer.insertAdjacentHTML('beforeend', nutritionLine);
-
-                    card.appendChild(imgContainer);
-                    card.appendChild(infoContainer);
-                }
-
-                grid.appendChild(card);
-            });
-
-            if (count === 0) {
-                if(emptyState) emptyState.classList.remove('hidden');
-            } else {
-                if(emptyState) emptyState.classList.add('hidden');
-            }
-        }
-
-        const sInput = document.getElementById('searchInput');
-        if (sInput) {
-            sInput.addEventListener('input', renderRecipes);
-        }
-
-        function scaleAndFormatIngredient(amountStr, unitStr, ratio) {
-            let str = (amountStr || '').toString().trim().replace(',', '.');
-            if (str.match(/^\d+\/\d+$/)) {
-                let parts = str.split('/');
-                str = (parseFloat(parts[0]) / parseFloat(parts[1])).toString();
-            }
-            
-            let val = parseFloat(str);
-            if (isNaN(val)) return { amt: amountStr, unt: unitStr }; 
-            
-            let scaled = val * ratio;
-            let u = (unitStr || '').trim();
-            let lowerU = u.toLowerCase();
-            
-            if (lowerU === 'g' && scaled >= 1000) {
-                return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'kg' };
-            }
-            if (lowerU === 'ml' && scaled >= 1000) {
-                return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'l' };
-            }
-            
-            return { amt: (Math.round(scaled * 10) / 10).toString().replace('.', ','), unt: unitStr };
-        }
-
-        function renderDetailIngredientsList(recipe, portionsToDisplay) {
-            const ingList = document.getElementById('detailIngredients');
-            if(!ingList) return;
-            ingList.innerHTML = '';
-            
-            const basePortions = recipe.portions > 0 ? recipe.portions : 1; 
-            const ratio = portionsToDisplay / basePortions;
-
-            if (recipe.ingredients) {
-                recipe.ingredients.forEach(ing => {
-                    const li = document.createElement('li');
-                    
-                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group page-break-inside-avoid print:px-0 print:mx-0 print:py-1";
-                    
-                    const formatted = scaleAndFormatIngredient(ing.amount, ing.unit, ratio);
-                    const fullAmount = `${formatted.amt} ${formatted.unt}`.trim();
-
-                    let amountHtml = '';
-                    if (fullAmount) {
-                        amountHtml = `
-                        <div class="flex-shrink-0">
-                            <span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block group-[.is-checked]:bg-gray-100 group-[.is-checked]:text-gray-400 group-[.is-checked]:shadow-none transition-all print:shadow-none print:border-gray-400">${fullAmount}</span>
-                        </div>`;
-                    }
-
-                    const checkmarkHtml = `
-                    <svg class="ing-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mr-1 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="9" stroke-width="2" class="opacity-100"></circle>
-                    </svg>`;
-
-                    li.innerHTML = `
-                        <div class="flex items-center gap-2 flex-1 min-w-0">
-                            ${checkmarkHtml}
-                            <span class="font-bold text-gray-900 break-words leading-snug ing-text transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400">${ing.name}</span>
-                        </div>
-                        ${amountHtml}
-                    `;
-
-                    li.addEventListener('click', function() {
-                        this.classList.toggle('is-checked');
-                        const svg = this.querySelector('.ing-checkbox');
-                        if (this.classList.contains('is-checked')) {
-                            svg.classList.replace('text-gray-300', 'text-green-500');
-                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
-                        } else {
-                            svg.classList.replace('text-green-500', 'text-gray-300');
-                            svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
-                        }
-                    });
-
-                    ingList.appendChild(li);
-                });
-            }
-        }
-
-        const bMinus = document.getElementById('btnPortionMinus');
-        if (bMinus) {
-            bMinus.addEventListener('click', () => {
-                if (currentDisplayPortions > 1 && currentDetailRecipe) {
-                    currentDisplayPortions--;
-                    const detPortionsCount = document.getElementById('detailPortionsCount');
-                    if(detPortionsCount) detPortionsCount.textContent = currentDisplayPortions;
-                    const prntPortionsCount = document.getElementById('printPortionsCount');
-                    if(prntPortionsCount) prntPortionsCount.textContent = currentDisplayPortions;
-                    renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
-                }
-            });
-        }
-
-        const bPlus = document.getElementById('btnPortionPlus');
-        if (bPlus) {
-            bPlus.addEventListener('click', () => {
-                if (currentDetailRecipe) {
-                    currentDisplayPortions++;
-                    const detPortionsCount = document.getElementById('detailPortionsCount');
-                    if(detPortionsCount) detPortionsCount.textContent = currentDisplayPortions;
-                    const prntPortionsCount = document.getElementById('printPortionsCount');
-                    if(prntPortionsCount) prntPortionsCount.textContent = currentDisplayPortions;
-                    renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
-                }
-            });
-        }
-
-        function openRecipeDetail(id) {
-            const recipe = recipes.find(r => r.id === id);
-            if (!recipe) { window.location.hash = ''; return; }
-
-            currentDetailRecipe = recipe;
-            currentDisplayPortions = recipe.portions > 0 ? recipe.portions : 4;
-
-            currentDetailRecipeId = id;
-            const detTitle = document.getElementById('detailTitle');
-            if(detTitle) detTitle.textContent = recipe.title;
-            
-            if(recipe.isDeleted) {
-                document.getElementById('editRecipeBtn')?.classList.add('hidden');
-                document.getElementById('deleteRecipeBtn')?.classList.add('hidden');
-                document.getElementById('printRecipeBtn')?.classList.add('hidden');
-                document.getElementById('shareRecipeBtn')?.classList.add('hidden');
-                document.getElementById('favRecipeBtn')?.classList.add('hidden');
-                document.getElementById('startZenModeBtn')?.classList.add('hidden');
-                
-                document.getElementById('restoreRecipeBtn')?.classList.remove('hidden');
-                document.getElementById('hardDeleteRecipeBtn')?.classList.remove('hidden');
-            } else {
-                document.getElementById('editRecipeBtn')?.classList.remove('hidden');
-                document.getElementById('deleteRecipeBtn')?.classList.remove('hidden');
-                document.getElementById('printRecipeBtn')?.classList.remove('hidden');
-                document.getElementById('shareRecipeBtn')?.classList.remove('hidden');
-                document.getElementById('favRecipeBtn')?.classList.remove('hidden');
-                document.getElementById('startZenModeBtn')?.classList.remove('hidden');
-                
-                document.getElementById('restoreRecipeBtn')?.classList.add('hidden');
-                document.getElementById('hardDeleteRecipeBtn')?.classList.add('hidden');
-                
-                const favBtn = document.getElementById('favRecipeBtn');
-                if(favBtn) {
-                    if(recipe.isFavorite) {
-                        favBtn.classList.add('fav-active');
-                        const svg = favBtn.querySelector('svg');
-                        if(svg) svg.innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
-                    } else {
-                        favBtn.classList.remove('fav-active');
-                        const svg = favBtn.querySelector('svg');
-                        if(svg) svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
-                    }
-                }
-            }
-            
-            const imgContainer = document.getElementById('detailImageContainer');
-            const imgEl = document.getElementById('detailImage');
-            if(recipe.imageBase64) {
-                if(imgEl) imgEl.src = recipe.imageBase64;
-                imgContainer?.classList.remove('hidden');
-            } else {
-                imgContainer?.classList.add('hidden');
-                if(imgEl) imgEl.src = '';
-            }
-
-            // GF Banner in der Detailansicht umschalten
-            const gfBanner = document.getElementById('detailGfBanner');
-            if (gfBanner) {
-                if (recipe.isGlutenFree) gfBanner.classList.remove('hidden');
-                else gfBanner.classList.add('hidden');
-            }
-
-            const tagsContainer = document.getElementById('detailTags');
-            if(tagsContainer) {
-                tagsContainer.innerHTML = '';
-                if(recipe.difficulty) {
-                    const diffSpan = document.createElement('span');
-                    diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300 print:border-gray-400`;
-                    diffSpan.textContent = recipe.difficulty;
-                    tagsContainer.appendChild(diffSpan);
-                }
-                if(recipe.rating > 0) {
-                    const starSpan = document.createElement('span');
-                    starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300 print:border-gray-400`;
-                    starSpan.innerHTML = getStarsHtml(recipe.rating);
-                    tagsContainer.appendChild(starSpan);
-                }
-
-                if (recipe.tags) {
-                    recipe.tags.forEach(tag => {
-                        const span = document.createElement('span');
-                        span.className = `px-3 py-1 rounded-lg text-sm font-bold ${getColorForTag(tag)}`;
-                        span.textContent = tag;
-                        tagsContainer.appendChild(span);
-                    });
-                }
-            }
-
-            const timesContainer = document.getElementById('detailTimesContainer');
-            const boxTotal = document.getElementById('timeTotalBox');
-            const boxPrep = document.getElementById('timePrepBox');
-            const boxCook = document.getElementById('timeCookBox');
-            const boxRest = document.getElementById('timeRestBox');
-            
-            let hasTimes = false;
-            if (recipe.times) {
-                if (recipe.times.total) {
-                    boxTotal?.classList.remove('hidden');
-                    const detailTimeTotal = document.getElementById('detailTimeTotal');
-                    if(detailTimeTotal) detailTimeTotal.textContent = recipe.times.total;
-                    hasTimes = true;
-                } else { boxTotal?.classList.add('hidden'); }
-
-                if (recipe.times.prep) {
-                    boxPrep?.classList.remove('hidden');
-                    const detailTimePrep = document.getElementById('detailTimePrep');
-                    if(detailTimePrep) detailTimePrep.textContent = recipe.times.prep;
-                    hasTimes = true;
-                } else { boxPrep?.classList.add('hidden'); }
-                
-                if (recipe.times.cook) {
-                    boxCook?.classList.remove('hidden');
-                    const detailTimeCook = document.getElementById('detailTimeCook');
-                    if(detailTimeCook) detailTimeCook.textContent = recipe.times.cook;
-                    hasTimes = true;
-                } else { boxCook?.classList.add('hidden'); }
-                
-                if (recipe.times.rest) {
-                    boxRest?.classList.remove('hidden');
-                    const detailTimeRest = document.getElementById('detailTimeRest');
-                    if(detailTimeRest) detailTimeRest.textContent = recipe.times.rest;
-                    hasTimes = true;
-                } else { boxRest?.classList.add('hidden'); }
-            }
-            
-            if (hasTimes) timesContainer?.classList.remove('hidden');
-            else timesContainer?.classList.add('hidden');
-
-            const nutContainer = document.getElementById('detailNutritionContainer');
-            if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.fat || recipe.nutrition.sugar)) {
-                nutContainer?.classList.remove('hidden');
-                const detKcal = document.getElementById('detailKcal');
-                if(detKcal) detKcal.textContent = recipe.nutrition.kcal || '-';
-                const detProt = document.getElementById('detailProtein');
-                if(detProt) detProt.textContent = recipe.nutrition.protein || '-';
-                const detCarbs = document.getElementById('detailCarbs');
-                if(detCarbs) detCarbs.textContent = recipe.nutrition.carbs || '-';
-                const detSug = document.getElementById('detailSugar');
-                if(detSug) detSug.textContent = recipe.nutrition.sugar || '-';
-                const detFat = document.getElementById('detailFat');
-                if(detFat) detFat.textContent = recipe.nutrition.fat || '-';
-            } else {
-                nutContainer?.classList.add('hidden');
-            }
-
-            const detPortions = document.getElementById('detailPortionsCount');
-            if(detPortions) detPortions.textContent = currentDisplayPortions;
-            const printPortions = document.getElementById('printPortionsCount');
-            if(printPortions) printPortions.textContent = currentDisplayPortions;
-            renderDetailIngredientsList(recipe, currentDisplayPortions);
-
-            const instrContainer = document.getElementById('detailInstructions');
-            if(instrContainer) {
-                instrContainer.innerHTML = '';
-                
-                if (recipe.instructions) {
-                    const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
-                    steps.forEach(step => {
-                        const stepEl = document.createElement('div');
-                        stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0 print:p-1";
-                        
-                        const checkmarkHtml = `
-                        <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
-                        </svg>`;
-
-                        const textWithTimers = parseTextForTimers(step.trim());
-
-                        stepEl.innerHTML = `
-                            ${checkmarkHtml}
-                            <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${textWithTimers}</p>
-                        `;
-
-                        stepEl.querySelectorAll('.timer-trigger').forEach(trigger => {
-                            trigger.addEventListener('click', (e) => {
-                                e.stopPropagation(); 
-                                const mins = parseInt(trigger.getAttribute('data-time'));
-                                if(!isNaN(mins)) startTimer(mins);
-                            });
-                        });
-
-                        stepEl.addEventListener('click', function(e) {
-                            if(e.target.classList.contains('timer-trigger') || e.target.closest('.timer-trigger')) return; 
-                            
-                            this.classList.toggle('is-checked');
-                            const svg = this.querySelector('.step-checkbox');
-                            if (this.classList.contains('is-checked')) {
-                                svg.classList.replace('text-gray-300', 'text-green-500');
-                                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
-                            } else {
-                                svg.classList.replace('text-green-500', 'text-gray-300');
-                                svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
-                            }
-                        });
-
-                        instrContainer.appendChild(stepEl);
-                    });
-                }
-            }
-
-            const notesContainer = document.getElementById('detailNotesContainer');
-            if(recipe.notes && recipe.notes.trim() !== '') {
-                notesContainer?.classList.remove('hidden');
-                const detNotesTxt = document.getElementById('detailNotesText');
-                if(detNotesTxt) detNotesTxt.textContent = recipe.notes.trim();
-            } else {
-                notesContainer?.classList.add('hidden');
-            }
-
-            const sourceContainer = document.getElementById('detailSourceContainer');
-            const sourceLink = document.getElementById('detailSourceLink');
-            if (recipe.sourceUrl) {
-                sourceContainer?.classList.remove('hidden');
-                if(sourceLink) sourceLink.href = recipe.sourceUrl;
-            } else {
-                sourceContainer?.classList.add('hidden');
-            }
-
-            showView('detail');
-        }
-
-        const delRecBtn = document.getElementById('deleteRecipeBtn');
-        if (delRecBtn) {
-            delRecBtn.addEventListener('click', async () => {
-                if (confirm('Rezept in den Papierkorb verschieben?')) {
-                    if (currentDetailRecipeId && currentUser) {
-                        try {
-                            const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
-                            await updateDoc(ref, { isDeleted: true });
-                            window.location.hash = ''; 
-                        } catch (e) { alert("Fehler beim Löschen"); }
-                    }
-                }
-            });
-        }
-
-        const restRecBtn = document.getElementById('restoreRecipeBtn');
-        if (restRecBtn) {
-            restRecBtn.addEventListener('click', async () => {
-                if (currentDetailRecipeId && currentUser) {
-                    try {
-                        const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
-                        await updateDoc(ref, { isDeleted: false });
-                        window.location.hash = '#trash'; 
-                    } catch (e) { alert("Fehler beim Wiederherstellen"); }
-                }
-            });
-        }
-
-        const hdDelRecBtn = document.getElementById('hardDeleteRecipeBtn');
-        if (hdDelRecBtn) {
-            hdDelRecBtn.addEventListener('click', async () => {
-                if (confirm('Dieses Rezept ENDGÜLTIG und unwiderruflich löschen?')) {
-                    if (currentDetailRecipeId && currentUser) {
-                        try {
-                            const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
-                            await deleteDoc(ref);
-                            window.location.hash = '#trash'; 
-                        } catch (e) { alert("Fehler beim Löschen"); }
-                    }
-                }
-            });
-        }
-
-        function resetForm() {
-            const form = document.getElementById('recipeForm');
-            if(form) form.reset();
-            currentRecipeTags = [];
-            currentEditRecipeId = null;
-            currentImageBase64 = null;
-            renderFormTags();
-            updateImagePreviewUI();
-            
-            const list = document.getElementById('ingredientsList');
-            if(list) {
-                const rows = list.querySelectorAll('.ingredient-row');
-                for(let i=1; i<rows.length; i++) rows[i].remove();
-                
-                const firstRow = list.querySelector('.ingredient-row');
-                if(firstRow) {
-                    firstRow.querySelector('.ingredient-name').value = '';
-                    firstRow.querySelector('.ingredient-amount').value = '';
-                    firstRow.querySelector('.ingredient-unit').value = 'g';
-                }
-            }
-
-            if(document.getElementById('formPortions')) document.getElementById('formPortions').value = '4';
-            if(document.getElementById('formPrepTime')) document.getElementById('formPrepTime').value = '';
-            if(document.getElementById('formCookTime')) document.getElementById('formCookTime').value = '';
-            if(document.getElementById('formRestTime')) document.getElementById('formRestTime').value = ''; 
-            if(document.getElementById('formTotalTime')) document.getElementById('formTotalTime').value = '';
-            if(document.getElementById('formKcal')) document.getElementById('formKcal').value = '';
-            if(document.getElementById('formProtein')) document.getElementById('formProtein').value = '';
-            if(document.getElementById('formCarbs')) document.getElementById('formCarbs').value = '';
-            if(document.getElementById('formSugar')) document.getElementById('formSugar').value = '';
-            if(document.getElementById('formFat')) document.getElementById('formFat').value = '';
-            if(document.getElementById('formSourceUrl')) document.getElementById('formSourceUrl').value = '';
-            if(document.getElementById('formNotes')) document.getElementById('formNotes').value = ''; 
-            if(document.getElementById('formRating')) document.getElementById('formRating').value = '0'; 
-            if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = ''; 
-            if(document.getElementById('formGlutenFree')) document.getElementById('formGlutenFree').checked = false;
-        }
-
-        const editRecBtn = document.getElementById('editRecipeBtn');
-        if (editRecBtn) {
-            editRecBtn.addEventListener('click', () => {
-                const recipe = recipes.find(r => r.id === currentDetailRecipeId);
-                if(!recipe) return;
-
-                resetForm();
-                currentEditRecipeId = recipe.id;
-                
-                const fTitle = document.getElementById('formTitle');
-                if(fTitle) fTitle.value = recipe.title;
-                const fInst = document.getElementById('formInstructions');
-                if(fInst) fInst.value = recipe.instructions;
-                
-                if(document.getElementById('formPortions')) document.getElementById('formPortions').value = recipe.portions || '4';
-                if(document.getElementById('formSourceUrl')) document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
-                if(document.getElementById('formNotes')) document.getElementById('formNotes').value = recipe.notes || '';
-                if(document.getElementById('formRating')) document.getElementById('formRating').value = recipe.rating || '0';
-                if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = recipe.difficulty || '';
-                if(document.getElementById('formGlutenFree')) document.getElementById('formGlutenFree').checked = recipe.isGlutenFree || false;
-
-                if(recipe.times) {
-                    if(document.getElementById('formPrepTime')) document.getElementById('formPrepTime').value = recipe.times.prep || '';
-                    if(document.getElementById('formCookTime')) document.getElementById('formCookTime').value = recipe.times.cook || '';
-                    if(document.getElementById('formRestTime')) document.getElementById('formRestTime').value = recipe.times.rest || ''; 
-                    if(document.getElementById('formTotalTime')) document.getElementById('formTotalTime').value = recipe.times.total || '';
-                }
-                
-                if (recipe.nutrition) {
-                    if(document.getElementById('formKcal')) document.getElementById('formKcal').value = recipe.nutrition.kcal || '';
-                    if(document.getElementById('formProtein')) document.getElementById('formProtein').value = recipe.nutrition.protein || '';
-                    if(document.getElementById('formCarbs')) document.getElementById('formCarbs').value = recipe.nutrition.carbs || '';
-                    if(document.getElementById('formSugar')) document.getElementById('formSugar').value = recipe.nutrition.sugar || '';
-                    if(document.getElementById('formFat')) document.getElementById('formFat').value = recipe.nutrition.fat || '';
-                }
-
-                if(recipe.imageBase64) {
-                    currentImageBase64 = recipe.imageBase64;
-                    updateImagePreviewUI();
-                }
-
-                if(recipe.tags) {
-                    currentRecipeTags = [...recipe.tags];
-                    renderFormTags();
-                }
-
-                const list = document.getElementById('ingredientsList');
-                if(list) {
-                    const firstRow = list.querySelector('.ingredient-row');
-                    
-                    if (recipe.ingredients && recipe.ingredients.length > 0) {
-                        recipe.ingredients.forEach((ing, index) => {
-                            let targetRow;
-                            if(index === 0) {
-                                targetRow = firstRow;
-                            } else {
-                                targetRow = firstRow.cloneNode(true);
-                                attachRemoveEventToRow(targetRow);
-                                list.appendChild(targetRow);
-                            }
-                            targetRow.querySelector('.ingredient-name').value = ing.name || '';
-                            targetRow.querySelector('.ingredient-amount').value = ing.amount || '';
-                            targetRow.querySelector('.ingredient-unit').value = ing.unit || '';
-                        });
-                    }
-                }
-
-                window.location.hash = '#edit';
-            });
-        }
-
-        const imageInput = document.getElementById('imageInput');
-        const removeImageBtn = document.getElementById('removeImageBtn');
-
-        if (imageInput) {
-            imageInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        const maxSize = 800; 
-
-                        if (width > height && width > maxSize) {
-                            height *= maxSize / width;
-                            width = maxSize;
-                        } else if (height > maxSize) {
-                            width *= maxSize / height;
-                            height = maxSize;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        currentImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                        updateImagePreviewUI();
-                    }
-                    img.src = event.target.result;
-                }
-                reader.readAsDataURL(file);
-            });
-        }
-
-        if (removeImageBtn) {
-            removeImageBtn.addEventListener('click', () => {
-                currentImageBase64 = null;
-                if(imageInput) imageInput.value = '';
-                updateImagePreviewUI();
-            });
-        }
-
-        function updateImagePreviewUI() {
-            const preview = document.getElementById('formImagePreview');
-            const placeholder = document.getElementById('imagePreviewPlaceholder');
-            const removeBtn = document.getElementById('removeImageBtn');
-
-            if(!preview || !placeholder || !removeBtn) return;
-
-            if (currentImageBase64) {
-                preview.src = currentImageBase64;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                removeBtn.classList.remove('hidden');
-            } else {
-                preview.src = '';
-                preview.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                removeBtn.classList.add('hidden');
-            }
-        }
-
-        function updateIngredientDatalist() {
-            const datalist = document.getElementById('ingredientSuggestions');
-            if(!datalist) return;
-            datalist.innerHTML = '';
-            const sorted = [...customIngredients].sort((a, b) => a.localeCompare(b, 'de'));
-            sorted.forEach(ing => {
-                const option = document.createElement('option');
-                option.value = ing;
-                datalist.appendChild(option);
-            });
-        }
-
-        function updateTagDatalist() {
-            const datalist = document.getElementById('tagSuggestions');
-            if(!datalist) return;
-            datalist.innerHTML = '';
-            const allTags = new Set();
-            recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
-            Array.from(allTags).sort().forEach(tag => {
-                const option = document.createElement('option');
-                option.value = tag;
-                datalist.appendChild(option);
-            });
-        }
-
-        const tagInput = document.getElementById('formTagInput');
-        const tagContainer = document.getElementById('tagInputContainer');
-        if (tagContainer && tagInput) {
-            tagContainer.addEventListener('click', () => tagInput.focus());
-        }
-
-        function renderFormTags() {
-            const container = document.getElementById('activeTagsContainer');
-            if(!container) return;
-            container.innerHTML = '';
-            currentRecipeTags.forEach(tag => {
-                const el = document.createElement('div');
-                el.className = `flex items-center gap-1 px-2.5 py-1 rounded-md text-sm font-bold ${getColorForTag(tag)}`;
-                el.innerHTML = `
-                    ${tag}
-                    <button type="button" class="text-current opacity-60 hover:opacity-100 ml-1 focus:outline-none" onclick="removeFormTag('${tag}')">&times;</button>
-                `;
-                container.appendChild(el);
-            });
-        }
-        window.removeFormTag = function(t) { currentRecipeTags = currentRecipeTags.filter(x => x !== t); renderFormTags(); }
-
-        if (tagInput) {
-            tagInput.addEventListener('input', (e) => {
-                let val = tagInput.value.trim().replace(',', '');
-                const allTags = new Set();
-                recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
-                
-                if (Array.from(allTags).includes(val)) {
-                    if (!currentRecipeTags.includes(val)) {
-                        currentRecipeTags.push(val);
-                        tagInput.value = '';
-                        renderFormTags();
-                    }
-                }
-            });
-
-            tagInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ',') {
-                    e.preventDefault();
-                    let val = tagInput.value.trim().replace(',', '');
-                    if (val && !currentRecipeTags.includes(val)) {
-                        val = val.charAt(0).toUpperCase() + val.slice(1);
-                        currentRecipeTags.push(val);
-                        tagInput.value = '';
-                        renderFormTags();
-                    }
-                } else if (e.key === 'Backspace' && tagInput.value === '' && currentRecipeTags.length > 0) {
-                    currentRecipeTags.pop();
-                    renderFormTags();
-                }
-            });
-        }
-
-        function attachRemoveEventToRow(row) {
-            const btn = row.querySelector('.remove-ingredient');
-            if(btn) {
-                btn.addEventListener('click', function(e) {
-                    const list = document.getElementById('ingredientsList');
-                    if(list.querySelectorAll('.ingredient-row').length > 1) {
-                        row.remove();
-                    } else {
-                        row.querySelector('.ingredient-name').value = '';
-                        row.querySelector('.ingredient-amount').value = '';
-                    }
-                });
-            }
-        }
-
-        const addIngBtn = document.getElementById('addIngredientBtn');
-        if (addIngBtn) {
-            addIngBtn.addEventListener('click', () => {
-                const list = document.getElementById('ingredientsList');
-                const firstRow = list.querySelector('.ingredient-row');
-                const newRow = firstRow.cloneNode(true);
-                newRow.querySelector('.ingredient-name').value = '';
-                newRow.querySelector('.ingredient-amount').value = '';
-                newRow.querySelector('.ingredient-unit').value = 'g';
-                attachRemoveEventToRow(newRow);
-                list.appendChild(newRow);
-                newRow.querySelector('.ingredient-name').focus();
-            });
-        }
-        
-        const firstIngRow = document.querySelector('.ingredient-row');
-        if(firstIngRow) attachRemoveEventToRow(firstIngRow);
-
-        const recipeFormEl = document.getElementById('recipeForm');
-        if (recipeFormEl) {
-            recipeFormEl.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (!currentUser) return;
-
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                submitBtn.innerHTML = '<div class="loader inline-block border-2 w-4 h-4 mr-1" style="border-top-color: #4b5563; width: 16px; height: 16px; border-width: 2px;"></div> Bitte warten...';
-                submitBtn.disabled = true;
-
-                const ingredients = [];
-                let foundNewIngredients = false;
-                let updatedIngredientsList = [...customIngredients];
-
-                document.querySelectorAll('.ingredient-row').forEach(row => {
-                    const name = row.querySelector('.ingredient-name').value.trim();
-                    const amount = row.querySelector('.ingredient-amount').value.trim();
-                    const unit = row.querySelector('.ingredient-unit').value;
-                    if (name) {
-                        const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
-                        ingredients.push({ name: formattedName, amount, unit });
-                        if (!updatedIngredientsList.includes(formattedName)) {
-                            updatedIngredientsList.push(formattedName);
-                            foundNewIngredients = true;
-                        }
-                    }
-                });
-
-                const recipeData = {
-                    title: document.getElementById('formTitle').value,
-                    tags: currentRecipeTags,
-                    portions: parseInt(document.getElementById('formPortions').value) || 4,
-                    times: {
-                        prep: document.getElementById('formPrepTime').value,
-                        cook: document.getElementById('formCookTime').value,
-                        rest: document.getElementById('formRestTime').value, 
-                        total: document.getElementById('formTotalTime').value
-                    },
-                    ingredients: ingredients,
-                    instructions: document.getElementById('formInstructions').value,
-                    notes: document.getElementById('formNotes').value,
-                    rating: document.getElementById('formRating').value,
-                    difficulty: document.getElementById('formDifficulty').value,
-                    sourceUrl: document.getElementById('formSourceUrl').value,
-                    isGlutenFree: document.getElementById('formGlutenFree').checked,
-                    nutrition: {
-                        kcal: document.getElementById('formKcal').value,
-                        protein: document.getElementById('formProtein').value,
-                        carbs: document.getElementById('formCarbs').value,
-                        sugar: document.getElementById('formSugar').value,
-                        fat: document.getElementById('formFat').value
-                    },
-                    imageBase64: currentImageBase64
-                };
-
-                try {
-                    if(currentEditRecipeId) {
-                        const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentEditRecipeId);
-                        await updateDoc(ref, recipeData);
-                    } else {
-                        recipeData.createdAt = new Date().toISOString();
-                        recipeData.isFavorite = false;
-                        recipeData.isDeleted = false;
-                        const recipesRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes');
-                        await addDoc(recipesRef, recipeData);
-                    }
-
-                    if (foundNewIngredients) await saveNewIngredientsToFirebase(updatedIngredientsList);
-                    
-                    window.location.hash = showTrashView ? '#trash' : ''; 
-                } catch (error) {
-                    console.error("Speicherfehler:", error);
-                    alert("Fehler beim Speichern!");
-                } finally {
-                    submitBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Rezept speichern';
-                    submitBtn.disabled = false;
-                }
-            });
-        }
-
-        // ==========================================
-        // URL IMPORT (Klassisch via JSON-LD)
-        // ==========================================
-        function parseIsoDuration(duration) {
-            if(!duration || typeof duration !== 'string') return '';
-            let total = 0;
-            const hMatch = duration.match(/(\d+)H/);
-            const mMatch = duration.match(/(\d+)M/);
-            if (hMatch) total += parseInt(hMatch[1], 10) * 60;
-            if (mMatch) total += parseInt(mMatch[1], 10);
-            return total > 0 ? total.toString() : '';
-        }
-
-        function extractNumber(str) {
-            if(!str) return '';
-            const match = str.toString().match(/\d+/);
-            return match ? match[0] : '';
-        }
-
-        function parseIngredientString(str) {
-            const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
-            if (match) {
-                let amount = (match[1] || '').trim();
-                let unitRaw = (match[2] || '').trim();
-                let name = (match[3] || '').trim();
-                let unit = '';
-                if (unitRaw) {
-                    const foundUnit = Array.from(document.querySelectorAll('.ingredient-unit option')).find(opt => opt.value.toLowerCase() === unitRaw.toLowerCase().replace('scheiben', 'scheibe').replace('pck', 'pck.').replace('msp', 'msp.'));
-                    if (foundUnit) unit = foundUnit.value;
-                }
-                if (!name && !amount && !unit) name = str.trim();
-                return { amount, unit, name };
-            }
-            return { amount: '', unit: '', name: str.trim() };
-        }
-
-        function extractRecipeFromJsonLd(data) {
-            let bestRecipe = null;
-            const search = (obj) => {
-                if (!obj) return;
-                if (typeof obj === 'object') {
-                    if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
-                        if (!bestRecipe || (obj.recipeIngredient && obj.recipeInstructions)) {
-                            bestRecipe = obj;
-                        }
-                    }
-                    for (let key in obj) search(obj[key]);
-                } else if (Array.isArray(obj)) {
-                    obj.forEach(item => search(item));
-                }
-            };
-            search(data);
-            return bestRecipe;
-        }
-
-        const startImpBtn = document.getElementById('startImportBtn');
-        if (startImpBtn) {
-            startImpBtn.addEventListener('click', async () => {
-                let url = document.getElementById('importUrlInput').value.trim();
-                const statusEl = document.getElementById('importStatus');
-                if(!url) return;
-
-                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-
-                statusEl.textContent = 'Versuche Daten abzurufen...';
-                statusEl.classList.remove('hidden');
-                statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
-
-                const proxies = [
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(url)}`
-                ];
-
-                let html = null;
-
-                for (let proxy of proxies) {
-                    try {
-                        const response = await fetch(proxy);
-                        if (proxy.includes('allorigins')) {
-                            const data = await response.json();
-                            if (data.contents) { html = data.contents; break; }
-                        } else {
-                            if (response.ok) { html = await response.text(); break; }
-                        }
-                    } catch (e) {}
-                }
-
-                if (!html) {
-                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert (z.B. durch Captcha oder Firewall).';
-                    statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
-                    return;
-                }
-
-                try {
-                    const parser = new DOMParser();
-                    const docObj = parser.parseFromString(html, 'text/html');
-
-                    let title = '';
-                    let instructions = '';
-                    let portions = '';
-                    let timesData = {};
-                    let ingredientsList = [];
-                    let nutritionData = {};
-
-                    // 1. JSON-LD SCAN (z.B. Chefkoch, Betty Bossi)
-                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"], script#__NEXT_DATA__');
-                    for (const script of ldScripts) {
-                        try {
-                            const data = JSON.parse(script.textContent);
-                            const r = extractRecipeFromJsonLd(data);
-
-                            if (r) {
-                                title = r.name || title;
-
-                                let instText = '';
-                                const parseInst = (instArray) => {
-                                    instArray.forEach(step => {
-                                        if (typeof step === 'string') {
-                                            instText += step + '\n\n';
-                                        } else if (step.text) {
-                                            instText += step.text + '\n\n';
-                                        } else if (step.itemListElement && Array.isArray(step.itemListElement)) {
-                                            if (step.name) instText += step.name + ':\n';
-                                            parseInst(step.itemListElement);
-                                        }
-                                    });
-                                };
-
-                                if (r.recipeInstructions) {
-                                    if (typeof r.recipeInstructions === 'string') {
-                                        instructions = r.recipeInstructions;
-                                    } else if (Array.isArray(r.recipeInstructions)) {
-                                        parseInst(r.recipeInstructions);
-                                        instructions = instText;
-                                    }
-                                }
-
-                                if (r.recipeIngredient) {
-                                    if (Array.isArray(r.recipeIngredient)) {
-                                        ingredientsList = r.recipeIngredient;
-                                    } else if (typeof r.recipeIngredient === 'string') {
-                                        ingredientsList = [r.recipeIngredient];
-                                    }
-                                }
-                                
-                                if (r.recipeYield) portions = extractNumber(r.recipeYield);
-                                if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
-                                if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
-                                if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
-
-                                if (r.nutrition && typeof r.nutrition === 'object') {
-                                    if(r.nutrition.calories) nutritionData.kcal = extractNumber(r.nutrition.calories);
-                                    if(r.nutrition.proteinContent) nutritionData.protein = extractNumber(r.nutrition.proteinContent);
-                                    if(r.nutrition.carbohydrateContent) nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
-                                    if(r.nutrition.sugarContent) nutritionData.sugar = extractNumber(r.nutrition.sugarContent);
-                                    if(r.nutrition.fatContent) nutritionData.fat = extractNumber(r.nutrition.fatContent);
-                                }
-                                break; 
-                            }
-                        } catch(e) {}
-                    }
-
-                    // 2. HTML FALLBACK (Falls JSON-LD kaputt/unvollständig ist)
-                    if (!title) {
-                        const h1 = docObj.querySelector('h1');
-                        if (h1) title = h1.textContent.trim();
-                    }
-                    
-                    if (!instructions) {
-                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation, .recipe-steps, [class*="zubereitung"]');
-                        if (instructionBlocks.length > 0) {
-                            instructionBlocks.forEach(block => { 
-                                let text = block.textContent.replace(/\s+/g, ' ').trim();
-                                if(text) instructions += text + '\n\n'; 
-                            });
-                        }
-                    }
-
-                    if (ingredientsList.length === 0) {
-                        const trs = docObj.querySelectorAll('table.ingredients tr, .recipe-ingredients tr, table.zutaten tr');
-                        if (trs.length > 0) {
-                            trs.forEach(row => {
-                                const cols = row.querySelectorAll('td');
-                                if (cols.length >= 2) ingredientsList.push(`${cols[0].textContent.trim()} ${cols[1].textContent.trim()}`);
-                                else if (cols.length === 1) ingredientsList.push(cols[0].textContent.trim());
-                            });
-                        } else {
-                            const lis = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, [class*="zutat"] li');
-                            lis.forEach(el => {
-                                let text = el.textContent.replace(/\s+/g, ' ').trim();
-                                if(text.length > 2 && text.length < 100) ingredientsList.push(text);
-                            });
-                        }
-                    }
-
-                    // Formular befüllen
-                    if(title) document.getElementById('formTitle').value = title;
-                    if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
-                    
-                    document.getElementById('formSourceUrl').value = url;
-
-                    if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
-                    if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
-                    if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
-                    if(nutritionData.sugar) document.getElementById('formSugar').value = nutritionData.sugar;
-                    if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
-                    
-                    // Automatischer Check für Zöliakie
-                    if (html.toLowerCase().includes('glutenfrei') || html.toLowerCase().includes('gluten-free') || title.toLowerCase().includes('glutenfrei')) {
-                        document.getElementById('formGlutenFree').checked = true;
-                    } else {
-                        document.getElementById('formGlutenFree').checked = false;
-                    }
-
-                    if(portions) document.getElementById('formPortions').value = portions;
-                    if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
-                    if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
-                    if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
-
-                    if(ingredientsList.length > 0) {
-                        const list = document.getElementById('ingredientsList');
-                        const rows = list.querySelectorAll('.ingredient-row');
-                        for(let i=1; i<rows.length; i++) rows[i].remove();
-
-                        const firstRow = list.querySelector('.ingredient-row');
-                        
-                        ingredientsList.forEach((ingStr, index) => {
-                            const parsed = parseIngredientString(ingStr);
-                            let targetRow;
-                            
-                            if(index === 0) {
-                                targetRow = firstRow;
-                            } else {
-                                targetRow = firstRow.cloneNode(true);
-                                attachRemoveEventToRow(targetRow);
-                                list.appendChild(targetRow);
-                            }
-                            
-                            targetRow.querySelector('.ingredient-name').value = parsed.name;
-                            targetRow.querySelector('.ingredient-amount').value = parsed.amount;
-                            
-                            const unitSelect = targetRow.querySelector('.ingredient-unit');
-                            let foundUnit = '';
-                            if(parsed.unit) {
-                                const opt = Array.from(unitSelect.options).find(o => o.value.toLowerCase() === parsed.unit.toLowerCase());
-                                if(opt) foundUnit = opt.value;
-                            }
-                            unitSelect.value = foundUnit;
-                        });
-                    }
-
-                    if(title || instructions || ingredientsList.length > 0) {
-                        statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
-                        statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
-                    } else {
-                        statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
-                        statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
-                    }
-
-                } catch(e) {
-                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten (Format nicht kompatibel).';
-                    statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
-                }
             });
         }
 
