@@ -159,10 +159,10 @@
                 <div class="flex items-center gap-3 flex-wrap">
                     <!-- VIEW TOGGLE (Raster/Liste) -->
                     <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
-                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Nährwerte)">
+                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Tags)">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                         </button>
-                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht (Fokus auf Tags)">
+                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht (Fokus auf Nährwerte)">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
@@ -197,7 +197,7 @@
             </div>
 
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 1.4 Stabil (Zucker & Advanced Views) | Stand: 17.05.2026, 11:05 Uhr
+                Version: 1.5 Stabil (Tag & Nährwert Split) | Stand: 17.05.2026, 11:20 Uhr
             </div>
         </div>
 
@@ -234,6 +234,7 @@
                         Löschen
                     </button>
                     
+                    <!-- Trash View Buttons -->
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -770,9 +771,9 @@
                 currentZenStepIndex = 0;
                 document.getElementById('zenTotalStepsNum').textContent = zenSteps.length;
                 
-                views.detail.classList.add('hidden');
-                mainHeader.classList.add('hidden');
-                views.zen.classList.remove('hidden');
+                views.detail?.classList.add('hidden');
+                mainHeader?.classList.add('hidden');
+                views.zen?.classList.remove('hidden');
                 
                 requestWakeLock();
                 updateZenModeUI();
@@ -783,9 +784,9 @@
         if(exitZenBtn) {
             exitZenBtn.addEventListener('click', () => {
                 window.speechSynthesis.cancel();
-                views.zen.classList.add('hidden');
-                views.detail.classList.remove('hidden');
-                mainHeader.classList.remove('hidden');
+                views.zen?.classList.add('hidden');
+                views.detail?.classList.remove('hidden');
+                mainHeader?.classList.remove('hidden');
                 releaseWakeLock();
             });
         }
@@ -807,7 +808,7 @@
                     currentZenStepIndex++;
                     updateZenModeUI();
                 } else {
-                    document.getElementById('exitZenModeBtn').click(); 
+                    document.getElementById('exitZenModeBtn')?.click(); 
                 }
             });
         }
@@ -828,32 +829,37 @@
 
         function updateZenModeUI() {
             window.speechSynthesis.cancel(); 
-            document.getElementById('zenCurrentStepNum').textContent = currentZenStepIndex + 1;
+            const zenCurrentStepNum = document.getElementById('zenCurrentStepNum');
+            if(zenCurrentStepNum) zenCurrentStepNum.textContent = currentZenStepIndex + 1;
             
             const stepText = zenSteps[currentZenStepIndex];
             const textWithTimers = parseTextForTimers(stepText);
             const instrContainer = document.getElementById('zenInstructionText');
-            instrContainer.innerHTML = textWithTimers;
-
-            instrContainer.querySelectorAll('.timer-trigger').forEach(trigger => {
-                trigger.addEventListener('click', (e) => {
-                    e.stopPropagation(); 
-                    const mins = parseInt(trigger.getAttribute('data-time'));
-                    if(!isNaN(mins)) startTimer(mins);
+            if(instrContainer) {
+                instrContainer.innerHTML = textWithTimers;
+                instrContainer.querySelectorAll('.timer-trigger').forEach(trigger => {
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        const mins = parseInt(trigger.getAttribute('data-time'));
+                        if(!isNaN(mins)) startTimer(mins);
+                    });
                 });
-            });
+            }
             
-            document.getElementById('zenPrevBtn').disabled = currentZenStepIndex === 0;
+            const zenPrevBtn = document.getElementById('zenPrevBtn');
+            if(zenPrevBtn) zenPrevBtn.disabled = currentZenStepIndex === 0;
             
             const nextBtn = document.getElementById('zenNextBtn');
-            if (currentZenStepIndex === zenSteps.length - 1) {
-                nextBtn.innerHTML = `Fertig <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
-                nextBtn.classList.replace('bg-red-600', 'bg-green-600');
-                nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
-            } else {
-                nextBtn.innerHTML = `Weiter <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>`;
-                nextBtn.classList.replace('bg-green-600', 'bg-red-600');
-                nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+            if(nextBtn) {
+                if (currentZenStepIndex === zenSteps.length - 1) {
+                    nextBtn.innerHTML = `Fertig <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                    nextBtn.classList.replace('bg-red-600', 'bg-green-600');
+                    nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                } else {
+                    nextBtn.innerHTML = `Weiter <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>`;
+                    nextBtn.classList.replace('bg-green-600', 'bg-red-600');
+                    nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+                }
             }
         }
 
@@ -965,11 +971,13 @@
                 if(showFavoritesOnly) {
                     this.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
                     this.classList.remove('bg-white', 'border-gray-300', 'text-gray-700');
-                    document.getElementById('favViewIcon').classList.replace('text-gray-400', 'text-red-500');
+                    const icon = document.getElementById('favViewIcon');
+                    if(icon) icon.classList.replace('text-gray-400', 'text-red-500');
                 } else {
                     this.classList.remove('bg-red-50', 'border-red-300', 'text-red-700');
                     this.classList.add('bg-white', 'border-gray-300', 'text-gray-700');
-                    document.getElementById('favViewIcon').classList.replace('text-red-500', 'text-gray-400');
+                    const icon = document.getElementById('favViewIcon');
+                    if(icon) icon.classList.replace('text-red-500', 'text-gray-400');
                 }
                 renderRecipes();
             });
@@ -995,10 +1003,12 @@
                     
                     if(newFavStatus) {
                         this.classList.add('fav-active');
-                        this.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
+                        const svg = this.querySelector('svg');
+                        if(svg) svg.innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
                     } else {
                         this.classList.remove('fav-active');
-                        this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                        const svg = this.querySelector('svg');
+                        if(svg) svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
                     }
                 } catch (e) { console.error("Fehler beim Favoriten speichern", e); }
             });
@@ -1036,11 +1046,11 @@
                         await navigator.share({ title: currentDetailRecipe.title, text: text });
                     } else {
                         await navigator.clipboard.writeText(text);
-                        textSpan.textContent = 'Kopiert!';
-                        btn.classList.replace('text-gray-700', 'text-blue-600');
+                        if(textSpan) textSpan.textContent = 'Kopiert!';
+                        if(btn) btn.classList.replace('text-gray-700', 'text-blue-600');
                         setTimeout(() => {
-                            textSpan.textContent = 'Teilen';
-                            btn.classList.replace('text-blue-600', 'text-gray-700');
+                            if(textSpan) textSpan.textContent = 'Teilen';
+                            if(btn) btn.classList.replace('text-blue-600', 'text-gray-700');
                         }, 2500);
                     }
                 } catch(e) {}
@@ -1068,11 +1078,11 @@
                     else text += `- ${name}\n`;
                 });
                 navigator.clipboard.writeText(text).then(() => {
-                    textSpan.textContent = 'Kopiert!';
-                    btn.classList.replace('text-gray-600', 'text-blue-600');
+                    if(textSpan) textSpan.textContent = 'Kopiert!';
+                    if(btn) btn.classList.replace('text-gray-600', 'text-blue-600');
                     setTimeout(() => {
-                        textSpan.textContent = 'Kopieren';
-                        btn.classList.replace('text-blue-600', 'text-gray-600');
+                        if(textSpan) textSpan.textContent = 'Kopieren';
+                        if(btn) btn.classList.replace('text-blue-600', 'text-gray-600');
                     }, 2000);
                 }).catch(err => alert("Konnte Text nicht kopieren."));
             });
@@ -1085,7 +1095,8 @@
                 if(btn) {
                     btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
                     btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
-                    document.getElementById('wakeLockText').textContent = 'Wach';
+                    const wlTxt = document.getElementById('wakeLockText');
+                    if(wlTxt) wlTxt.textContent = 'Wach';
                 }
             } catch (err) {}
         }
@@ -1096,7 +1107,8 @@
             if(btn) {
                 btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
                 btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
-                document.getElementById('wakeLockText').textContent = 'Wach';
+                const wlTxt = document.getElementById('wakeLockText');
+                if(wlTxt) wlTxt.textContent = 'Wach';
             }
         }
 
@@ -1127,17 +1139,17 @@
         if(toggleAuthModeBtn) {
             toggleAuthModeBtn.addEventListener('click', () => {
                 isLoginMode = !isLoginMode;
-                authError.classList.add('hidden');
+                if(authError) authError.classList.add('hidden');
                 if (isLoginMode) {
-                    loginTitle.textContent = "Willkommen zurück";
-                    loginSubtitle.textContent = "Melde dich an, um deine Rezepte zu sehen.";
-                    authSubmitBtn.textContent = "Einloggen";
-                    toggleAuthModeBtn.textContent = "Neu hier? Jetzt registrieren";
+                    if(loginTitle) loginTitle.textContent = "Willkommen zurück";
+                    if(loginSubtitle) loginSubtitle.textContent = "Melde dich an, um deine Rezepte zu sehen.";
+                    if(authSubmitBtn) authSubmitBtn.textContent = "Einloggen";
+                    if(toggleAuthModeBtn) toggleAuthModeBtn.textContent = "Neu hier? Jetzt registrieren";
                 } else {
-                    loginTitle.textContent = "Konto erstellen";
-                    loginSubtitle.textContent = "Sichere deine Rezepte dauerhaft.";
-                    authSubmitBtn.textContent = "Registrieren";
-                    toggleAuthModeBtn.textContent = "Bereits ein Konto? Einloggen";
+                    if(loginTitle) loginTitle.textContent = "Konto erstellen";
+                    if(loginSubtitle) loginSubtitle.textContent = "Sichere deine Rezepte dauerhaft.";
+                    if(authSubmitBtn) authSubmitBtn.textContent = "Registrieren";
+                    if(toggleAuthModeBtn) toggleAuthModeBtn.textContent = "Bereits ein Konto? Einloggen";
                 }
             });
         }
@@ -1147,18 +1159,24 @@
                 e.preventDefault();
                 const email = document.getElementById('authEmail').value;
                 const password = document.getElementById('authPassword').value;
-                authError.classList.add('hidden');
-                authSubmitBtn.disabled = true;
-                authSubmitBtn.innerHTML = '<div class="loader inline-block border-2 w-4 h-4 mr-1" style="border-top-color: #4b5563; width: 16px; height: 16px; border-width: 2px;"></div> Bitte warten...';
+                if(authError) authError.classList.add('hidden');
+                if(authSubmitBtn) {
+                    authSubmitBtn.disabled = true;
+                    authSubmitBtn.innerHTML = '<div class="loader inline-block border-2 w-4 h-4 mr-1" style="border-top-color: #4b5563; width: 16px; height: 16px; border-width: 2px;"></div> Bitte warten...';
+                }
 
                 try {
                     if (isLoginMode) await signInWithEmailAndPassword(auth, email, password);
                     else await createUserWithEmailAndPassword(auth, email, password);
                 } catch (error) {
-                    authError.classList.remove('hidden');
-                    authError.textContent = "Ein Fehler ist aufgetreten. Bitte Daten prüfen.";
-                    authSubmitBtn.disabled = false;
-                    authSubmitBtn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
+                    if(authError) {
+                        authError.classList.remove('hidden');
+                        authError.textContent = "Ein Fehler ist aufgetreten. Bitte Daten prüfen.";
+                    }
+                    if(authSubmitBtn) {
+                        authSubmitBtn.disabled = false;
+                        authSubmitBtn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
+                    }
                 }
             });
         }
@@ -1230,7 +1248,6 @@
                         rating: data.rating ? parseInt(data.rating) : 0, 
                         difficulty: data.difficulty || '', 
                         sourceUrl: data.sourceUrl || '',
-                        // NEU: Zucker in der Datenbank
                         nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '', sugar: '' },
                         imageBase64: data.imageBase64 || null,
                         createdAt: data.createdAt || new Date().toISOString(),
@@ -1289,16 +1306,22 @@
                 const trBtn = document.getElementById('trashViewBtn');
                 
                 if(showTrashView) {
-                    document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
+                    const mainHeaderTitle = document.getElementById('mainHeaderTitle');
+                    if(mainHeaderTitle) mainHeaderTitle.textContent = "Papierkorb";
                     if(listCtrl) listCtrl.classList.add('hidden');
-                    document.getElementById('emptyStateTitle').textContent = "Papierkorb ist leer";
-                    document.getElementById('emptyStateDesc').textContent = "Gelöschte Rezepte tauchen hier auf.";
+                    const emptyStateTitle = document.getElementById('emptyStateTitle');
+                    if(emptyStateTitle) emptyStateTitle.textContent = "Papierkorb ist leer";
+                    const emptyStateDesc = document.getElementById('emptyStateDesc');
+                    if(emptyStateDesc) emptyStateDesc.textContent = "Gelöschte Rezepte tauchen hier auf.";
                     if(trBtn) trBtn.classList.add('text-red-600', 'bg-red-50');
                 } else {
-                    document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
+                    const mainHeaderTitle = document.getElementById('mainHeaderTitle');
+                    if(mainHeaderTitle) mainHeaderTitle.textContent = "Meine Rezepte";
                     if(listCtrl) listCtrl.classList.remove('hidden');
-                    document.getElementById('emptyStateTitle').textContent = "Noch keine Rezepte";
-                    document.getElementById('emptyStateDesc').textContent = "Klicke oben auf 'Neu' oder 'Import'.";
+                    const emptyStateTitle = document.getElementById('emptyStateTitle');
+                    if(emptyStateTitle) emptyStateTitle.textContent = "Noch keine Rezepte";
+                    const emptyStateDesc = document.getElementById('emptyStateDesc');
+                    if(emptyStateDesc) emptyStateDesc.textContent = "Klicke oben auf 'Neu' oder 'Import'.";
                     if(trBtn) trBtn.classList.remove('text-red-600', 'bg-red-50');
                 }
                 renderRecipes();
@@ -1323,17 +1346,23 @@
             
             if (window.location.hash === '#new') {
                 resetForm();
-                document.getElementById('formHeaderTitle').textContent = "Neues Rezept";
-                document.getElementById('importSection').classList.remove('hidden');
+                const formHeaderTitle = document.getElementById('formHeaderTitle');
+                if(formHeaderTitle) formHeaderTitle.textContent = "Neues Rezept";
+                const importSection = document.getElementById('importSection');
+                if(importSection) importSection.classList.remove('hidden');
                 showView('form');
             } else if (window.location.hash === '#import') {
                 resetForm();
-                document.getElementById('formHeaderTitle').textContent = "Rezept Importieren";
-                document.getElementById('importSection').classList.remove('hidden');
+                const formHeaderTitle = document.getElementById('formHeaderTitle');
+                if(formHeaderTitle) formHeaderTitle.textContent = "Rezept Importieren";
+                const importSection = document.getElementById('importSection');
+                if(importSection) importSection.classList.remove('hidden');
                 showView('form');
             } else if (window.location.hash === '#edit') {
-                document.getElementById('formHeaderTitle').textContent = "Rezept bearbeiten";
-                document.getElementById('importSection').classList.add('hidden');
+                const formHeaderTitle = document.getElementById('formHeaderTitle');
+                if(formHeaderTitle) formHeaderTitle.textContent = "Rezept bearbeiten";
+                const importSection = document.getElementById('importSection');
+                if(importSection) importSection.classList.add('hidden');
                 showView('form');
             } else if (window.location.hash.startsWith('#recipe-')) {
                 const id = window.location.hash.replace('#recipe-', '');
@@ -1467,21 +1496,8 @@
                 const card = document.createElement('div');
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
-                let recipeTagsToRender = recipe.tags ? [...recipe.tags] : [];
-                
-                if (recipe.nutrition) {
-                    let protein = parseInt(recipe.nutrition.protein) || 0;
-                    let carbs = parseInt(recipe.nutrition.carbs) || 999;
-                    if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
-                        recipeTagsToRender.unshift("High Protein 💪");
-                    }
-                    if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
-                        recipeTagsToRender.unshift("Low Carb 🥗");
-                    }
-                }
-
                 if (currentViewMode === 'grid') {
-                    // --- KACHEL ANSICHT (Fokus: Nährwerte & Bild) ---
+                    // --- KACHEL ANSICHT (Fokus: Bild & Tags, OHNE Nährwerte) ---
                     card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
 
                     const cardHeader = document.createElement('div');
@@ -1518,8 +1534,21 @@
                     title.textContent = recipe.title;
 
                     const tagsContainer = document.createElement('div');
-                    tagsContainer.className = "flex flex-wrap gap-1.5 mb-2"; 
+                    tagsContainer.className = "flex flex-wrap gap-1.5 mt-auto"; 
                     
+                    let recipeTagsToRender = recipe.tags ? [...recipe.tags] : [];
+                    
+                    if (recipe.nutrition) {
+                        let protein = parseInt(recipe.nutrition.protein) || 0;
+                        let carbs = parseInt(recipe.nutrition.carbs) || 999;
+                        if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
+                            recipeTagsToRender.unshift("High Protein 💪");
+                        }
+                        if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
+                            recipeTagsToRender.unshift("Low Carb 🥗");
+                        }
+                    }
+
                     // In Grid nur max 3 Tags zeigen
                     recipeTagsToRender.slice(0, 3).forEach(tag => {
                         const t = document.createElement('span');
@@ -1540,52 +1569,22 @@
                         tagsContainer.appendChild(t);
                     });
 
-                    // Nährwerte Leiste für Grid
-                    let nutritionHtml = '';
-                    if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs)) {
-                        nutritionHtml = `
-                            <div class="mt-4 grid grid-cols-5 divide-x divide-gray-200 border-t border-gray-100 bg-gray-50/80 -mx-5 -mb-5 rounded-b-3xl">
-                                <div class="py-2.5 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition-colors">
-                                    <span class="font-black text-gray-800 text-[11px] leading-tight">${recipe.nutrition.kcal || '-'}</span>
-                                    <span class="text-[8px] text-gray-500 uppercase tracking-wider font-bold">Kcal</span>
-                                </div>
-                                <div class="py-2.5 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition-colors">
-                                    <span class="font-black text-gray-800 text-[11px] leading-tight">${recipe.nutrition.carbs || '-'}</span>
-                                    <span class="text-[8px] text-gray-500 uppercase tracking-wider font-bold">KH</span>
-                                </div>
-                                <div class="py-2.5 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition-colors">
-                                    <span class="font-black text-gray-800 text-[11px] leading-tight">${recipe.nutrition.sugar || '-'}</span>
-                                    <span class="text-[8px] text-gray-500 uppercase tracking-wider font-bold">Zucker</span>
-                                </div>
-                                <div class="py-2.5 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition-colors">
-                                    <span class="font-black text-gray-800 text-[11px] leading-tight">${recipe.nutrition.protein || '-'}</span>
-                                    <span class="text-[8px] text-gray-500 uppercase tracking-wider font-bold">Prot</span>
-                                </div>
-                                <div class="py-2.5 flex flex-col items-center justify-center text-center hover:bg-gray-100 transition-colors">
-                                    <span class="font-black text-gray-800 text-[11px] leading-tight">${recipe.nutrition.fat || '-'}</span>
-                                    <span class="text-[8px] text-gray-500 uppercase tracking-wider font-bold">Fett</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-
                     cardBody.innerHTML = `
                         <div>
                             ${title.outerHTML}
                             ${tagsContainer.outerHTML}
                         </div>
-                        ${nutritionHtml}
                     `;
                     
                     card.appendChild(cardHeader);
                     card.appendChild(cardBody);
                     
                 } else {
-                    // --- LISTEN ANSICHT (Fokus: Tags, kompakt & Nährwertleiste) ---
-                    card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-stretch p-3 min-h-[100px] h-auto ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                    // --- LISTEN ANSICHT (Fokus: Nur Nährwerte, keine Tags) ---
+                    card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-auto min-h-[90px] ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
                     
                     const imgContainer = document.createElement('div');
-                    imgContainer.className = "h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 bg-gray-200 rounded-lg relative overflow-hidden border border-gray-200 mr-4 self-start mt-1";
+                    imgContainer.className = "h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 bg-gray-200 rounded-lg relative overflow-hidden border border-gray-200 mr-4";
                     
                     if (recipe.imageBase64) {
                         const img = document.createElement('img');
@@ -1598,7 +1597,7 @@
                     }
 
                     const infoContainer = document.createElement('div');
-                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-start py-0.5";
+                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-center py-0.5";
 
                     const headerRow = document.createElement('div');
                     headerRow.className = "flex justify-between items-start gap-2 mb-1";
@@ -1620,34 +1619,19 @@
                         <div class="flex-shrink-0 text-right whitespace-nowrap">${metaHtml}</div>
                     `;
 
-                    // Alle Tags in der Liste
-                    const tagsContainer = document.createElement('div');
-                    tagsContainer.className = "flex flex-wrap gap-1 mt-1";
-                    recipeTagsToRender.forEach(tag => {
-                        const t = document.createElement('span');
-                        let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
-                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white border-transparent' : 'bg-green-700 text-white border-transparent') : getColorForTag(tag);
-                        
-                        t.className = `text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded font-bold border ${colorClass}`;
-                        t.textContent = tag;
-                        tagsContainer.appendChild(t);
-                    });
-
-                    // Kompakte Nährwertleiste in der Liste
+                    // Bunte Nährwertleiste in der Liste (statt Tags)
                     let nutritionLine = '';
-                    if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs)) {
-                        nutritionLine = `
-                        <div class="flex items-center gap-1.5 mt-2 flex-wrap">
-                            ${recipe.nutrition.kcal ? `<span class="bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-600 uppercase tracking-wide">${recipe.nutrition.kcal} kcal</span>` : ''}
-                            ${recipe.nutrition.carbs ? `<span class="bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-600 uppercase tracking-wide">${recipe.nutrition.carbs}g KH</span>` : ''}
-                            ${recipe.nutrition.sugar ? `<span class="bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-600 uppercase tracking-wide">${recipe.nutrition.sugar}g Zucker</span>` : ''}
-                            ${recipe.nutrition.protein ? `<span class="bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-600 uppercase tracking-wide">${recipe.nutrition.protein}g Prot</span>` : ''}
-                            ${recipe.nutrition.fat ? `<span class="bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded text-[9px] font-bold text-gray-600 uppercase tracking-wide">${recipe.nutrition.fat}g Fett</span>` : ''}
-                        </div>`;
+                    if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.sugar || recipe.nutrition.fat)) {
+                        nutritionLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">`;
+                        if (recipe.nutrition.kcal) nutritionLine += `<span class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.kcal} kcal</span>`;
+                        if (recipe.nutrition.carbs) nutritionLine += `<span class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.carbs}g KH</span>`;
+                        if (recipe.nutrition.sugar) nutritionLine += `<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g Zucker</span>`;
+                        if (recipe.nutrition.protein) nutritionLine += `<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.protein}g Prot</span>`;
+                        if (recipe.nutrition.fat) nutritionLine += `<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fat}g Fett</span>`;
+                        nutritionLine += `</div>`;
                     }
 
                     infoContainer.appendChild(headerRow);
-                    infoContainer.appendChild(tagsContainer);
                     if(nutritionLine) infoContainer.insertAdjacentHTML('beforeend', nutritionLine);
 
                     card.appendChild(imgContainer);
@@ -1657,8 +1641,11 @@
                 grid.appendChild(card);
             });
 
-            if (count === 0) emptyState.classList.remove('hidden');
-            else emptyState.classList.add('hidden');
+            if (count === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+            }
         }
 
         const sInput = document.getElementById('searchInput');
@@ -1750,8 +1737,10 @@
             bMinus.addEventListener('click', () => {
                 if (currentDisplayPortions > 1 && currentDetailRecipe) {
                     currentDisplayPortions--;
-                    document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
-                    document.getElementById('printPortionsCount').textContent = currentDisplayPortions;
+                    const detPortionsCount = document.getElementById('detailPortionsCount');
+                    if(detPortionsCount) detPortionsCount.textContent = currentDisplayPortions;
+                    const prntPortionsCount = document.getElementById('printPortionsCount');
+                    if(prntPortionsCount) prntPortionsCount.textContent = currentDisplayPortions;
                     renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
                 }
             });
@@ -1762,8 +1751,10 @@
             bPlus.addEventListener('click', () => {
                 if (currentDetailRecipe) {
                     currentDisplayPortions++;
-                    document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
-                    document.getElementById('printPortionsCount').textContent = currentDisplayPortions;
+                    const detPortionsCount = document.getElementById('detailPortionsCount');
+                    if(detPortionsCount) detPortionsCount.textContent = currentDisplayPortions;
+                    const prntPortionsCount = document.getElementById('printPortionsCount');
+                    if(prntPortionsCount) prntPortionsCount.textContent = currentDisplayPortions;
                     renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
                 }
             });
@@ -1777,7 +1768,8 @@
             currentDisplayPortions = recipe.portions > 0 ? recipe.portions : 4;
 
             currentDetailRecipeId = id;
-            document.getElementById('detailTitle').textContent = recipe.title;
+            const detTitle = document.getElementById('detailTitle');
+            if(detTitle) detTitle.textContent = recipe.title;
             
             if(recipe.isDeleted) {
                 document.getElementById('editRecipeBtn')?.classList.add('hidden');
@@ -1801,12 +1793,16 @@
                 document.getElementById('hardDeleteRecipeBtn')?.classList.add('hidden');
                 
                 const favBtn = document.getElementById('favRecipeBtn');
-                if(recipe.isFavorite) {
-                    favBtn.classList.add('fav-active');
-                    favBtn.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
-                } else {
-                    favBtn.classList.remove('fav-active');
-                    favBtn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                if(favBtn) {
+                    if(recipe.isFavorite) {
+                        favBtn.classList.add('fav-active');
+                        const svg = favBtn.querySelector('svg');
+                        if(svg) svg.innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
+                    } else {
+                        favBtn.classList.remove('fav-active');
+                        const svg = favBtn.querySelector('svg');
+                        if(svg) svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                    }
                 }
             }
             
@@ -1821,28 +1817,29 @@
             }
 
             const tagsContainer = document.getElementById('detailTags');
-            if(tagsContainer) tagsContainer.innerHTML = '';
-            
-            if(recipe.difficulty && tagsContainer) {
-                const diffSpan = document.createElement('span');
-                diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300 print:border-gray-400`;
-                diffSpan.textContent = recipe.difficulty;
-                tagsContainer.appendChild(diffSpan);
-            }
-            if(recipe.rating > 0) {
-                const starSpan = document.createElement('span');
-                starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300 print:border-gray-400`;
-                starSpan.innerHTML = getStarsHtml(recipe.rating);
-                tagsContainer.appendChild(starSpan);
-            }
+            if(tagsContainer) {
+                tagsContainer.innerHTML = '';
+                if(recipe.difficulty) {
+                    const diffSpan = document.createElement('span');
+                    diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300 print:border-gray-400`;
+                    diffSpan.textContent = recipe.difficulty;
+                    tagsContainer.appendChild(diffSpan);
+                }
+                if(recipe.rating > 0) {
+                    const starSpan = document.createElement('span');
+                    starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300 print:border-gray-400`;
+                    starSpan.innerHTML = getStarsHtml(recipe.rating);
+                    tagsContainer.appendChild(starSpan);
+                }
 
-            if (recipe.tags) {
-                recipe.tags.forEach(tag => {
-                    const span = document.createElement('span');
-                    span.className = `px-3 py-1 rounded-lg text-sm font-bold ${getColorForTag(tag)}`;
-                    span.textContent = tag;
-                    tagsContainer.appendChild(span);
-                });
+                if (recipe.tags) {
+                    recipe.tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = `px-3 py-1 rounded-lg text-sm font-bold ${getColorForTag(tag)}`;
+                        span.textContent = tag;
+                        tagsContainer.appendChild(span);
+                    });
+                }
             }
 
             const timesContainer = document.getElementById('detailTimesContainer');
@@ -1909,67 +1906,70 @@
             renderDetailIngredientsList(recipe, currentDisplayPortions);
 
             const instrContainer = document.getElementById('detailInstructions');
-            instrContainer.innerHTML = '';
-            
-            if (recipe.instructions) {
-                const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
-                steps.forEach(step => {
-                    const stepEl = document.createElement('div');
-                    stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0 print:p-1";
-                    
-                    const checkmarkHtml = `
-                    <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
-                    </svg>`;
-
-                    const textWithTimers = parseTextForTimers(step.trim());
-
-                    stepEl.innerHTML = `
-                        ${checkmarkHtml}
-                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${textWithTimers}</p>
-                    `;
-
-                    stepEl.querySelectorAll('.timer-trigger').forEach(trigger => {
-                        trigger.addEventListener('click', (e) => {
-                            e.stopPropagation(); 
-                            const mins = parseInt(trigger.getAttribute('data-time'));
-                            if(!isNaN(mins)) startTimer(mins);
-                        });
-                    });
-
-                    stepEl.addEventListener('click', function(e) {
-                        if(e.target.classList.contains('timer-trigger') || e.target.closest('.timer-trigger')) return; 
+            if(instrContainer) {
+                instrContainer.innerHTML = '';
+                
+                if (recipe.instructions) {
+                    const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
+                    steps.forEach(step => {
+                        const stepEl = document.createElement('div');
+                        stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0 print:p-1";
                         
-                        this.classList.toggle('is-checked');
-                        const svg = this.querySelector('.step-checkbox');
-                        if (this.classList.contains('is-checked')) {
-                            svg.classList.replace('text-gray-300', 'text-green-500');
-                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
-                        } else {
-                            svg.classList.replace('text-green-500', 'text-gray-300');
-                            svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
-                        }
-                    });
+                        const checkmarkHtml = `
+                        <svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+                        </svg>`;
 
-                    instrContainer.appendChild(stepEl);
-                });
+                        const textWithTimers = parseTextForTimers(step.trim());
+
+                        stepEl.innerHTML = `
+                            ${checkmarkHtml}
+                            <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${textWithTimers}</p>
+                        `;
+
+                        stepEl.querySelectorAll('.timer-trigger').forEach(trigger => {
+                            trigger.addEventListener('click', (e) => {
+                                e.stopPropagation(); 
+                                const mins = parseInt(trigger.getAttribute('data-time'));
+                                if(!isNaN(mins)) startTimer(mins);
+                            });
+                        });
+
+                        stepEl.addEventListener('click', function(e) {
+                            if(e.target.classList.contains('timer-trigger') || e.target.closest('.timer-trigger')) return; 
+                            
+                            this.classList.toggle('is-checked');
+                            const svg = this.querySelector('.step-checkbox');
+                            if (this.classList.contains('is-checked')) {
+                                svg.classList.replace('text-gray-300', 'text-green-500');
+                                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                            } else {
+                                svg.classList.replace('text-green-500', 'text-gray-300');
+                                svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
+                            }
+                        });
+
+                        instrContainer.appendChild(stepEl);
+                    });
+                }
             }
 
             const notesContainer = document.getElementById('detailNotesContainer');
             if(recipe.notes && recipe.notes.trim() !== '') {
-                notesContainer.classList.remove('hidden');
-                document.getElementById('detailNotesText').textContent = recipe.notes.trim();
+                notesContainer?.classList.remove('hidden');
+                const detNotesTxt = document.getElementById('detailNotesText');
+                if(detNotesTxt) detNotesTxt.textContent = recipe.notes.trim();
             } else {
-                notesContainer.classList.add('hidden');
+                notesContainer?.classList.add('hidden');
             }
 
             const sourceContainer = document.getElementById('detailSourceContainer');
             const sourceLink = document.getElementById('detailSourceLink');
             if (recipe.sourceUrl) {
-                sourceContainer.classList.remove('hidden');
-                sourceLink.href = recipe.sourceUrl;
+                sourceContainer?.classList.remove('hidden');
+                if(sourceLink) sourceLink.href = recipe.sourceUrl;
             } else {
-                sourceContainer.classList.add('hidden');
+                sourceContainer?.classList.add('hidden');
             }
 
             showView('detail');
@@ -2065,28 +2065,30 @@
                 resetForm();
                 currentEditRecipeId = recipe.id;
                 
-                document.getElementById('formTitle').value = recipe.title;
-                document.getElementById('formInstructions').value = recipe.instructions;
+                const fTitle = document.getElementById('formTitle');
+                if(fTitle) fTitle.value = recipe.title;
+                const fInst = document.getElementById('formInstructions');
+                if(fInst) fInst.value = recipe.instructions;
                 
-                document.getElementById('formPortions').value = recipe.portions || '4';
-                document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
-                document.getElementById('formNotes').value = recipe.notes || '';
-                document.getElementById('formRating').value = recipe.rating || '0';
-                document.getElementById('formDifficulty').value = recipe.difficulty || '';
+                if(document.getElementById('formPortions')) document.getElementById('formPortions').value = recipe.portions || '4';
+                if(document.getElementById('formSourceUrl')) document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
+                if(document.getElementById('formNotes')) document.getElementById('formNotes').value = recipe.notes || '';
+                if(document.getElementById('formRating')) document.getElementById('formRating').value = recipe.rating || '0';
+                if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = recipe.difficulty || '';
 
                 if(recipe.times) {
-                    document.getElementById('formPrepTime').value = recipe.times.prep || '';
-                    document.getElementById('formCookTime').value = recipe.times.cook || '';
-                    document.getElementById('formRestTime').value = recipe.times.rest || ''; 
-                    document.getElementById('formTotalTime').value = recipe.times.total || '';
+                    if(document.getElementById('formPrepTime')) document.getElementById('formPrepTime').value = recipe.times.prep || '';
+                    if(document.getElementById('formCookTime')) document.getElementById('formCookTime').value = recipe.times.cook || '';
+                    if(document.getElementById('formRestTime')) document.getElementById('formRestTime').value = recipe.times.rest || ''; 
+                    if(document.getElementById('formTotalTime')) document.getElementById('formTotalTime').value = recipe.times.total || '';
                 }
                 
                 if (recipe.nutrition) {
-                    document.getElementById('formKcal').value = recipe.nutrition.kcal || '';
-                    document.getElementById('formProtein').value = recipe.nutrition.protein || '';
-                    document.getElementById('formCarbs').value = recipe.nutrition.carbs || '';
-                    document.getElementById('formSugar').value = recipe.nutrition.sugar || '';
-                    document.getElementById('formFat').value = recipe.nutrition.fat || '';
+                    if(document.getElementById('formKcal')) document.getElementById('formKcal').value = recipe.nutrition.kcal || '';
+                    if(document.getElementById('formProtein')) document.getElementById('formProtein').value = recipe.nutrition.protein || '';
+                    if(document.getElementById('formCarbs')) document.getElementById('formCarbs').value = recipe.nutrition.carbs || '';
+                    if(document.getElementById('formSugar')) document.getElementById('formSugar').value = recipe.nutrition.sugar || '';
+                    if(document.getElementById('formFat')) document.getElementById('formFat').value = recipe.nutrition.fat || '';
                 }
 
                 if(recipe.imageBase64) {
@@ -2100,22 +2102,24 @@
                 }
 
                 const list = document.getElementById('ingredientsList');
-                const firstRow = list.querySelector('.ingredient-row');
-                
-                if (recipe.ingredients && recipe.ingredients.length > 0) {
-                    recipe.ingredients.forEach((ing, index) => {
-                        let targetRow;
-                        if(index === 0) {
-                            targetRow = firstRow;
-                        } else {
-                            targetRow = firstRow.cloneNode(true);
-                            attachRemoveEventToRow(targetRow);
-                            list.appendChild(targetRow);
-                        }
-                        targetRow.querySelector('.ingredient-name').value = ing.name || '';
-                        targetRow.querySelector('.ingredient-amount').value = ing.amount || '';
-                        targetRow.querySelector('.ingredient-unit').value = ing.unit || '';
-                    });
+                if(list) {
+                    const firstRow = list.querySelector('.ingredient-row');
+                    
+                    if (recipe.ingredients && recipe.ingredients.length > 0) {
+                        recipe.ingredients.forEach((ing, index) => {
+                            let targetRow;
+                            if(index === 0) {
+                                targetRow = firstRow;
+                            } else {
+                                targetRow = firstRow.cloneNode(true);
+                                attachRemoveEventToRow(targetRow);
+                                list.appendChild(targetRow);
+                            }
+                            targetRow.querySelector('.ingredient-name').value = ing.name || '';
+                            targetRow.querySelector('.ingredient-amount').value = ing.amount || '';
+                            targetRow.querySelector('.ingredient-unit').value = ing.unit || '';
+                        });
+                    }
                 }
 
                 window.location.hash = '#edit';
@@ -2381,7 +2385,7 @@
         }
 
         // ==========================================
-        // URL IMPORT (Klassisch via JSON-LD)
+        // URL IMPORT (Extrem Robuster JSON-LD Scraper)
         // ==========================================
         function parseIsoDuration(duration) {
             if(!duration || typeof duration !== 'string') return '';
@@ -2399,14 +2403,32 @@
             return match ? match[0] : '';
         }
 
+        function parseIngredientString(str) {
+            const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
+            if (match) {
+                let amount = (match[1] || '').trim();
+                let unitRaw = (match[2] || '').trim();
+                let name = (match[3] || '').trim();
+                let unit = '';
+                if (unitRaw) {
+                    const foundUnit = Array.from(document.querySelectorAll('.ingredient-unit option')).find(opt => opt.value.toLowerCase() === unitRaw.toLowerCase().replace('scheiben', 'scheibe').replace('pck', 'pck.').replace('msp', 'msp.'));
+                    if (foundUnit) unit = foundUnit.value;
+                }
+                if (!name && !amount && !unit) name = str.trim();
+                return { amount, unit, name };
+            }
+            return { amount: '', unit: '', name: str.trim() };
+        }
+
         function extractRecipeFromJsonLd(data) {
-            let recipeObj = null;
+            let bestRecipe = null;
             const search = (obj) => {
-                if (!obj || recipeObj) return;
+                if (!obj) return;
                 if (typeof obj === 'object') {
                     if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
-                        recipeObj = obj;
-                        return;
+                        if (!bestRecipe || (obj.recipeIngredient && obj.recipeInstructions)) {
+                            bestRecipe = obj;
+                        }
                     }
                     for (let key in obj) search(obj[key]);
                 } else if (Array.isArray(obj)) {
@@ -2414,7 +2436,7 @@
                 }
             };
             search(data);
-            return recipeObj;
+            return bestRecipe;
         }
 
         const startImpBtn = document.getElementById('startImportBtn');
@@ -2431,8 +2453,8 @@
                 statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
                 const proxies = [
-                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(url)}`
                 ];
 
                 let html = null;
@@ -2450,7 +2472,7 @@
                 }
 
                 if (!html) {
-                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
+                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert (z.B. durch Captcha oder Firewall).';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                     return;
                 }
@@ -2466,7 +2488,8 @@
                     let ingredientsList = [];
                     let nutritionData = {};
 
-                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"]');
+                    // 1. JSON-LD SCAN (z.B. Chefkoch, Betty Bossi)
+                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"], script#__NEXT_DATA__');
                     for (const script of ldScripts) {
                         try {
                             const data = JSON.parse(script.textContent);
@@ -2475,50 +2498,87 @@
                             if (r) {
                                 title = r.name || title;
 
+                                let instText = '';
+                                const parseInst = (instArray) => {
+                                    instArray.forEach(step => {
+                                        if (typeof step === 'string') {
+                                            instText += step + '\n\n';
+                                        } else if (step.text) {
+                                            instText += step.text + '\n\n';
+                                        } else if (step.itemListElement && Array.isArray(step.itemListElement)) {
+                                            if (step.name) instText += step.name + ':\n';
+                                            parseInst(step.itemListElement);
+                                        }
+                                    });
+                                };
+
                                 if (r.recipeInstructions) {
                                     if (typeof r.recipeInstructions === 'string') {
                                         instructions = r.recipeInstructions;
                                     } else if (Array.isArray(r.recipeInstructions)) {
-                                        instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
+                                        parseInst(r.recipeInstructions);
+                                        instructions = instText;
                                     }
                                 }
 
-                                if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
-                                    ingredientsList = r.recipeIngredient;
+                                if (r.recipeIngredient) {
+                                    if (Array.isArray(r.recipeIngredient)) {
+                                        ingredientsList = r.recipeIngredient;
+                                    } else if (typeof r.recipeIngredient === 'string') {
+                                        ingredientsList = [r.recipeIngredient];
+                                    }
                                 }
                                 
-                                if (r.recipeYield) {
-                                    portions = extractNumber(r.recipeYield);
-                                }
-
+                                if (r.recipeYield) portions = extractNumber(r.recipeYield);
                                 if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
                                 if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
                                 if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
 
-                                if (r.nutrition) {
-                                    nutritionData.kcal = extractNumber(r.nutrition.calories);
-                                    nutritionData.protein = extractNumber(r.nutrition.proteinContent);
-                                    nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
-                                    if(r.nutrition.sugarContent) nutritionData.sugar = extractNumber(r.nutrition.sugarContent);
-                                    nutritionData.fat = extractNumber(r.nutrition.fatContent);
+                                if (r.nutrition && typeof r.nutrition === 'object') {
+                                    if(r.nutrition.calories) nutritionData.kcal = extractNumber(r.nutrition.calories);
+                                    if(r.nutrition.proteinContent) nutritionData.protein = extractNumber(r.nutrition.proteinContent);
+                                    if(r.nutrition.carbohydrateContent) nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
+                                    if(r.nutrition.fatContent) nutritionData.fat = extractNumber(r.nutrition.fatContent);
                                 }
                                 break; 
                             }
                         } catch(e) {}
                     }
 
+                    // 2. HTML FALLBACK (Falls JSON-LD kaputt/unvollständig ist)
                     if (!title) {
                         const h1 = docObj.querySelector('h1');
                         if (h1) title = h1.textContent.trim();
                     }
                     
                     if (!instructions) {
-                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
+                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation, .recipe-steps, [class*="zubereitung"]');
                         if (instructionBlocks.length > 0) {
-                            instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
+                            instructionBlocks.forEach(block => { 
+                                let text = block.textContent.replace(/\s+/g, ' ').trim();
+                                if(text) instructions += text + '\n\n'; 
+                            });
                         }
                     }
 
+                    if (ingredientsList.length === 0) {
+                        const trs = docObj.querySelectorAll('table.ingredients tr, .recipe-ingredients tr, table.zutaten tr');
+                        if (trs.length > 0) {
+                            trs.forEach(row => {
+                                const cols = row.querySelectorAll('td');
+                                if (cols.length >= 2) ingredientsList.push(`${cols[0].textContent.trim()} ${cols[1].textContent.trim()}`);
+                                else if (cols.length === 1) ingredientsList.push(cols[0].textContent.trim());
+                            });
+                        } else {
+                            const lis = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, [class*="zutat"] li');
+                            lis.forEach(el => {
+                                let text = el.textContent.replace(/\s+/g, ' ').trim();
+                                if(text.length > 2 && text.length < 100) ingredientsList.push(text);
+                            });
+                        }
+                    }
+
+                    // Formular befüllen
                     if(title) document.getElementById('formTitle').value = title;
                     if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                     
@@ -2527,7 +2587,6 @@
                     if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
                     if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
                     if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
-                    if(nutritionData.sugar) document.getElementById('formSugar').value = nutritionData.sugar;
                     if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
                     
                     if(portions) document.getElementById('formPortions').value = portions;
@@ -2535,6 +2594,7 @@
                     if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
                     if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
 
+                    // Zutaten ins Formular übertragen
                     if(ingredientsList.length > 0) {
                         const list = document.getElementById('ingredientsList');
                         const rows = list.querySelectorAll('.ingredient-row');
@@ -2571,16 +2631,17 @@
                         statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
                         statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
                     } else {
-                        statusEl.textContent = 'Webseite geladen, aber keine Rezeptdaten gefunden.';
+                        statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
                         statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
                     }
 
                 } catch(e) {
-                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten.';
+                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten (Format nicht kompatibel).';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                 }
             });
         }
+
     </script>
 </body>
 </html>
