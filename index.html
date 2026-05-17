@@ -9,9 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
-    
     <!-- Cache-Buster erzwingt den sofortigen Download der Logos auf dem Smartphone -->
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=9">
+    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=10">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     
@@ -101,7 +100,7 @@
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png?v=9" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
+                <img src="logomr78brutalist.png?v=10" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
@@ -134,7 +133,7 @@
     <!-- HAUPT NAVIGATION (HEADER) -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png?v=9" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
+            <img src="logomr78brutalist.png?v=10" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         
@@ -150,23 +149,31 @@
                 <span class="hidden sm:inline">Produkte</span>
             </button>
 
+            <!-- PAPIERKORB -->
             <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
+            
+            <!-- IMPORT -->
             <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                 Import
             </button>
+
+            <!-- NEUES REZEPT -->
             <button id="newRecipeBtn" class="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-red-500/30 transition-all flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Neu
             </button>
+
+            <!-- LOGOUT -->
             <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Abmelden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
         </div>
     </header>
 
+    <!-- ZENTRALER MAIN CONTAINER -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ========================================================================= -->
@@ -175,18 +182,18 @@
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
                 
-                <!-- Filterbereich -->
+                <!-- Filterbereich (Tags) -->
                 <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer">
                     <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
                 </div>
                 
                 <div class="flex items-center gap-3 flex-wrap">
-                    <!-- VIEW TOGGLE (Raster/Liste) -->
+                    <!-- UMSCHALTER: KACHEL / LISTE -->
                     <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
-                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht">
+                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Tags)">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                         </button>
-                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht">
+                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht (Fokus auf Nährwerte)">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
@@ -205,23 +212,27 @@
                 </div>
             </div>
 
+            <!-- Wenn ein Filter aktiv ist -->
             <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
                 <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
             </div>
             
+            <!-- Grid für Rezepte -->
             <div id="recipeGrid"></div>
             
+            <!-- Leerer Zustand -->
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4" id="emptyStateIcon">
-                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-4xl text-gray-400">🍽️</span>
                 </div>
                 <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
                 <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
 
+            <!-- Version Info -->
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 3.1 Ultimate Fixed | Stand: 17.05.2026, 20:39 Uhr
+                Version: 3.1 Ultimate Stable | Stand: 17.05.2026, 20:56 Uhr
             </div>
         </div>
 
@@ -288,6 +299,7 @@
                         Löschen
                     </button>
                     
+                    <!-- Trash View Buttons -->
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -488,7 +500,7 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- ANSICHT 5: REZEPT FORMULAR -->
+        <!-- ANSICHT 5: REZEPT FORMULAR (NEU / BEARBEITEN) -->
         <!-- ========================================================================= -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
@@ -653,12 +665,12 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- ANSICHT 6: PRODUKT FORMULAR -->
+        <!-- ANSICHT 6: PRODUKT FORMULAR (NEU) -->
         <!-- ========================================================================= -->
         <div id="productFormView" class="max-w-3xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7-7h18"></path></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Abbrechen
                 </button>
                 <h3 class="font-bold text-gray-900" id="productFormTitle">Neues Produkt</h3>
@@ -666,7 +678,6 @@
             </div>
 
             <div class="p-6 md:p-10">
-                <!-- Barcode Scanner via Live Text/Kamera Empfehlung -->
                 <div class="mb-10 bg-orange-50 p-6 rounded-2xl border border-orange-200 shadow-inner">
                     <h3 class="font-bold text-orange-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
@@ -789,6 +800,7 @@
 
         const loadingOverlay = document.getElementById('loadingOverlay');
 
+        // Dynamisches Holen der DOM Elemente zur Vermeidung von Null-Errors
         function getViews() {
             return {
                 login: document.getElementById('loginView'),
@@ -856,6 +868,194 @@
         }
 
         // ==========================================
+        // ZEN MODE LOGIC & TIMERS (WIEDERHERGESTELLT)
+        // ==========================================
+        function parseTextForTimers(text) {
+            if (!text) return '';
+            const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
+            return text.replace(regex, (match, number, unit) => {
+                let minutes = parseInt(number);
+                if (unit.toLowerCase().startsWith('st') || unit.toLowerCase() === 'h') {
+                    minutes = minutes * 60;
+                }
+                return `<button type="button" class="timer-trigger inline-flex items-center gap-1.5 whitespace-nowrap bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-xl shadow-sm border-2 border-blue-300 cursor-pointer hover:bg-blue-200 hover:-translate-y-0.5 active:translate-y-0 transition-all mx-1.5 align-middle print:hidden" data-time="${minutes}">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    ${match}
+                </button><span class="hidden print:inline font-bold">${match}</span>`;
+            });
+        }
+
+        function renderTimers() {
+            const container = document.getElementById('floatingTimerContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            activeTimers.forEach((timer, index) => {
+                const el = document.createElement('div');
+                const isFinished = timer.remaining <= 0;
+                
+                el.className = `timer-box flex items-center justify-between gap-4 p-3 rounded-xl border-2 shadow-lg backdrop-blur-md ${isFinished ? 'timer-ringing border-red-600 text-red-900' : 'bg-gray-900/90 border-gray-700 text-white'}`;
+                
+                const absRem = Math.abs(timer.remaining);
+                const mins = Math.floor(absRem / 60);
+                const secs = absRem % 60;
+                const timeStr = `${isFinished ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                el.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-70">Timer ${index + 1}</span>
+                        <span class="text-2xl font-black tabular-nums">${timeStr}</span>
+                    </div>
+                    <button class="stop-timer-btn p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                
+                el.querySelector('.stop-timer-btn').addEventListener('click', () => {
+                    clearInterval(timer.intervalId);
+                    activeTimers.splice(index, 1);
+                    renderTimers();
+                });
+                
+                container.appendChild(el);
+            });
+        }
+
+        let alarmAudioCtx = null;
+        function playAnnoyingAlarm() {
+            try {
+                if (!alarmAudioCtx) alarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (alarmAudioCtx.state === 'suspended') alarmAudioCtx.resume();
+                
+                let osc1 = alarmAudioCtx.createOscillator();
+                let gain1 = alarmAudioCtx.createGain();
+                osc1.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(900, alarmAudioCtx.currentTime);
+                gain1.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.15);
+                osc1.connect(gain1);
+                gain1.connect(alarmAudioCtx.destination);
+                osc1.start(alarmAudioCtx.currentTime);
+                osc1.stop(alarmAudioCtx.currentTime + 0.15);
+
+                let osc2 = alarmAudioCtx.createOscillator();
+                let gain2 = alarmAudioCtx.createGain();
+                osc2.type = 'sawtooth';
+                osc2.frequency.setValueAtTime(1100, alarmAudioCtx.currentTime + 0.2);
+                gain2.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime + 0.2);
+                gain2.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.35);
+                osc2.connect(gain2);
+                gain2.connect(alarmAudioCtx.destination);
+                osc2.start(alarmAudioCtx.currentTime + 0.2);
+                osc2.stop(alarmAudioCtx.currentTime + 0.35);
+            } catch(e) {}
+        }
+
+        function startTimer(minutes) {
+            const timer = { remaining: minutes * 60, intervalId: null };
+            
+            timer.intervalId = setInterval(() => {
+                timer.remaining--;
+                if(timer.remaining <= 0) {
+                    playAnnoyingAlarm();
+                }
+                renderTimers();
+            }, 1000);
+            
+            activeTimers.push(timer);
+            renderTimers();
+        }
+
+        document.getElementById('startZenModeBtn')?.addEventListener('click', () => {
+            if (!currentDetailRecipe || !currentDetailRecipe.instructions) return;
+            zenSteps = currentDetailRecipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
+            if (zenSteps.length === 0) return;
+
+            currentZenStepIndex = 0;
+            const stepsNum = document.getElementById('zenTotalStepsNum');
+            if(stepsNum) stepsNum.textContent = zenSteps.length;
+            
+            const currentViews = getViews();
+            currentViews.detail?.classList.add('hidden');
+            document.getElementById('mainHeader')?.classList.add('hidden');
+            currentViews.zen?.classList.remove('hidden');
+            
+            if (typeof requestWakeLock === 'function') requestWakeLock();
+            updateZenModeUI();
+        });
+
+        document.getElementById('exitZenModeBtn')?.addEventListener('click', () => {
+            window.speechSynthesis.cancel();
+            const currentViews = getViews();
+            currentViews.zen?.classList.add('hidden');
+            currentViews.detail?.classList.remove('hidden');
+            document.getElementById('mainHeader')?.classList.remove('hidden');
+            if (typeof releaseWakeLock === 'function') releaseWakeLock();
+        });
+
+        document.getElementById('zenPrevBtn')?.addEventListener('click', () => {
+            if (currentZenStepIndex > 0) {
+                currentZenStepIndex--;
+                updateZenModeUI();
+            }
+        });
+
+        document.getElementById('zenNextBtn')?.addEventListener('click', () => {
+            if (currentZenStepIndex < zenSteps.length - 1) {
+                currentZenStepIndex++;
+                updateZenModeUI();
+            } else {
+                document.getElementById('exitZenModeBtn')?.click(); 
+            }
+        });
+
+        document.getElementById('ttsPlayBtn')?.addEventListener('click', () => {
+            const text = zenSteps[currentZenStepIndex];
+            if (!text) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.rate = 0.95; 
+            window.speechSynthesis.speak(utterance);
+        });
+
+        function updateZenModeUI() {
+            window.speechSynthesis.cancel(); 
+            const zenCurrentStepNum = document.getElementById('zenCurrentStepNum');
+            if(zenCurrentStepNum) zenCurrentStepNum.textContent = currentZenStepIndex + 1;
+            
+            const stepText = zenSteps[currentZenStepIndex];
+            const textWithTimers = parseTextForTimers(stepText);
+            const instrContainer = document.getElementById('zenInstructionText');
+            if(instrContainer) {
+                instrContainer.innerHTML = textWithTimers;
+                instrContainer.querySelectorAll('.timer-trigger').forEach(trigger => {
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation(); 
+                        const mins = parseInt(trigger.getAttribute('data-time'));
+                        if(!isNaN(mins)) startTimer(mins);
+                    });
+                });
+            }
+            
+            const zenPrevBtn = document.getElementById('zenPrevBtn');
+            if(zenPrevBtn) zenPrevBtn.disabled = currentZenStepIndex === 0;
+            
+            const nextBtn = document.getElementById('zenNextBtn');
+            if(nextBtn) {
+                if (currentZenStepIndex === zenSteps.length - 1) {
+                    nextBtn.innerHTML = `Fertig <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                    nextBtn.classList.replace('bg-red-600', 'bg-green-600');
+                    nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                } else {
+                    nextBtn.innerHTML = `Weiter <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>`;
+                    nextBtn.classList.replace('bg-green-600', 'bg-red-600');
+                    nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+                }
+            }
+        }
+
+        // ==========================================
         // VIEW TOGGLE LOGIC
         // ==========================================
         function updateViewToggleUI() {
@@ -875,7 +1075,7 @@
         let isLoginMode = true;
         document.getElementById('toggleAuthModeBtn')?.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
-            document.getElementById('authError')?.classList.add('hidden');
+            const errEl = document.getElementById('authError'); if(errEl) errEl.classList.add('hidden');
             document.getElementById('loginTitle').textContent = isLoginMode ? "Willkommen zurück" : "Konto erstellen";
             document.getElementById('loginSubtitle').textContent = isLoginMode ? "Melde dich an, um deine Rezepte zu sehen." : "Sichere deine Rezepte dauerhaft.";
             document.getElementById('authSubmitBtn').textContent = isLoginMode ? "Einloggen" : "Registrieren";
@@ -887,14 +1087,16 @@
             const em = document.getElementById('authEmail').value;
             const pw = document.getElementById('authPassword').value;
             const btn = document.getElementById('authSubmitBtn');
-            document.getElementById('authError')?.classList.add('hidden');
+            const errEl = document.getElementById('authError'); if(errEl) errEl.classList.add('hidden');
             btn.disabled = true; btn.innerHTML = 'Warten...';
             try {
                 if (isLoginMode) await signInWithEmailAndPassword(auth, em, pw);
                 else await createUserWithEmailAndPassword(auth, em, pw);
             } catch (err) {
-                document.getElementById('authError').classList.remove('hidden');
-                document.getElementById('authError').textContent = "Fehler bei der Anmeldung. Bitte prüfen.";
+                if(errEl) {
+                    errEl.classList.remove('hidden');
+                    errEl.textContent = "Fehler bei der Anmeldung. Bitte prüfen.";
+                }
                 btn.disabled = false; btn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
             }
         });
@@ -1440,9 +1642,9 @@
                 const imgEl = document.getElementById('detailImage');
                 if(recipe.imageBase64) {
                     if(imgEl) imgEl.src = recipe.imageBase64;
-                    if(imgContainer) imgContainer.classList.remove('hidden');
+                    imgContainer?.classList.remove('hidden');
                 } else {
-                    if(imgContainer) imgContainer.classList.add('hidden');
+                    imgContainer?.classList.add('hidden');
                     if(imgEl) imgEl.src = '';
                 }
 
@@ -1485,23 +1687,23 @@
                 
                 let hasTimes = false;
                 if (recipe.times) {
-                    if (recipe.times.total) { if(boxTotal) boxTotal.classList.remove('hidden'); const detailTimeTotal = document.getElementById('detailTimeTotal'); if(detailTimeTotal) detailTimeTotal.textContent = recipe.times.total; hasTimes = true; } else { if(boxTotal) boxTotal.classList.add('hidden'); }
-                    if (recipe.times.prep) { if(boxPrep) boxPrep.classList.remove('hidden'); const detailTimePrep = document.getElementById('detailTimePrep'); if(detailTimePrep) detailTimePrep.textContent = recipe.times.prep; hasTimes = true; } else { if(boxPrep) boxPrep.classList.add('hidden'); }
-                    if (recipe.times.cook) { if(boxCook) boxCook.classList.remove('hidden'); const detailTimeCook = document.getElementById('detailTimeCook'); if(detailTimeCook) detailTimeCook.textContent = recipe.times.cook; hasTimes = true; } else { if(boxCook) boxCook.classList.add('hidden'); }
-                    if (recipe.times.rest) { if(boxRest) boxRest.classList.remove('hidden'); const detailTimeRest = document.getElementById('detailTimeRest'); if(detailTimeRest) detailTimeRest.textContent = recipe.times.rest; hasTimes = true; } else { if(boxRest) boxRest.classList.add('hidden'); }
+                    if (recipe.times.total) { boxTotal?.classList.remove('hidden'); const detailTimeTotal = document.getElementById('detailTimeTotal'); if(detailTimeTotal) detailTimeTotal.textContent = recipe.times.total; hasTimes = true; } else { boxTotal?.classList.add('hidden'); }
+                    if (recipe.times.prep) { boxPrep?.classList.remove('hidden'); const detailTimePrep = document.getElementById('detailTimePrep'); if(detailTimePrep) detailTimePrep.textContent = recipe.times.prep; hasTimes = true; } else { boxPrep?.classList.add('hidden'); }
+                    if (recipe.times.cook) { boxCook?.classList.remove('hidden'); const detailTimeCook = document.getElementById('detailTimeCook'); if(detailTimeCook) detailTimeCook.textContent = recipe.times.cook; hasTimes = true; } else { boxCook?.classList.add('hidden'); }
+                    if (recipe.times.rest) { boxRest?.classList.remove('hidden'); const detailTimeRest = document.getElementById('detailTimeRest'); if(detailTimeRest) detailTimeRest.textContent = recipe.times.rest; hasTimes = true; } else { boxRest?.classList.add('hidden'); }
                 }
-                if (hasTimes) { if(timesContainer) timesContainer.classList.remove('hidden'); } else { if(timesContainer) timesContainer.classList.add('hidden'); }
+                if (hasTimes) { timesContainer?.classList.remove('hidden'); } else { timesContainer?.classList.add('hidden'); }
 
                 const nutContainer = document.getElementById('detailNutritionContainer');
                 if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.fat || recipe.nutrition.sugar)) {
-                    if(nutContainer) nutContainer.classList.remove('hidden');
+                    nutContainer?.classList.remove('hidden');
                     const detKcal = document.getElementById('detailKcal'); if(detKcal) detKcal.textContent = recipe.nutrition.kcal || '-';
                     const detProt = document.getElementById('detailProtein'); if(detProt) detProt.textContent = recipe.nutrition.protein || '-';
                     const detCarbs = document.getElementById('detailCarbs'); if(detCarbs) detCarbs.textContent = recipe.nutrition.carbs || '-';
                     const detSug = document.getElementById('detailSugar'); if(detSug) detSug.textContent = recipe.nutrition.sugar || '-';
                     const detFat = document.getElementById('detailFat'); if(detFat) detFat.textContent = recipe.nutrition.fat || '-';
                 } else {
-                    if(nutContainer) nutContainer.classList.add('hidden');
+                    nutContainer?.classList.add('hidden');
                 }
 
                 const detPortions = document.getElementById('detailPortionsCount'); if(detPortions) detPortions.textContent = currentDisplayPortions;
@@ -1547,20 +1749,20 @@
 
                 const notesContainer = document.getElementById('detailNotesContainer');
                 if(recipe.notes && typeof recipe.notes === 'string' && recipe.notes.trim() !== '') {
-                    if(notesContainer) notesContainer.classList.remove('hidden');
+                    notesContainer?.classList.remove('hidden');
                     const detNotesTxt = document.getElementById('detailNotesText');
                     if(detNotesTxt) detNotesTxt.textContent = recipe.notes.trim();
                 } else {
-                    if(notesContainer) notesContainer.classList.add('hidden');
+                    notesContainer?.classList.add('hidden');
                 }
 
                 const sourceContainer = document.getElementById('detailSourceContainer');
                 const sourceLink = document.getElementById('detailSourceLink');
                 if (recipe.sourceUrl) {
-                    if(sourceContainer) sourceContainer.classList.remove('hidden');
+                    sourceContainer?.classList.remove('hidden');
                     if(sourceLink) sourceLink.href = recipe.sourceUrl;
                 } else {
-                    if(sourceContainer) sourceContainer.classList.add('hidden');
+                    sourceContainer?.classList.add('hidden');
                 }
 
                 showView('detail');
@@ -1948,7 +2150,7 @@
                 window.location.hash = showTrashView ? '#trash' : ''; 
             } catch (error) {
                 console.error("Speicherfehler:", error);
-                alert("Fehler beim Speichern!");
+                showToast("Fehler beim Speichern!");
             } finally {
                 submitBtn.innerHTML = originalContent;
                 submitBtn.disabled = false;
