@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
-    <!-- Trick: ?v=4 zwingt Handys, alles neu zu laden -->
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=4">
+    <!-- Versions-Tags erzwingen Cache-Refresh auf Handys -->
+    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=5">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     
@@ -28,7 +28,6 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Versteckt den hässlichen grauen Balken unter den Filter-Tags */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -42,7 +41,6 @@
         .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
 
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
-        .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
         
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -56,14 +54,11 @@
             .print\:p-0 { padding: 0 !important; }
             #mainContent { overflow: visible !important; height: auto !important; padding: 0 !important; }
             #detailView { border: none !important; box-shadow: none !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
-            #detailImageContainer { height: 160px !important; margin-bottom: 12px !important; border-radius: 8px; overflow: hidden; }
-            h2#detailTitle { font-size: 2rem !important; margin-bottom: 12px !important; line-height: 1.1 !important; }
             .page-break-inside-avoid { page-break-inside: avoid; }
         }
 
         .fav-active svg { fill: #dc2626; color: #dc2626; }
         
-        /* Floating Timer Styles */
         .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .timer-ringing { animation: pulseRed 1s infinite; }
@@ -97,7 +92,7 @@
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
-    <!-- ANSICHT 0: LOGIN & REGISTRIERUNG -->
+    <!-- ANSICHT 0: LOGIN -->
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
@@ -105,7 +100,6 @@
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
-
             <form id="authForm" class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium text-gray-800 mb-1">E-Mail Adresse</label>
@@ -115,18 +109,11 @@
                     <label class="block text-sm font-medium text-gray-800 mb-1">Passwort</label>
                     <input type="password" id="authPassword" required minlength="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="Min. 6 Zeichen">
                 </div>
-                
                 <div id="authError" class="hidden text-red-600 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">Fehler bei der Anmeldung.</div>
-
-                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">
-                    Einloggen
-                </button>
+                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">Einloggen</button>
             </form>
-
             <div class="mt-6 text-center">
-                <button type="button" id="toggleAuthModeBtn" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
-                    Neu hier? Jetzt registrieren
-                </button>
+                <button type="button" id="toggleAuthModeBtn" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors">Neu hier? Jetzt registrieren</button>
             </div>
         </div>
     </div>
@@ -144,22 +131,17 @@
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-            <!-- PRODUKTE BUTTON -->
             <button id="navProductsBtn" class="flex-shrink-0 bg-white hover:bg-orange-50 text-orange-700 font-bold py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-orange-200 shadow-sm" title="Produkte & Speisekammer">
-                <span class="text-lg leading-none">🥫</span>
-                <span class="hidden sm:inline">Produkte</span>
+                <span class="text-lg leading-none">🥫</span><span class="hidden sm:inline">Produkte</span>
             </button>
-
             <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
             <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Import
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Import
             </button>
             <button id="newRecipeBtn" class="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-red-500/30 transition-all flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Neu
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Neu
             </button>
             <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Abmelden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -167,7 +149,6 @@
         </div>
     </header>
 
-    <!-- HIER IST DER ZENTRALE EINZIGE MAIN CONTAINER FÜR ALLE VIEWS -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ========================================================================= -->
@@ -175,18 +156,14 @@
         <!-- ========================================================================= -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
-                
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer">
-                    <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
-                </div>
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer"></div>
                 
                 <div class="flex items-center gap-3 flex-wrap">
-                    <!-- VIEW TOGGLE (Raster/Liste) -->
                     <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
-                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Tags)">
+                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                         </button>
-                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht (Fokus auf Nährwerte)">
+                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
@@ -213,31 +190,58 @@
             <div id="recipeGrid"></div>
             
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4" id="emptyStateIcon">
-                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-4xl text-gray-400">🍽️</span>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
-                <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
+                <h3 class="text-xl font-bold text-gray-900">Noch keine Rezepte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
 
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 2.0 Ultimate (Full Stack fixed) | Stand: 17.05.2026, 19:15 Uhr
+                Version: 2.1 (Director's Cut Clean) | Stand: 17.05.2026, 19:40 Uhr
             </div>
         </div>
 
         <!-- ========================================================================= -->
-        <!-- ANSICHT 2: REZEPT DETAILS -->
+        <!-- ANSICHT 2: PRODUKTE (SPEISEKAMMER) LISTE -->
+        <!-- ========================================================================= -->
+        <div id="productsListView" class="max-w-[1600px] w-full mx-auto hidden print:hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 flex items-center gap-3">
+                        <span class="text-4xl">🥫</span> Speisekammer
+                    </h2>
+                    <p class="text-gray-600 mt-1 font-medium">Hier speicherst du deine Produkte, Saucen und Spezialzutaten.</p>
+                </div>
+                <button id="newProductBtn" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Neues Produkt
+                </button>
+            </div>
+
+            <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6"></div>
+
+            <div id="emptyProductsState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
+                <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-100">
+                    <span class="text-3xl">🥫</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Noch keine Produkte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto font-medium">Nutze dein Handy, um Barcodes zu scannen und Zutaten hier zu speichern.</p>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT 3: REZEPT DETAILS -->
         <!-- ========================================================================= -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Zurück
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Zurück
                 </button>
                 <div class="flex gap-2 flex-wrap justify-end" id="detailActionBar">
                     <button id="startZenModeBtn" class="text-white bg-gray-900 hover:bg-black font-bold text-sm flex items-center gap-1.5 px-4 py-2 rounded-lg transition-colors shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span class="hidden sm:inline">Kochen Starten</span>
+                        <span class="hidden sm:inline">Kochen</span>
                     </button>
                     <button id="favRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
@@ -259,27 +263,24 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         Löschen
                     </button>
-                    
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Wiederherstellen
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Wiederherstellen
                     </button>
                     <button id="hardDeleteRecipeBtn" class="hidden text-white bg-red-600 hover:bg-red-700 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Endgültig löschen
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Endgültig löschen
                     </button>
                 </div>
             </div>
             
             <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3 relative group">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity print:hidden"></div>
             </div>
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
                 
+                <!-- GF Banner Emilia -->
                 <div id="detailGfBanner" class="hidden mb-6 flex justify-center md:justify-start print:justify-start transition-all duration-300 transform hover:scale-105">
-                    <img src="GFEmilia.png?v=2" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
+                    <img src="GFEmilia.png?v=5" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
@@ -417,7 +418,7 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- ANSICHT 3: PRODUKT DETAILS (NEU) -->
+        <!-- ANSICHT 4: PRODUKT DETAILS (NEU) -->
         <!-- ========================================================================= -->
         <div id="productDetailView" class="max-w-2xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
@@ -441,7 +442,7 @@
                 <div class="w-48 h-48 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative flex items-center justify-center">
                     <img id="detailProdImage" src="" class="w-full h-full object-contain p-2 mix-blend-multiply">
                     <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden">
-                        <img src="GFEmilia.png?v=2" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
+                        <img src="GFEmilia.png?v=5" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
                     </div>
                 </div>
                 <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
@@ -459,7 +460,7 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- ANSICHT 4: FORMULAR (REZEPTE) -->
+        <!-- ANSICHT 5: REZEPT FORMULAR -->
         <!-- ========================================================================= -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
@@ -515,7 +516,7 @@
                     <!-- GF TOGGLE -->
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=2" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=5" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -624,7 +625,7 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- ANSICHT 5: PRODUKT FORMULAR (NEU) -->
+        <!-- ANSICHT 6: PRODUKT FORMULAR -->
         <!-- ========================================================================= -->
         <div id="productFormView" class="max-w-3xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
@@ -637,14 +638,14 @@
             </div>
 
             <div class="p-6 md:p-10">
-                <!-- Barcode Scanner via Live Text/Kamera Empfehlung -->
+                <!-- Barcode Scanner -->
                 <div class="mb-10 bg-orange-50 p-6 rounded-2xl border border-orange-200 shadow-inner">
                     <h3 class="font-bold text-orange-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                         Daten laden (Barcodescanner)
                     </h3>
                     <p class="text-sm text-orange-800 mb-4 leading-relaxed">
-                        <strong>Tipp für Spezialprodukte (z.B. BBQ-Saucen):</strong> Nutze die Text-Erkennung (Google Lens / Apple Live Text) in der Kamera deines Handys, um die Zutatenliste der Verpackung zu kopieren und füge sie unten manuell ein. Für Standard-Produkte kannst du hier den Barcode (EAN) suchen:
+                        Nutze für Spezialprodukte am besten Google Lens/Live Text zum Kopieren der Zutaten. Für Standard-Produkte suche hier per Strichcode (EAN):
                     </p>
                     <div class="flex gap-2">
                         <input type="text" id="barcodeInput" placeholder="z.B. 4005500332211" class="flex-1 px-4 py-3 bg-white border border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none shadow-sm font-mono tracking-widest">
@@ -687,7 +688,7 @@
 
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=2" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=5" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -874,6 +875,7 @@
                     recipes = [];
                     snap.forEach(d => { recipes.push({ id: d.id, ...d.data() }); });
                     if(window.location.hash === '' || window.location.hash === '#trash') renderRecipes();
+                    renderFilterTags(); updateTagDatalist();
                 } catch(e) { console.error(e); } finally { loadingOverlay?.classList.add('hidden'); }
             });
             productsUnsubscribe = onSnapshot(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products'), (snap) => {
@@ -891,25 +893,29 @@
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
             if(!grid) return; grid.innerHTML = '';
-            products.forEach(p => {
+            let count = 0;
+            const sortedProducts = [...products].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            sortedProducts.forEach(prod => {
+                count++;
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-2xl shadow border border-orange-200 cursor-pointer overflow-hidden flex flex-col transform hover:-translate-y-1 transition-all";
-                card.onclick = () => window.location.hash = `#product-${p.id}`;
+                card.onclick = () => window.location.hash = `#product-${prod.id}`;
                 card.innerHTML = `
                     <div class="h-32 bg-gray-100 flex justify-center items-center relative p-2 border-b border-gray-200">
-                        ${p.isGlutenFree ? `<img src="GFEmilia.png?v=2" class="absolute top-2 left-2 h-6 rounded shadow border border-white/50" onerror="this.style.display='none'">` : ''}
-                        ${p.imageBase64 ? `<img src="${p.imageBase64}" class="h-full w-full object-contain mix-blend-multiply">` : '<span class="text-4xl opacity-20">🥫</span>'}
+                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=5" class="absolute top-2 left-2 h-6 rounded shadow border border-white/50" onerror="this.style.display='none'">` : ''}
+                        ${prod.imageBase64 ? `<img src="${prod.imageBase64}" class="h-full w-full object-contain mix-blend-multiply">` : '<span class="text-4xl opacity-20">🥫</span>'}
                     </div>
                     <div class="p-3 flex-1 flex flex-col justify-between">
-                        <h3 class="font-bold text-sm leading-tight line-clamp-2">${p.name}</h3>
-                        ${p.brand ? `<p class="text-xs text-orange-600 font-bold mt-1 uppercase tracking-wider">${p.brand}</p>` : ''}
+                        <h3 class="font-bold text-sm leading-tight line-clamp-2">${prod.name}</h3>
+                        ${prod.brand ? `<p class="text-xs text-orange-600 font-bold mt-1 uppercase tracking-wider">${prod.brand}</p>` : ''}
                     </div>
                 `;
                 grid.appendChild(card);
             });
             const emptyState = document.getElementById('emptyProductsState');
             if(emptyState) {
-                if (products.length === 0) emptyState.classList.remove('hidden'); 
+                if (count === 0) emptyState.classList.remove('hidden'); 
                 else emptyState.classList.add('hidden');
             }
         }
@@ -956,6 +962,7 @@
             document.getElementById('barcodeInput').value = p.barcode || '';
             document.getElementById('prodIngredients').value = p.ingredients || '';
             document.getElementById('prodGlutenFree').checked = p.isGlutenFree || false;
+            
             if(p.imageBase64) {
                 currentProdImageBase64 = p.imageBase64;
                 document.getElementById('prodImagePreview').src = currentProdImageBase64;
@@ -1036,7 +1043,7 @@
             finally { btn.innerHTML = originalContent; btn.disabled = false; }
         });
 
-        // YUKA FETCH
+        // YUKA FETCH (Robust via allorigins wrapper for fallback CORS)
         document.getElementById('fetchBarcodeBtn')?.addEventListener('click', async () => {
             const b = document.getElementById('barcodeInput').value.trim();
             const statusEl = document.getElementById('barcodeStatus');
@@ -1124,16 +1131,16 @@
                 const trBtn = document.getElementById('trashViewBtn');
                 
                 if(showTrashView) {
-                    document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
+                    const ht = document.getElementById('mainHeaderTitle'); if(ht) ht.textContent = "Papierkorb";
                     listCtrl?.classList.add('hidden');
-                    document.getElementById('emptyStateTitle').textContent = "Papierkorb ist leer";
-                    document.getElementById('emptyStateDesc').textContent = "Gelöschte Rezepte tauchen hier auf.";
+                    const et = document.getElementById('emptyStateTitle'); if(et) et.textContent = "Papierkorb ist leer";
+                    const ed = document.getElementById('emptyStateDesc'); if(ed) ed.textContent = "Gelöschte Rezepte tauchen hier auf.";
                     trBtn?.classList.add('text-red-600', 'bg-red-50');
                 } else {
-                    document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
+                    const ht = document.getElementById('mainHeaderTitle'); if(ht) ht.textContent = "Meine Rezepte";
                     listCtrl?.classList.remove('hidden');
-                    document.getElementById('emptyStateTitle').textContent = "Noch keine Rezepte";
-                    document.getElementById('emptyStateDesc').textContent = "Klicke oben auf 'Neu' oder 'Import'.";
+                    const et = document.getElementById('emptyStateTitle'); if(et) et.textContent = "Noch keine Rezepte";
+                    const ed = document.getElementById('emptyStateDesc'); if(ed) ed.textContent = "Klicke oben auf 'Neu' oder 'Import'.";
                     trBtn?.classList.remove('text-red-600', 'bg-red-50');
                 }
                 renderRecipes();
@@ -1143,9 +1150,7 @@
             window.scrollTo(0, 0);
         }
 
-        document.getElementById('trashViewBtn')?.addEventListener('click', () => {
-            window.location.hash = showTrashView ? '' : '#trash';
-        });
+        document.getElementById('trashViewBtn')?.addEventListener('click', () => { window.location.hash = showTrashView ? '' : '#trash'; });
 
         window.addEventListener('hashchange', () => {
             if(!currentUser) return; 
@@ -1166,12 +1171,8 @@
         document.getElementById('logoBtn')?.addEventListener('click', () => { window.location.hash = ''; });
         document.getElementById('newRecipeBtn')?.addEventListener('click', () => { window.location.hash = '#new'; });
         document.getElementById('importBtn')?.addEventListener('click', () => { window.location.hash = '#import'; });
-        document.querySelectorAll('.backToHomeBtn').forEach(btn => {
-            btn.addEventListener('click', () => { window.location.hash = showTrashView ? '#trash' : ''; });
-        });
-        document.querySelectorAll('.backToProductsBtn').forEach(btn => {
-            btn.addEventListener('click', () => { window.location.hash = '#products'; });
-        });
+        document.querySelectorAll('.backToHomeBtn').forEach(btn => { btn.addEventListener('click', () => { window.location.hash = showTrashView ? '#trash' : ''; }); });
+        document.querySelectorAll('.backToProductsBtn').forEach(btn => { btn.addEventListener('click', () => { window.location.hash = '#products'; }); });
 
         function renderFilterTags() {
             const container = document.getElementById('filterTagsContainer');
@@ -1245,7 +1246,7 @@
                     if (recipe.imageBase64) header.innerHTML = `<img src="${recipe.imageBase64}" class="w-full h-full object-cover">`;
                     else header.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"><div class="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800">${recipe.title.charAt(0).toUpperCase()}</div></div>`;
 
-                    if (recipe.isGlutenFree) header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=2" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
+                    if (recipe.isGlutenFree) header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=5" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
 
                     let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
                     if(recipe.isFavorite && !showTrashView) badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
@@ -1288,8 +1289,6 @@
                     if (recipe.imageBase64) imgCont.innerHTML = `<img src="${recipe.imageBase64}" class="w-full h-full object-cover">`;
                     else { imgCont.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800"; imgCont.textContent = recipe.title.charAt(0).toUpperCase(); }
 
-                    if (recipe.isGlutenFree) imgCont.innerHTML += `<div class="absolute top-1 left-1 bg-amber-400/95 backdrop-blur text-amber-950 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-300 z-10 flex items-center gap-0.5"><span>🌾</span> GF</div>`;
-
                     const infoCont = document.createElement('div');
                     infoCont.className = "flex-1 min-w-0 flex flex-col justify-center py-0.5";
                     let metaHtml = '';
@@ -1298,17 +1297,19 @@
                     
                     const headerRow = document.createElement('div');
                     headerRow.className = "flex justify-between items-start gap-2 mb-1";
-                    headerRow.innerHTML = `<div class="flex-1"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight">${recipe.title}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>`;
+                    
+                    let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=5" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
+                    headerRow.innerHTML = `<div class="flex-1 min-w-0"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">${recipe.title}${titleGf}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>`;
 
                     let nutLine = '';
                     if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.sugar || recipe.nutrition.fat)) {
-                        nutLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">`;
-                        if (recipe.nutrition.kcal) nutLine += `<span class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.kcal} kcal</span>`;
-                        if (recipe.nutrition.carbs) nutLine += `<span class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.carbs}g KH</span>`;
-                        if (recipe.nutrition.sugar) nutLine += `<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g Zucker</span>`;
-                        if (recipe.nutrition.protein) nutLine += `<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.protein}g Prot</span>`;
-                        if (recipe.nutrition.fat) nutLine += `<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fat}g Fett</span>`;
-                        nutLine += `</div>`;
+                        let nut = [];
+                        if(recipe.nutrition.kcal) nut.push(`<span class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.kcal} kcal</span>`);
+                        if(recipe.nutrition.carbs) nut.push(`<span class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.carbs}g KH</span>`);
+                        if(recipe.nutrition.sugar) nut.push(`<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g Zucker</span>`);
+                        if(recipe.nutrition.protein) nut.push(`<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.protein}g Prot</span>`);
+                        if(recipe.nutrition.fat) nut.push(`<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fat}g Fett</span>`);
+                        nutLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">${nut.join('')}</div>`;
                     }
                     infoCont.appendChild(headerRow);
                     if(nutLine) infoCont.insertAdjacentHTML('beforeend', nutLine);
@@ -1734,7 +1735,6 @@
             const datalist = document.getElementById('ingredientSuggestions');
             if(!datalist) return;
             datalist.innerHTML = '';
-            // Produkte + Standard in Autocomplete
             const prodNames = products.map(p => p.name).filter(n => n.length > 0);
             const allIngs = new Set([...customIngredients, ...prodNames]);
             const sorted = Array.from(allIngs).sort((a, b) => a.localeCompare(b, 'de'));
@@ -1934,7 +1934,7 @@
             let finalUrl = url;
             if (!/^https?:\/\//i.test(finalUrl)) finalUrl = 'https://' + finalUrl;
 
-            statusEl.textContent = 'Versuche Daten abzurufen... (Das kann kurz dauern)';
+            statusEl.textContent = 'Versuche Daten abzurufen...';
             statusEl.classList.remove('hidden');
             statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
