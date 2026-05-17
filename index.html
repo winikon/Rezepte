@@ -66,7 +66,7 @@
 
         .fav-active svg { fill: #dc2626; color: #dc2626; }
         
-        /* Floating Timer Styles */
+        /* Floating Timer Styles (Mit aggressiverem roten Blinken) */
         .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .timer-ringing { animation: pulseRed 1s infinite; }
@@ -288,6 +288,7 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
+                            <!-- NEUE REIHENFOLGE -->
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
@@ -428,7 +429,7 @@
                         Rezept Importieren
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 gap-6">
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                             <p class="text-sm font-bold text-gray-800 mb-2">Von Webseite (z.B. Chefkoch)</p>
                             <div class="flex gap-2">
@@ -651,7 +652,7 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const apiKey = ""; 
+        // Google API Key wurde hier vollständig entfernt, da das Feature zurückgebaut wurde.
 
         const firebaseConfig = {
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
@@ -698,6 +699,7 @@
             form: document.getElementById('formView'),
             zen: document.getElementById('zenModeView')
         };
+        
         const mainHeader = document.getElementById('mainHeader');
         const mainContent = document.getElementById('mainContent');
         const searchInput = document.getElementById('searchInput');
@@ -739,8 +741,11 @@
             return html;
         }
 
+        // ==========================================
+        // ZEN MODUS
+        // ==========================================
         const startZenBtn = document.getElementById('startZenModeBtn');
-        if (startZenBtn) {
+        if(startZenBtn) {
             startZenBtn.addEventListener('click', () => {
                 if (!currentDetailRecipe || !currentDetailRecipe.instructions) return;
                 zenSteps = currentDetailRecipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
@@ -759,7 +764,7 @@
         }
 
         const exitZenBtn = document.getElementById('exitZenModeBtn');
-        if (exitZenBtn) {
+        if(exitZenBtn) {
             exitZenBtn.addEventListener('click', () => {
                 window.speechSynthesis.cancel();
                 views.zen.classList.add('hidden');
@@ -770,7 +775,7 @@
         }
 
         const zenPrevBtn = document.getElementById('zenPrevBtn');
-        if (zenPrevBtn) {
+        if(zenPrevBtn) {
             zenPrevBtn.addEventListener('click', () => {
                 if (currentZenStepIndex > 0) {
                     currentZenStepIndex--;
@@ -780,7 +785,7 @@
         }
 
         const zenNextBtn = document.getElementById('zenNextBtn');
-        if (zenNextBtn) {
+        if(zenNextBtn) {
             zenNextBtn.addEventListener('click', () => {
                 if (currentZenStepIndex < zenSteps.length - 1) {
                     currentZenStepIndex++;
@@ -792,10 +797,11 @@
         }
 
         const ttsBtn = document.getElementById('ttsPlayBtn');
-        if (ttsBtn) {
+        if(ttsBtn) {
             ttsBtn.addEventListener('click', () => {
                 const text = zenSteps[currentZenStepIndex];
                 if (!text) return;
+                
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'de-DE';
@@ -835,6 +841,9 @@
             }
         }
 
+        // ==========================================
+        // TIMERS
+        // ==========================================
         function parseTextForTimers(text) {
             const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
             return text.replace(regex, (match, number, unit) => {
@@ -851,6 +860,7 @@
 
         function renderTimers() {
             const container = document.getElementById('floatingTimerContainer');
+            if(!container) return;
             container.innerHTML = '';
             
             activeTimers.forEach((timer, index) => {
@@ -929,9 +939,12 @@
             renderTimers();
         }
 
-        const favViewBtn = document.getElementById('toggleFavViewBtn');
-        if (favViewBtn) {
-            favViewBtn.addEventListener('click', function() {
+        // ==========================================
+        // UI & EVENT LISTENER REZEPTE
+        // ==========================================
+        const toggleFavBtn = document.getElementById('toggleFavViewBtn');
+        if (toggleFavBtn) {
+            toggleFavBtn.addEventListener('click', function() {
                 showFavoritesOnly = !showFavoritesOnly;
                 if(showFavoritesOnly) {
                     this.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
@@ -946,9 +959,9 @@
             });
         }
 
-        const sortSelectEl = document.getElementById('sortSelect');
-        if (sortSelectEl) {
-            sortSelectEl.addEventListener('change', function() {
+        const sortSelect = document.getElementById('sortSelect');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
                 currentSortOption = this.value;
                 renderRecipes();
             });
@@ -975,9 +988,9 @@
             });
         }
 
-        const shareBtn = document.getElementById('shareRecipeBtn');
-        if (shareBtn) {
-            shareBtn.addEventListener('click', async () => {
+        const shareRecipeBtn = document.getElementById('shareRecipeBtn');
+        if (shareRecipeBtn) {
+            shareRecipeBtn.addEventListener('click', async () => {
                 if(!currentDetailRecipe) return;
                 const btn = document.getElementById('shareRecipeBtn');
                 const textSpan = document.getElementById('shareRecipeText');
@@ -1018,12 +1031,14 @@
             });
         }
 
-        const printBtn = document.getElementById('printRecipeBtn');
-        if (printBtn) printBtn.addEventListener('click', () => { window.print(); });
+        const printRecipeBtn = document.getElementById('printRecipeBtn');
+        if (printRecipeBtn) {
+            printRecipeBtn.addEventListener('click', () => { window.print(); });
+        }
 
-        const copyIngBtn = document.getElementById('copyIngredientsBtn');
-        if (copyIngBtn) {
-            copyIngBtn.addEventListener('click', () => {
+        const copyIngredientsBtn = document.getElementById('copyIngredientsBtn');
+        if (copyIngredientsBtn) {
+            copyIngredientsBtn.addEventListener('click', () => {
                 if(!currentDetailRecipe) return;
                 const btn = document.getElementById('copyIngredientsBtn');
                 const textSpan = document.getElementById('copyIngredientsText');
@@ -1069,9 +1084,9 @@
             }
         }
 
-        const wakeBtn = document.getElementById('wakeLockBtn');
-        if (wakeBtn) {
-            wakeBtn.addEventListener('click', () => {
+        const wakeLockBtn = document.getElementById('wakeLockBtn');
+        if (wakeLockBtn) {
+            wakeLockBtn.addEventListener('click', () => {
                 if (wakeLock !== null) releaseWakeLock(); else requestWakeLock();
             });
         }
@@ -1082,6 +1097,9 @@
             }
         });
 
+        // ==========================================
+        // AUTHENTIFIZIERUNG
+        // ==========================================
         let isLoginMode = true;
         const authForm = document.getElementById('authForm');
         const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
@@ -1090,7 +1108,7 @@
         const authSubmitBtn = document.getElementById('authSubmitBtn');
         const authError = document.getElementById('authError');
 
-        if (toggleAuthModeBtn) {
+        if(toggleAuthModeBtn) {
             toggleAuthModeBtn.addEventListener('click', () => {
                 isLoginMode = !isLoginMode;
                 authError.classList.add('hidden');
@@ -1108,7 +1126,7 @@
             });
         }
 
-        if (authForm) {
+        if(authForm) {
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('authEmail').value;
@@ -1130,7 +1148,7 @@
         }
 
         const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
+        if(logoutBtn) {
             logoutBtn.addEventListener('click', async () => {
                 if(confirm("Möchtest du dich wirklich abmelden?")) await signOut(auth);
             });
@@ -1139,8 +1157,9 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                loadingOverlay.classList.remove('hidden');
-                document.getElementById('loadingText').textContent = "Lade deine Rezepte...";
+                if(loadingOverlay) loadingOverlay.classList.remove('hidden');
+                const loadTxt = document.getElementById('loadingText');
+                if(loadTxt) loadTxt.textContent = "Lade deine Rezepte...";
                 views.login.classList.add('hidden');
                 mainHeader.classList.remove('hidden');
                 mainHeader.classList.add('flex');
@@ -1159,7 +1178,7 @@
                 views.form.classList.add('hidden');
                 views.zen.classList.add('hidden');
                 
-                loadingOverlay.classList.add('hidden');
+                if(loadingOverlay) loadingOverlay.classList.add('hidden');
                 views.login.classList.remove('hidden');
                 if(authForm) authForm.reset();
                 if(authSubmitBtn) {
@@ -1206,7 +1225,7 @@
                 renderRecipes();
                 renderFilterTags();
                 updateTagDatalist();
-                loadingOverlay.classList.add('hidden');
+                if(loadingOverlay) loadingOverlay.classList.add('hidden');
             }, (error) => {
                 console.error("Fehler beim Laden der Rezepte:", error);
             });
@@ -1229,6 +1248,9 @@
             } catch (e) {}
         }
 
+        // ==========================================
+        // ROUTING & ANSICHTEN
+        // ==========================================
         function showView(viewName) {
             views.login.classList.add('hidden');
             views.list.classList.add('hidden');
@@ -1241,31 +1263,38 @@
             }
 
             if (viewName === 'list') {
-                document.getElementById('searchContainer').classList.remove('hidden');
+                const searchCont = document.getElementById('searchContainer');
+                if(searchCont) searchCont.classList.remove('hidden');
+                
                 releaseWakeLock(); 
+                
+                const listCtrl = document.getElementById('listControls');
+                const trBtn = document.getElementById('trashViewBtn');
+                
                 if(showTrashView) {
                     document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
-                    document.getElementById('listControls').classList.add('hidden');
+                    if(listCtrl) listCtrl.classList.add('hidden');
                     document.getElementById('emptyStateTitle').textContent = "Papierkorb ist leer";
                     document.getElementById('emptyStateDesc').textContent = "Gelöschte Rezepte tauchen hier auf.";
-                    document.getElementById('trashViewBtn').classList.add('text-red-600', 'bg-red-50');
+                    if(trBtn) trBtn.classList.add('text-red-600', 'bg-red-50');
                 } else {
                     document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
-                    document.getElementById('listControls').classList.remove('hidden');
+                    if(listCtrl) listCtrl.classList.remove('hidden');
                     document.getElementById('emptyStateTitle').textContent = "Noch keine Rezepte";
                     document.getElementById('emptyStateDesc').textContent = "Klicke oben auf 'Neu' oder 'Import'.";
-                    document.getElementById('trashViewBtn').classList.remove('text-red-600', 'bg-red-50');
+                    if(trBtn) trBtn.classList.remove('text-red-600', 'bg-red-50');
                 }
                 renderRecipes();
             } else {
-                document.getElementById('searchContainer').classList.add('hidden');
+                const searchCont = document.getElementById('searchContainer');
+                if(searchCont) searchCont.classList.add('hidden');
             }
             window.scrollTo(0, 0);
         }
 
-        const trashBtn = document.getElementById('trashViewBtn');
-        if (trashBtn) {
-            trashBtn.addEventListener('click', () => {
+        const tBtn = document.getElementById('trashViewBtn');
+        if (tBtn) {
+            tBtn.addEventListener('click', () => {
                 window.location.hash = showTrashView ? '' : '#trash';
             });
         }
@@ -1298,13 +1327,13 @@
         });
 
         const logoBtn = document.getElementById('logoBtn');
-        if (logoBtn) logoBtn.addEventListener('click', () => { window.location.hash = ''; });
+        if(logoBtn) logoBtn.addEventListener('click', () => { window.location.hash = ''; });
         
         const newBtn = document.getElementById('newRecipeBtn');
-        if (newBtn) newBtn.addEventListener('click', () => { window.location.hash = '#new'; });
+        if(newBtn) newBtn.addEventListener('click', () => { window.location.hash = '#new'; });
         
         const impBtn = document.getElementById('importBtn');
-        if (impBtn) impBtn.addEventListener('click', () => { window.location.hash = '#import'; });
+        if(impBtn) impBtn.addEventListener('click', () => { window.location.hash = '#import'; });
         
         document.querySelectorAll('.backToHomeBtn').forEach(btn => {
             btn.addEventListener('click', () => { 
@@ -1315,6 +1344,7 @@
         function renderFilterTags() {
             const container = document.getElementById('filterTagsContainer');
             if(!container) return;
+            
             const allTags = new Set();
             recipes.filter(r => !r.isDeleted).forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
 
@@ -1339,7 +1369,8 @@
         function updateActiveFilterUI() {
             const note = document.getElementById('activeFilterNote');
             const text = document.getElementById('activeFilterText');
-            if (!note || !text) return;
+            if(!note || !text) return;
+            
             if (activeFilter && !showTrashView) {
                 note.classList.remove('hidden');
                 text.innerHTML = `Zeige Rezepte für Kategorie: <strong class="ml-1">${activeFilter}</strong>`;
@@ -1363,7 +1394,8 @@
             const emptyState = document.getElementById('emptyState');
             if(!grid || !emptyState) return;
             
-            const searchTerm = searchInput.value.toLowerCase();
+            const sInput = document.getElementById('searchInput');
+            const searchTerm = sInput ? sInput.value.toLowerCase() : '';
 
             grid.innerHTML = '';
             let count = 0;
@@ -1509,8 +1541,9 @@
             else emptyState.classList.add('hidden');
         }
 
-        if (searchInput) {
-            searchInput.addEventListener('input', renderRecipes);
+        const sInput = document.getElementById('searchInput');
+        if (sInput) {
+            sInput.addEventListener('input', renderRecipes);
         }
 
         function scaleAndFormatIngredient(amountStr, unitStr, ratio) {
@@ -1592,9 +1625,9 @@
             }
         }
 
-        const btnPortionMinus = document.getElementById('btnPortionMinus');
-        if (btnPortionMinus) {
-            btnPortionMinus.addEventListener('click', () => {
+        const bMinus = document.getElementById('btnPortionMinus');
+        if (bMinus) {
+            bMinus.addEventListener('click', () => {
                 if (currentDisplayPortions > 1 && currentDetailRecipe) {
                     currentDisplayPortions--;
                     document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
@@ -1604,9 +1637,9 @@
             });
         }
 
-        const btnPortionPlus = document.getElementById('btnPortionPlus');
-        if (btnPortionPlus) {
-            btnPortionPlus.addEventListener('click', () => {
+        const bPlus = document.getElementById('btnPortionPlus');
+        if (bPlus) {
+            bPlus.addEventListener('click', () => {
                 if (currentDetailRecipe) {
                     currentDisplayPortions++;
                     document.getElementById('detailPortionsCount').textContent = currentDisplayPortions;
@@ -1615,7 +1648,6 @@
                 }
             });
         }
-
 
         function openRecipeDetail(id) {
             const recipe = recipes.find(r => r.id === id);
@@ -1811,9 +1843,9 @@
             showView('detail');
         }
 
-        const delRecipeBtn = document.getElementById('deleteRecipeBtn');
-        if (delRecipeBtn) {
-            delRecipeBtn.addEventListener('click', async () => {
+        const delRecBtn = document.getElementById('deleteRecipeBtn');
+        if (delRecBtn) {
+            delRecBtn.addEventListener('click', async () => {
                 if (confirm('Rezept in den Papierkorb verschieben?')) {
                     if (currentDetailRecipeId && currentUser) {
                         try {
@@ -1826,9 +1858,9 @@
             });
         }
 
-        const resRecipeBtn = document.getElementById('restoreRecipeBtn');
-        if (resRecipeBtn) {
-            resRecipeBtn.addEventListener('click', async () => {
+        const restRecBtn = document.getElementById('restoreRecipeBtn');
+        if (restRecBtn) {
+            restRecBtn.addEventListener('click', async () => {
                 if (currentDetailRecipeId && currentUser) {
                     try {
                         const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
@@ -1839,9 +1871,9 @@
             });
         }
 
-        const hardDelBtn = document.getElementById('hardDeleteRecipeBtn');
-        if (hardDelBtn) {
-            hardDelBtn.addEventListener('click', async () => {
+        const hdDelRecBtn = document.getElementById('hardDeleteRecipeBtn');
+        if (hdDelRecBtn) {
+            hdDelRecBtn.addEventListener('click', async () => {
                 if (confirm('Dieses Rezept ENDGÜLTIG und unwiderruflich löschen?')) {
                     if (currentDetailRecipeId && currentUser) {
                         try {
@@ -1855,7 +1887,8 @@
         }
 
         function resetForm() {
-            document.getElementById('recipeForm').reset();
+            const form = document.getElementById('recipeForm');
+            if(form) form.reset();
             currentRecipeTags = [];
             currentEditRecipeId = null;
             currentImageBase64 = null;
@@ -1863,32 +1896,36 @@
             updateImagePreviewUI();
             
             const list = document.getElementById('ingredientsList');
-            const rows = list.querySelectorAll('.ingredient-row');
-            for(let i=1; i<rows.length; i++) rows[i].remove();
-            
-            const firstRow = list.querySelector('.ingredient-row');
-            firstRow.querySelector('.ingredient-name').value = '';
-            firstRow.querySelector('.ingredient-amount').value = '';
-            firstRow.querySelector('.ingredient-unit').value = 'g';
+            if(list) {
+                const rows = list.querySelectorAll('.ingredient-row');
+                for(let i=1; i<rows.length; i++) rows[i].remove();
+                
+                const firstRow = list.querySelector('.ingredient-row');
+                if(firstRow) {
+                    firstRow.querySelector('.ingredient-name').value = '';
+                    firstRow.querySelector('.ingredient-amount').value = '';
+                    firstRow.querySelector('.ingredient-unit').value = 'g';
+                }
+            }
 
-            document.getElementById('formPortions').value = '4';
-            document.getElementById('formPrepTime').value = '';
-            document.getElementById('formCookTime').value = '';
-            document.getElementById('formRestTime').value = ''; 
-            document.getElementById('formTotalTime').value = '';
-            document.getElementById('formKcal').value = '';
-            document.getElementById('formProtein').value = '';
-            document.getElementById('formCarbs').value = '';
-            document.getElementById('formFat').value = '';
-            document.getElementById('formSourceUrl').value = '';
-            document.getElementById('formNotes').value = ''; 
-            document.getElementById('formRating').value = '0'; 
-            document.getElementById('formDifficulty').value = ''; 
+            if(document.getElementById('formPortions')) document.getElementById('formPortions').value = '4';
+            if(document.getElementById('formPrepTime')) document.getElementById('formPrepTime').value = '';
+            if(document.getElementById('formCookTime')) document.getElementById('formCookTime').value = '';
+            if(document.getElementById('formRestTime')) document.getElementById('formRestTime').value = ''; 
+            if(document.getElementById('formTotalTime')) document.getElementById('formTotalTime').value = '';
+            if(document.getElementById('formKcal')) document.getElementById('formKcal').value = '';
+            if(document.getElementById('formProtein')) document.getElementById('formProtein').value = '';
+            if(document.getElementById('formCarbs')) document.getElementById('formCarbs').value = '';
+            if(document.getElementById('formFat')) document.getElementById('formFat').value = '';
+            if(document.getElementById('formSourceUrl')) document.getElementById('formSourceUrl').value = '';
+            if(document.getElementById('formNotes')) document.getElementById('formNotes').value = ''; 
+            if(document.getElementById('formRating')) document.getElementById('formRating').value = '0'; 
+            if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = ''; 
         }
 
-        const editRecipeBtn = document.getElementById('editRecipeBtn');
-        if (editRecipeBtn) {
-            editRecipeBtn.addEventListener('click', () => {
+        const editRecBtn = document.getElementById('editRecipeBtn');
+        if (editRecBtn) {
+            editRecBtn.addEventListener('click', () => {
                 const recipe = recipes.find(r => r.id === currentDetailRecipeId);
                 if(!recipe) return;
 
