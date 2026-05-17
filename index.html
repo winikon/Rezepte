@@ -13,7 +13,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     
-    <!-- Dynamisches App Manifest für Android & Installation -->
     <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"mr78 Rezepte","short_name":"Rezepte","start_url":".","display":"standalone","background_color":"#E6E4DD","theme_color":"#E6E4DD","icons":[{"src":"https://winikon.github.io/Rezepte/logomr78brutalist.png","sizes":"512x512","type":"image/png"}]}'>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,12 +26,8 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #dc2626;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            border: 4px solid #f3f3f3; border-top: 4px solid #dc2626; border-radius: 50%;
+            width: 40px; height: 40px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -42,8 +37,7 @@
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
         
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
         @media print {
@@ -62,7 +56,6 @@
 
         .fav-active svg { fill: #dc2626; color: #dc2626; }
         
-        /* Floating Timer Styles (Mit aggressiverem roten Blinken) */
         .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .timer-ringing { animation: pulseRed 1s infinite; }
@@ -75,11 +68,13 @@
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
+    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
+    <!-- ANSICHT 0: LOGIN -->
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
@@ -116,7 +111,7 @@
     <!-- HEADER -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
+            <img src="logomr78brutalist.png" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         
@@ -143,6 +138,7 @@
         </div>
     </header>
 
+    <!-- HAUPTBEREICH -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto px-4 pt-6 safe-pb relative print:p-0 print:overflow-visible">
 
         <!-- ANSICHT 1: LISTENANSICHT -->
@@ -181,9 +177,10 @@
                 <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
                 <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
-            
+
+            <!-- VERSIONS-STEMPEL -->
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: Stabil-Rollback (URL Import Fixed) | Stand: 17.05.2026, 08:50 Uhr
+                Version: Zen-Mode Classic | Stand: 17.05.2026, 09:35 Uhr
             </div>
         </div>
 
@@ -417,22 +414,20 @@
 
             <div class="p-6 md:p-10">
                 
+                <!-- IMPORT BEREICH (NUR URL) -->
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
-                    <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        Rezept Importieren
+                        Rezept aus dem Internet importieren
                     </h3>
-                    
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                            <p class="text-sm font-bold text-gray-800 mb-2">Von Webseite (z.B. Chefkoch)</p>
-                            <div class="flex gap-2">
-                                <input type="url" id="importUrlInput" placeholder="https://..." class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-sm">
-                                <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm">Laden</button>
-                            </div>
-                        </div>
+                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung, Zeiten und Nährwerte automatisch aus.</p>
+                    <div class="flex gap-2">
+                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
+                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                            Auslesen
+                        </button>
                     </div>
-                    <p id="importStatus" class="text-sm mt-4 font-medium hidden"></p>
+                    <p id="importStatus" class="text-sm mt-3 font-medium hidden"></p>
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
@@ -631,8 +626,8 @@
 
                     <!-- Submit -->
                     <div class="pt-6 border-t border-gray-200 flex justify-end">
-                        <button type="submit" class="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors bg-white px-4 py-2.5 rounded-lg shadow-sm border border-gray-300">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <button type="submit" class="flex items-center gap-1.5 text-green-700 hover:text-green-900 hover:bg-green-50 font-medium text-sm transition-colors bg-white px-5 py-2.5 rounded-lg shadow-sm border border-green-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Rezept speichern
                         </button>
                     </div>
@@ -1219,7 +1214,7 @@
                 updateTagDatalist();
                 if(loadingOverlay) loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden der Rezepte:", error);
+                console.error("Fehler beim Laden:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -2159,9 +2154,9 @@
         const firstIngRow = document.querySelector('.ingredient-row');
         if(firstIngRow) attachRemoveEventToRow(firstIngRow);
 
-        const recipeForm = document.getElementById('recipeForm');
-        if (recipeForm) {
-            recipeForm.addEventListener('submit', async (e) => {
+        const recipeFormEl = document.getElementById('recipeForm');
+        if (recipeFormEl) {
+            recipeFormEl.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!currentUser) return;
 
@@ -2238,8 +2233,44 @@
         }
 
         // ==========================================
-        // URL IMPORT (Ohne KI, extrem robuster JSON-LD Scraper)
+        // URL IMPORT (Klassisch via JSON-LD)
         // ==========================================
+        function parseIngredientString(str) {
+            const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
+            
+            if (match) {
+                let amount = (match[1] || '').trim();
+                let unitRaw = (match[2] || '').trim();
+                let name = (match[3] || '').trim();
+
+                let unit = '';
+                if (unitRaw) {
+                    const foundUnit = Array.from(document.querySelectorAll('.ingredient-unit option')).find(opt => opt.value.toLowerCase() === unitRaw.toLowerCase().replace('scheiben', 'scheibe').replace('pck', 'pck.').replace('msp', 'msp.'));
+                    if (foundUnit) unit = foundUnit.value;
+                }
+                
+                if (!name && !amount && !unit) name = str.trim();
+                return { amount, unit, name };
+            }
+            return { amount: '', unit: '', name: str.trim() };
+        }
+
+        function extractNumber(str) {
+            if(!str) return '';
+            const match = str.toString().match(/\d+/);
+            return match ? match[0] : '';
+        }
+
+        function parseIsoDuration(duration) {
+            if(!duration) return '';
+            const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+            if(!match) return '';
+            const hours = parseInt(match[1] || 0, 10);
+            const minutes = parseInt(match[2] || 0, 10);
+            const total = (hours * 60) + minutes;
+            return total > 0 ? total.toString() : '';
+        }
+
         function extractRecipeFromJsonLd(data) {
             let recipeObj = null;
             const search = (obj) => {
@@ -2258,16 +2289,16 @@
             return recipeObj;
         }
 
-        const startImportBtn = document.getElementById('startImportBtn');
-        if (startImportBtn) {
-            startImportBtn.addEventListener('click', async () => {
+        const startImpBtn = document.getElementById('startImportBtn');
+        if (startImpBtn) {
+            startImpBtn.addEventListener('click', async () => {
                 let url = document.getElementById('importUrlInput').value.trim();
                 const statusEl = document.getElementById('importStatus');
                 if(!url) return;
 
                 if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-                statusEl.textContent = 'Versuche Daten abzurufen... (Das kann kurz dauern)';
+                statusEl.textContent = 'Versuche Daten abzurufen...';
                 statusEl.classList.remove('hidden');
                 statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
@@ -2291,7 +2322,7 @@
                 }
 
                 if (!html) {
-                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert (z.B. wegen eines Captchas).';
+                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                     return;
                 }
@@ -2307,8 +2338,7 @@
                     let ingredientsList = [];
                     let nutritionData = {};
 
-                    // 1. VERSUCH: JSON-LD (Standard für Rezepte, extrem robust gesucht)
-                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
+                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"]');
                     for (const script of ldScripts) {
                         try {
                             const data = JSON.parse(script.textContent);
@@ -2348,27 +2378,18 @@
                         } catch(e) {}
                     }
 
-                    // 2. VERSUCH: Manuelles Auslesen aus dem HTML-Code (Wenn JSON-LD fehlt)
                     if (!title) {
                         const h1 = docObj.querySelector('h1');
                         if (h1) title = h1.textContent.trim();
                     }
                     
                     if (!instructions) {
-                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation, .recipe-steps');
+                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
                         if (instructionBlocks.length > 0) {
                             instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
                         }
                     }
 
-                    if (ingredientsList.length === 0) {
-                        const ingBlocks = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, li[itemprop="recipeIngredient"]');
-                        if (ingBlocks.length > 0) {
-                            ingBlocks.forEach(el => ingredientsList.push(el.textContent.trim()));
-                        }
-                    }
-
-                    // Formular befüllen
                     if(title) document.getElementById('formTitle').value = title;
                     if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                     
@@ -2384,7 +2405,6 @@
                     if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
                     if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
 
-                    // Zutaten ins Formular übertragen
                     if(ingredientsList.length > 0) {
                         const list = document.getElementById('ingredientsList');
                         const rows = list.querySelectorAll('.ingredient-row');
@@ -2407,7 +2427,6 @@
                             targetRow.querySelector('.ingredient-name').value = parsed.name;
                             targetRow.querySelector('.ingredient-amount').value = parsed.amount;
                             
-                            // Unit setzen
                             const unitSelect = targetRow.querySelector('.ingredient-unit');
                             let foundUnit = '';
                             if(parsed.unit) {
@@ -2422,12 +2441,12 @@
                         statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
                         statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
                     } else {
-                        statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
+                        statusEl.textContent = 'Webseite geladen, aber keine Rezeptdaten gefunden.';
                         statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
                     }
 
                 } catch(e) {
-                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten (Format nicht kompatibel).';
+                    statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten.';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                 }
             });
