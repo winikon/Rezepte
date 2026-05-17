@@ -4,39 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Meine Rezept-App</title>
+    
+    <!-- MOBILE APP / PWA SETTINGS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
     <link rel="apple-touch-icon" href="logomr78brutalist.png?v=2">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
+    
     <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"mr78 Rezepte","short_name":"Rezepte","start_url":".","display":"standalone","background_color":"#E6E4DD","theme_color":"#E6E4DD","icons":[{"src":"https://winikon.github.io/Rezepte/logomr78brutalist.png","sizes":"512x512","type":"image/png"}]}'>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .tag-chip { transition: all 0.2s ease-in-out; }
+        .tag-chip:hover { transform: scale(1.05); }
+        
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #E6E4DD; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #dc2626; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+
+        .loader {
+            border: 4px solid #f3f3f3; border-top: 4px solid #dc2626; border-radius: 50%;
+            width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)); }
         .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
+
+        .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
+        
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         @media print {
             body { background-color: white !important; font-size: 11pt !important; }
             .print\:hidden { display: none !important; }
+            .print\:shadow-none { box-shadow: none !important; }
+            .print\:border-none { border: none !important; }
+            .print\:m-0 { margin: 0 !important; }
+            .print\:p-0 { padding: 0 !important; }
             #mainContent { overflow: visible !important; height: auto !important; padding: 0 !important; }
             #detailView { border: none !important; box-shadow: none !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+            #detailImageContainer { height: 160px !important; margin-bottom: 12px !important; border-radius: 8px; overflow: hidden; }
+            h2#detailTitle { font-size: 2rem !important; margin-bottom: 12px !important; line-height: 1.1 !important; }
             .page-break-inside-avoid { page-break-inside: avoid; }
         }
-        .timer-box { animation: slideIn 0.3s forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .fav-active svg { fill: #dc2626; color: #dc2626; }
+        
+        .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .timer-ringing { animation: pulseRed 1s infinite; }
-        @keyframes pulseRed { 50% { background-color: #ef4444; color: white; } }
+        @keyframes pulseRed { 
+            0% { background-color: #fee2e2; border-color: #f87171; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); color: #7f1d1d;} 
+            50% { background-color: #ef4444; border-color: #b91c1c; color: white; box-shadow: 0 0 20px 5px rgba(239, 68, 68, 0.5); } 
+            100% { background-color: #fee2e2; border-color: #f87171; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); color: #7f1d1d;} 
+        }
     </style>
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
+
+    <!-- CUSTOM APP MODAL & TOAST -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl transform scale-100 transition-transform">
+            <h3 id="customModalText" class="text-xl font-bold text-gray-900 mb-8 text-center leading-tight"></h3>
+            <div class="flex gap-4 justify-center">
+                <button id="customModalCancel" class="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors">Abbrechen</button>
+                <button id="customModalConfirm" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-red-500/30">Ja, OK</button>
+            </div>
+        </div>
+    </div>
+    <div id="customToast" class="hidden fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900/95 backdrop-blur text-white px-6 py-3 rounded-full font-bold shadow-2xl z-[200] transition-all duration-300 translate-y-10 opacity-0 flex items-center gap-2">
+        <span id="customToastIcon">✅</span>
+        <span id="customToastText">Gespeichert!</span>
+    </div>
 
     <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
@@ -44,220 +92,666 @@
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
     </div>
 
-    <!-- LOGIN -->
-    <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 print:hidden">
-        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md">
+    <!-- ANSICHT 0: LOGIN & REGISTRIERUNG -->
+    <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png" alt="Logo" class="w-32 mx-auto mb-6 rounded-md shadow-sm">
-                <h2 class="text-2xl font-bold" id="loginTitle">Willkommen</h2>
+                <img src="logomr78brutalist.png" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
+                <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
+                <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
+
             <form id="authForm" class="space-y-5">
-                <input type="email" id="authEmail" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl" placeholder="E-Mail">
-                <input type="password" id="authPassword" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl" placeholder="Passwort">
-                <div id="authError" class="hidden text-red-600 text-sm bg-red-50 p-3 rounded-lg">Fehler.</div>
-                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl">Einloggen</button>
+                <div>
+                    <label class="block text-sm font-medium text-gray-800 mb-1">E-Mail Adresse</label>
+                    <input type="email" id="authEmail" required class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="deine@email.de">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-800 mb-1">Passwort</label>
+                    <input type="password" id="authPassword" required minlength="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="Min. 6 Zeichen">
+                </div>
+                
+                <div id="authError" class="hidden text-red-600 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">Fehler bei der Anmeldung.</div>
+
+                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">
+                    Einloggen
+                </button>
             </form>
-            <button id="toggleAuthModeBtn" class="w-full text-red-600 text-sm font-medium mt-6">Neu hier? Registrieren</button>
+
+            <div class="mt-6 text-center">
+                <button type="button" id="toggleAuthModeBtn" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
+                    Neu hier? Jetzt registrieren
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- HEADER -->
-    <header id="mainHeader" class="hidden shadow-sm z-10 px-4 pb-4 pt-4 sticky top-0 flex-col md:flex-row justify-between gap-4 border-b border-gray-300 bg-white/90 backdrop-blur print:hidden">
+    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png" class="h-10 w-auto rounded shadow-sm">
-            <h1 class="text-xl font-bold">Meine Rezepte</h1>
+            <img src="logomr78brutalist.png" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
+        
         <div class="flex-1 max-w-xl relative" id="searchContainer">
-            <input type="text" id="searchInput" placeholder="Suchen..." class="w-full pl-4 pr-4 py-2.5 bg-gray-100 border border-gray-300 rounded-full">
+            <input type="text" id="searchInput" placeholder="Suchen in Titel, Tags & Zutaten..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 focus:border-red-500 rounded-full focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner">
+            <svg class="w-5 h-5 text-gray-400 absolute left-4 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
-        <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar">
-            <button id="navProductsBtn" class="flex-shrink-0 bg-white hover:bg-orange-50 text-orange-700 font-bold py-2 px-4 rounded-full border border-orange-200 flex gap-2"><span class="text-lg">🥫</span><span class="hidden sm:inline">Produkte</span></button>
-            <button id="trashViewBtn" class="p-2 text-gray-500 rounded-full" title="Papierkorb">🗑️</button>
-            <button id="importBtn" class="bg-white border border-gray-300 py-2 px-4 rounded-full font-medium">Import</button>
-            <button id="newRecipeBtn" class="bg-red-600 text-white py-2 px-5 rounded-full font-medium">Neu</button>
-            <button id="logoutBtn" class="p-2 text-gray-500 rounded-full" title="Abmelden">🚪</button>
+
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
+            <!-- PRODUKTE BUTTON -->
+            <button id="navProductsBtn" class="flex-shrink-0 bg-white hover:bg-orange-50 text-orange-700 font-bold py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-orange-200 shadow-sm" title="Produkte & Speisekammer">
+                <span class="text-lg leading-none">🥫</span>
+                <span class="hidden sm:inline">Produkte</span>
+            </button>
+
+            <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+            <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Import
+            </button>
+            <button id="newRecipeBtn" class="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-red-500/30 transition-all flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Neu
+            </button>
+            <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Abmelden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
         </div>
     </header>
 
-    <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 safe-pb relative print:p-0">
-        
-        <!-- REZEPTE LISTE -->
-        <div id="listView" class="max-w-[1600px] mx-auto hidden">
-            <div class="flex flex-col lg:flex-row justify-between gap-4 mb-6" id="listControls">
-                <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar flex-1" id="filterTagsContainer"></div>
+    <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT 1: LISTENANSICHT REZEPTE -->
+        <!-- ========================================================================= -->
+        <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
+                
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer">
+                    <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
+                </div>
+                
                 <div class="flex items-center gap-3 flex-wrap">
-                    <div class="flex bg-white border border-gray-300 rounded-full p-1">
-                        <button id="viewGridBtn" class="p-1.5 rounded-full bg-gray-200">🔲</button>
-                        <button id="viewListBtn" class="p-1.5 rounded-full text-gray-500">📄</button>
+                    <!-- VIEW TOGGLE (Raster/Liste) -->
+                    <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
+                        <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht (Fokus auf Tags)">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        </button>
+                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht (Fokus auf Nährwerte)">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                        </button>
                     </div>
-                    <button id="toggleFavViewBtn" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold">❤️ Favoriten</button>
-                    <select id="sortSelect" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold">
-                        <option value="newest">Neueste</option><option value="az">A-Z</option><option value="time">Kürzeste Dauer</option>
+
+                    <button id="toggleFavViewBtn" class="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 hover:text-red-600 hover:border-red-300 shadow-sm transition-all">
+                        <svg class="w-4 h-4 text-gray-400 transition-colors" id="favViewIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        Nur Favoriten
+                    </button>
+                    <select id="sortSelect" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none shadow-sm cursor-pointer">
+                        <option value="newest">Neueste zuerst</option>
+                        <option value="az">A - Z</option>
+                        <option value="time">Kürzeste Dauer</option>
+                        <option value="kcal">Meiste Kalorien</option>
+                        <option value="protein">Meistes Protein</option>
                     </select>
                 </div>
             </div>
+
+            <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
+                <span id="activeFilterText">Zeige Rezepte für: </span>
+                <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
+            </div>
+            
             <div id="recipeGrid"></div>
-            <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8">Keine Rezepte gefunden.</div>
-            <div class="mt-8 text-center text-xs font-bold text-gray-400">v1.8 | Stabil & Kompakt</div>
-        </div>
-
-        <!-- PRODUKTE LISTE -->
-        <div id="productsListView" class="max-w-[1600px] mx-auto hidden">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-black">🥫 Speisekammer</h2>
-                <button id="newProductBtn" class="bg-orange-600 text-white font-bold py-2 px-5 rounded-full">Neues Produkt</button>
+            
+            <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
-            <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4"></div>
+
+            <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
+                Version: 1.8 Ultimate (Full HTML restored) | Stand: 17.05.2026, 16:30 Uhr
+            </div>
         </div>
 
-        <!-- REZEPT DETAILS -->
-        <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md overflow-hidden print:shadow-none">
-            <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between print:hidden">
-                <button class="backToHomeBtn px-4 py-2 bg-white rounded-lg border font-medium text-sm">Zurück</button>
-                <div class="flex gap-2">
-                    <button id="startZenModeBtn" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold">Kochen</button>
-                    <button id="editRecipeBtn" class="px-3 py-2 text-red-600 bg-white border rounded-lg text-sm font-bold">Bearbeiten</button>
-                    <button id="deleteRecipeBtn" class="px-3 py-2 text-gray-600 bg-white border rounded-lg text-sm">Löschen</button>
+        <!-- ========================================================================= -->
+        <!-- ANSICHT: PRODUKTE (SPEISEKAMMER) LISTE -->
+        <!-- ========================================================================= -->
+        <div id="productsListView" class="max-w-[1600px] w-full mx-auto hidden print:hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-gray-900 flex items-center gap-3">
+                        <span class="text-4xl">🥫</span> Speisekammer
+                    </h2>
+                    <p class="text-gray-600 mt-1 font-medium">Hier speicherst du deine Produkte, Saucen und Spezialzutaten.</p>
+                </div>
+                <button id="newProductBtn" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Neues Produkt
+                </button>
+            </div>
+
+            <div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6"></div>
+
+            <div id="emptyProductsState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
+                <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-100">
+                    <span class="text-3xl">🥫</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Noch keine Produkte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto font-medium">Scanne Barcodes, um deine Zutaten hier für zukünftige Rezepte zu speichern.</p>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT 2: REZEPT DETAILS -->
+        <!-- ========================================================================= -->
+        <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
+            <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
+                <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Zurück
+                </button>
+                <div class="flex gap-2 flex-wrap justify-end" id="detailActionBar">
+                    <button id="startZenModeBtn" class="text-white bg-gray-900 hover:bg-black font-bold text-sm flex items-center gap-1.5 px-4 py-2 rounded-lg transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="hidden sm:inline">Kochen Starten</span>
+                    </button>
+                    <button id="favRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        <span class="hidden sm:inline">Favorit</span>
+                    </button>
+                    <button id="shareRecipeBtn" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <span id="shareRecipeText" class="hidden sm:inline">Teilen</span>
+                    </button>
+                    <button id="printRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        <span class="hidden sm:inline">Drucken</span>
+                    </button>
+                    <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Bearbeiten
+                    </button>
+                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Löschen
+                    </button>
+                    
+                    <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Wiederherstellen
+                    </button>
+                    <button id="hardDeleteRecipeBtn" class="hidden text-white bg-red-600 hover:bg-red-700 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Endgültig löschen
+                    </button>
                 </div>
             </div>
-            <div id="detailImageContainer" class="h-64 md:h-96 relative bg-gray-200"><img id="detailImage" class="w-full h-full object-cover"></div>
-            <div class="p-6 md:p-10">
-                <div id="detailGfBanner" class="hidden mb-6"><img src="GFEmilia.png" class="h-16 md:h-20 shadow-md rounded-xl border border-gray-200"></div>
-                <div id="detailTags" class="flex flex-wrap gap-2 mb-4"></div>
-                <h2 id="detailTitle" class="text-4xl font-black mb-6">Titel</h2>
-                <div id="detailNutritionContainer" class="mb-6 flex gap-3 flex-wrap"></div>
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-1 bg-gray-50 p-6 rounded-2xl">
-                        <h3 class="font-bold text-xl mb-4">Zutaten (<span id="detailPortionsCount"></span> P.)</h3>
-                        <div class="flex gap-2 mb-4 print:hidden">
-                            <button id="btnPortionMinus" class="px-3 py-1 bg-white border rounded font-bold">-</button>
-                            <button id="btnPortionPlus" class="px-3 py-1 bg-white border rounded font-bold">+</button>
+            
+            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3 relative group">
+                <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity print:hidden"></div>
+            </div>
+
+            <div class="p-6 md:p-10 print:p-0 print:pt-4">
+                
+                <!-- GF Banner Emilia -->
+                <div id="detailGfBanner" class="hidden mb-6 flex justify-center md:justify-start print:justify-start transition-all duration-300 transform hover:scale-105">
+                    <img src="GFEmilia.png" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
+                
+                <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight print:text-3xl print:mb-4" id="detailTitle">Rezept Titel</h2>
+
+                <!-- ZEITEN -->
+                <div class="flex flex-wrap gap-4 mb-8 print:mb-4">
+                    <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden print:gap-3">
+                        <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Gesamtzeit</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p>
+                            </div>
                         </div>
-                        <ul id="detailIngredients" class="space-y-2 text-sm"></ul>
-                    </div>
-                    <div class="lg:col-span-2">
-                        <h3 class="font-bold text-xl mb-4">Zubereitung</h3>
-                        <div id="detailInstructions" class="space-y-3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- REZEPT FORMULAR -->
-        <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md overflow-hidden">
-            <div class="p-4 border-b bg-gray-50 flex justify-between">
-                <button class="backToHomeBtn px-4 py-2 bg-white rounded-lg border font-medium text-sm">Abbrechen</button>
-                <h3 class="font-bold" id="formHeaderTitle">Rezept</h3>
-                <div class="w-24"></div>
-            </div>
-            <div class="p-6">
-                <div id="importSection" class="mb-8 bg-gray-100 p-4 rounded-xl">
-                    <p class="font-bold mb-2">Von Webseite importieren</p>
-                    <div class="flex gap-2">
-                        <input type="url" id="importUrlInput" class="flex-1 px-3 py-2 rounded-lg border" placeholder="URL einfügen">
-                        <button id="startImportBtn" class="bg-gray-900 text-white px-4 rounded-lg">Laden</button>
-                    </div>
-                    <p id="importStatus" class="text-sm mt-2 hidden"></p>
-                </div>
-                <form id="recipeForm" class="space-y-6">
-                    <input type="text" id="formTitle" required class="w-full px-4 py-3 border rounded-xl text-xl font-bold" placeholder="Titel">
-                    <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
-                        <img src="GFEmilia.png" class="h-10 rounded">
-                        <input type="checkbox" id="formGlutenFree" class="w-6 h-6 ml-auto pointer-events-none">
-                    </div>
-                    <input type="file" id="imageInput" accept="image/*" class="w-full">
-                    <div id="tagInputContainer" class="border rounded-xl p-2 flex flex-wrap gap-2">
-                        <div id="activeTagsContainer" class="flex flex-wrap gap-2"></div>
-                        <input type="text" id="formTagInput" class="outline-none bg-transparent flex-1" placeholder="Tags...">
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        <input type="number" id="formPortions" placeholder="Portionen" class="border p-2 rounded">
-                        <input type="number" id="formPrepTime" placeholder="Arbeitszeit" class="border p-2 rounded">
-                        <input type="number" id="formCookTime" placeholder="Kochzeit" class="border p-2 rounded">
-                        <input type="number" id="formKcal" placeholder="Kcal" class="border p-2 rounded">
-                        <input type="number" id="formCarbs" placeholder="KH" class="border p-2 rounded">
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-xl">
-                        <button type="button" id="addIngredientBtn" class="mb-4 bg-white border px-3 py-1 rounded text-sm font-bold">Zutat +</button>
-                        <div id="ingredientsList" class="space-y-2">
-                            <div class="ingredient-row flex gap-2">
-                                <input type="text" class="ingredient-name flex-1 border p-2 rounded text-sm" placeholder="Name">
-                                <input type="text" class="ingredient-amount w-16 border p-2 rounded text-sm" placeholder="Menge">
-                                <select class="ingredient-unit w-20 border p-2 rounded text-sm"><option value="g">g</option><option value="ml">ml</option><option value="Stk">Stk</option><option value="EL">EL</option><option value="">-</option></select>
-                                <button type="button" class="remove-ingredient text-red-500 p-2">X</button>
+                        <div id="timePrepBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Arbeitszeit</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p>
+                            </div>
+                        </div>
+                        <div id="timeCookBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10h14M7 10v6a4 4 0 004 4h2a4 4 0 004-4v-6M9 4h6M12 4v6"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Koch-/Backzeit</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p>
+                            </div>
+                        </div>
+                        <div id="timeRestBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 4H3m18 16H3m7-10l-4-4h12l-4 4m0 4l4 4H7l4-4"></path></svg>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Ruhezeit</p>
+                                <p class="font-black text-gray-900 leading-tight"><span id="detailTimeRest"></span> Min.</p>
                             </div>
                         </div>
                     </div>
-                    <textarea id="formInstructions" rows="6" class="w-full border p-4 rounded-xl" placeholder="Anleitung..."></textarea>
-                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl">Speichern</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- PRODUKT FORMULAR -->
-        <div id="productFormView" class="max-w-2xl mx-auto hidden bg-white rounded-3xl shadow-md overflow-hidden">
-            <div class="p-4 border-b bg-gray-50 flex justify-between">
-                <button class="backToProductsBtn px-4 py-2 bg-white rounded-lg border font-medium text-sm">Abbrechen</button>
-                <h3 class="font-bold">Produkt</h3>
-                <div class="w-24"></div>
-            </div>
-            <div class="p-6">
-                <div class="mb-6 bg-orange-50 p-4 rounded-xl">
-                    <div class="flex gap-2">
-                        <input type="text" id="barcodeInput" placeholder="EAN Barcode..." class="flex-1 px-3 py-2 rounded-lg border">
-                        <button id="fetchBarcodeBtn" class="bg-orange-600 text-white px-4 rounded-lg font-bold">Suchen</button>
-                    </div>
-                    <p id="barcodeStatus" class="text-sm mt-2 hidden"></p>
                 </div>
-                <form id="productForm" class="space-y-6">
-                    <input type="text" id="prodName" required class="w-full border p-3 rounded-xl font-bold" placeholder="Produktname">
-                    <input type="text" id="prodBrand" class="w-full border p-3 rounded-xl" placeholder="Marke">
-                    <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
-                        <img src="GFEmilia.png" class="h-10 rounded">
-                        <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 ml-auto pointer-events-none">
+
+                <!-- Nährwerte -->
+                <div id="detailNutritionContainer" class="mb-8 hidden page-break-inside-avoid print:mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm print:shadow-none print:border-gray-400 print:p-3">
+                        <h3 class="text-base font-bold text-gray-900 whitespace-nowrap flex items-center gap-2 m-0">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Nährwerte pro Portion (ca.)
+                        </h3>
+                        <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
+                                <span class="text-gray-500 font-medium text-sm">Kcal:</span>
+                                <span id="detailKcal" class="font-bold text-gray-900"></span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
+                                <span class="text-gray-500 font-medium text-sm">Kohlenhydrate:</span>
+                                <span id="detailCarbs" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
+                                <span class="text-gray-500 font-medium text-sm">Zucker:</span>
+                                <span id="detailSugar" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
+                                <span class="text-gray-500 font-medium text-sm">Protein:</span>
+                                <span id="detailProtein" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                            <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent print:border-l print:border-gray-300 print:rounded-none">
+                                <span class="text-gray-500 font-medium text-sm">Fett:</span>
+                                <span id="detailFat" class="font-bold text-gray-900"></span><span class="text-gray-500 text-sm font-bold">g</span>
+                            </div>
+                        </div>
                     </div>
-                    <textarea id="prodIngredients" rows="4" class="w-full border p-3 rounded-xl" placeholder="Zutaten..."></textarea>
-                    <input type="file" id="prodImageInput" accept="image/*" class="w-full">
-                    <button type="submit" class="w-full bg-orange-600 text-white font-bold py-3 rounded-xl">Produkt Speichern</button>
-                </form>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 print:grid-cols-5 print:gap-6">
+                    
+                    <!-- Zutaten Container -->
+                    <div class="lg:col-span-2 print:col-span-2 bg-[#f4f3ef] p-6 md:p-8 rounded-2xl h-fit border border-gray-300/50 shadow-sm print:p-5 print:shadow-none page-break-inside-avoid">
+                        <div class="flex flex-wrap items-center justify-between border-b border-gray-300 pb-4 mb-4 gap-3 print:pb-2 print:mb-2">
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap">
+                                <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                Zutaten
+                            </h3>
+                            <div class="flex flex-wrap items-center gap-2 print:hidden">
+                                <button id="copyIngredientsBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-blue-600 transition-colors" title="Zutaten als Liste kopieren">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                                    <span class="hidden xl:inline" id="copyIngredientsText">Kopieren</span>
+                                </button>
+                                <button id="wakeLockBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-yellow-600 transition-colors" title="Display beim Kochen anlassen">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                    <span class="hidden sm:inline" id="wakeLockText">Wach</span>
+                                </button>
+                                <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-gray-300 shadow-sm text-sm">
+                                    <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
+                                    </button>
+                                    <span id="detailPortionsCount" class="font-black text-gray-900 w-5 text-center tabular-nums">4</span>
+                                    <button id="btnPortionPlus" class="text-green-600 hover:bg-green-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="hidden print:block font-bold text-gray-600">Für <span id="printPortionsCount">4</span> Portionen</div>
+                        </div>
+                        
+                        <ul class="space-y-1" id="detailIngredients"></ul>
+                    </div>
+
+                    <!-- Zubereitung Container -->
+                    <div class="lg:col-span-3 print:col-span-3">
+                        <h3 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2 border-b border-gray-200 pb-3 print:mb-3 print:pb-2">
+                            <svg class="w-5 h-5 text-red-600 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Zubereitung
+                        </h3>
+                        <div class="space-y-2 print:space-y-1" id="detailInstructions"></div>
+
+                        <div id="detailNotesContainer" class="mt-10 bg-yellow-50 border border-yellow-200 p-5 rounded-2xl hidden page-break-inside-avoid shadow-inner print:mt-6 print:shadow-none print:border-gray-400 print:bg-white print:border-dashed print:p-4">
+                            <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 print:text-gray-800">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                Meine Notizen
+                            </h4>
+                            <p id="detailNotesText" class="text-gray-800 whitespace-pre-wrap leading-relaxed italic"></p>
+                        </div>
+
+                        <div id="detailSourceContainer" class="mt-10 pt-6 border-t border-gray-200 hidden print:hidden">
+                            <a id="detailSourceLink" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-red-600 transition-colors bg-gray-100 hover:bg-red-50 px-4 py-2.5 rounded-xl">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                Original-Rezept öffnen
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- PRODUKT DETAILS -->
-        <div id="productDetailView" class="max-w-2xl mx-auto hidden bg-white rounded-3xl shadow-md overflow-hidden">
-            <div class="p-4 border-b bg-gray-50 flex justify-between">
-                <button class="backToProductsBtn px-4 py-2 bg-white rounded-lg border font-medium text-sm">Zurück</button>
+        <!-- ========================================================================= -->
+        <!-- ANSICHT 3: PRODUKT DETAILS (NEU) -->
+        <!-- ========================================================================= -->
+        <div id="productDetailView" class="max-w-2xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
+            <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Zurück
+                </button>
                 <div class="flex gap-2">
-                    <button id="editProductBtn" class="px-3 py-1 text-orange-600 border rounded">Edit</button>
-                    <button id="deleteProductBtn" class="px-3 py-1 text-red-600 border rounded">Löschen</button>
+                    <button id="editProductBtn" class="text-orange-600 hover:bg-orange-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Bearbeiten
+                    </button>
+                    <button id="deleteProductBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Löschen
+                    </button>
                 </div>
             </div>
-            <div class="p-6 text-center">
-                <img id="detailProdImage" class="w-32 h-32 mx-auto object-contain mb-4 border rounded-xl p-2">
-                <div id="detailProdGfBadge" class="hidden mb-4"><img src="GFEmilia.png" class="h-10 mx-auto rounded shadow"></div>
-                <h2 id="detailProdName" class="text-2xl font-black">Name</h2>
-                <p id="detailProdBrand" class="text-gray-500 mb-4">Marke</p>
-                <div class="text-left bg-gray-50 p-4 rounded-xl">
-                    <h4 class="font-bold mb-2">Zutaten:</h4>
-                    <p id="detailProdIngredients" class="text-sm"></p>
+
+            <div class="p-6 md:p-10 flex flex-col items-center text-center border-b border-gray-200 bg-gray-50/50">
+                <div class="w-48 h-48 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative">
+                    <img id="detailProdImage" src="" class="w-full h-full object-contain p-2">
+                    <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden">
+                        <img src="GFEmilia.png" class="h-8 w-auto rounded shadow-sm border border-gray-200">
+                    </div>
                 </div>
+                <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
+                <p class="text-lg text-orange-600 font-bold uppercase tracking-wider" id="detailProdBrand">Marke</p>
+                <div class="mt-4 bg-gray-200 text-gray-600 font-mono px-3 py-1 rounded text-xs tracking-widest hidden" id="detailProdBarcode"></div>
+            </div>
+
+            <div class="p-6 md:p-10">
+                <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Zutaten laut Hersteller
+                </h3>
+                <p id="detailProdIngredients" class="text-gray-700 leading-relaxed bg-[#f4f3ef] p-5 rounded-xl border border-gray-200 text-sm font-medium"></p>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT 4: FORMULAR (REZEPTE) -->
+        <!-- ========================================================================= -->
+        <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
+             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Abbrechen
+                </button>
+                <h3 class="font-bold text-gray-900" id="formHeaderTitle">Neues Rezept</h3>
+                <div class="w-24"></div> 
+            </div>
+
+            <div class="p-6 md:p-10">
+                <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
+                    <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        Rezept Importieren
+                    </h3>
+                    <div class="flex gap-2">
+                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
+                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors">Laden</button>
+                    </div>
+                    <p id="importStatus" class="text-sm mt-3 font-medium hidden"></p>
+                </div>
+
+                <form id="recipeForm" class="space-y-8">
+                    <!-- Bild Upload -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 mb-2">Rezeptbild</label>
+                        <div class="flex items-center gap-6">
+                            <div id="imagePreviewContainer" class="w-32 h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden relative group shrink-0">
+                                <span id="imagePreviewPlaceholder" class="text-gray-400 flex flex-col items-center">
+                                    <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </span>
+                                <img id="formImagePreview" src="" class="hidden recipe-image-preview">
+                                <button type="button" id="removeImageBtn" class="hidden absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                            <div class="flex-1">
+                                <label class="cursor-pointer bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2.5 px-5 rounded-xl transition-colors inline-block shadow-sm">
+                                    <span>Foto auswählen...</span>
+                                    <input type="file" id="imageInput" accept="image/*" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 mb-1">Rezept Name <span class="text-red-600">*</span></label>
+                        <input type="text" id="formTitle" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 shadow-sm" placeholder="z.B. Schnelle Lasagne">
+                    </div>
+
+                    <!-- GF TOGGLE -->
+                    <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
+                        <div class="flex items-center gap-4">
+                            <img src="GFEmilia.png" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                        </div>
+                        <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
+                    </div>
+
+                    <!-- Tags -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 mb-1">Kategorien / Tags</label>
+                        <div class="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-red-600 shadow-sm" id="tagInputContainer">
+                            <div id="activeTagsContainer" class="flex flex-wrap gap-2"></div>
+                            <datalist id="tagSuggestions"></datalist>
+                            <input type="text" id="formTagInput" list="tagSuggestions" class="flex-1 bg-transparent border-none focus:outline-none min-w-[150px] py-1 px-2 text-gray-900" placeholder="z.B. Pasta, High Protein...">
+                        </div>
+                    </div>
+
+                    <!-- Bewertung & Schwierigkeit -->
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <label class="block text-lg font-black text-gray-900 mb-4">Bewertung & Schwierigkeit</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Eigene Bewertung</label>
+                                <select id="formRating" class="w-full px-3 py-2 bg-white border rounded-lg focus:ring-2 focus:ring-red-500">
+                                    <option value="0">Keine Bewertung</option>
+                                    <option value="1">1 Stern - Naja</option>
+                                    <option value="2">2 Sterne - Ok</option>
+                                    <option value="3">3 Sterne - Gut</option>
+                                    <option value="4">4 Sterne - Sehr lecker</option>
+                                    <option value="5">5 Sterne - Mein Favorit!</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Schwierigkeitsgrad</label>
+                                <select id="formDifficulty" class="w-full px-3 py-2 bg-white border rounded-lg focus:ring-2 focus:ring-red-500">
+                                    <option value="">Nicht angegeben</option>
+                                    <option value="Einfach">Einfach</option>
+                                    <option value="Mittel">Mittel</option>
+                                    <option value="Schwer">Schwer</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zeiten -->
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <label class="block text-lg font-black text-gray-900 mb-4">Zeiten & Portionen</label>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Portionen</label><input type="number" id="formPortions" value="4" min="1" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Arbeitszeit (Min)</label><input type="number" id="formPrepTime" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Koch-/Backzeit</label><input type="number" id="formCookTime" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Ruhezeit (Min)</label><input type="number" id="formRestTime" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Gesamtzeit (Min)</label><input type="number" id="formTotalTime" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                        </div>
+                    </div>
+
+                    <!-- Nährwerte -->
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 shadow-sm">
+                        <label class="block text-lg font-black text-gray-900 mb-4">Nährwerte (pro Portion)</label>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Kcal</label><input type="number" id="formKcal" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">KH (g)</label><input type="number" id="formCarbs" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Zucker (g)</label><input type="number" id="formSugar" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Protein (g)</label><input type="number" id="formProtein" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                            <div><label class="block text-xs font-bold text-gray-600 mb-1">Fett (g)</label><input type="number" id="formFat" min="0" class="w-full px-3 py-2 border rounded-lg"></div>
+                        </div>
+                    </div>
+
+                    <!-- Zutaten -->
+                    <div class="bg-[#E6E4DD]/40 p-5 rounded-2xl border border-gray-300 shadow-inner">
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="block text-lg font-black text-gray-900">Zutaten</label>
+                            <button type="button" id="addIngredientBtn" class="text-sm bg-white border border-gray-300 text-gray-800 hover:text-red-600 font-bold px-3 py-1.5 rounded-lg shadow-sm">+ Zeile</button>
+                        </div>
+                        <datalist id="ingredientSuggestions"></datalist>
+                        <div id="ingredientsList" class="space-y-2">
+                            <div class="ingredient-row flex gap-2 items-center bg-white p-1.5 rounded-xl border border-gray-300 shadow-sm">
+                                <input type="text" list="ingredientSuggestions" class="ingredient-name flex-1 px-3 py-2 bg-transparent border-none focus:outline-none" placeholder="Zutat...">
+                                <select class="ingredient-unit w-20 border-l border-gray-200 pl-2 bg-transparent focus:outline-none"><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="l">l</option><option value="EL">EL</option><option value="TL">TL</option><option value="Stk">Stk</option><option value="Prise">Prise</option><option value="Bund">Bund</option><option value="Pck.">Pck.</option><option value="Dose">Dose</option><option value="Zehe">Zehe</option><option value="Msp.">Msp.</option><option value="Tasse">Tasse</option><option value="">--</option></select>
+                                <input type="text" class="ingredient-amount w-16 md:w-24 border-l border-gray-200 pl-2 bg-transparent focus:outline-none" placeholder="Menge">
+                                <button type="button" class="remove-ingredient text-gray-400 hover:text-red-600 p-1.5 border-l border-gray-200">X</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anleitung -->
+                    <div>
+                        <label class="block text-lg font-black text-gray-900 mb-2">Zubereitungsschritte <span class="text-red-600">*</span></label>
+                        <textarea id="formInstructions" required rows="10" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="1. Zwiebeln anbraten..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-lg font-black text-gray-900 mb-2">Persönliche Notizen</label>
+                        <textarea id="formNotes" rows="3" class="w-full px-4 py-3 bg-yellow-50/50 border border-yellow-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="z.B. Schmeckt noch besser mit etwas Chili..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 mb-1">Original Rezept-Link</label>
+                        <input type="url" id="formSourceUrl" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600">
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit" class="flex items-center gap-1.5 text-white bg-green-600 hover:bg-green-700 font-bold px-6 py-3 rounded-xl shadow-md transition-colors">
+                            Rezept speichern
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- ANSICHT 5: PRODUKT FORMULAR (NEU) -->
+        <!-- ========================================================================= -->
+        <div id="productFormView" class="max-w-3xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
+             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
+                <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Abbrechen
+                </button>
+                <h3 class="font-bold text-gray-900" id="productFormTitle">Neues Produkt</h3>
+                <div class="w-24"></div> 
+            </div>
+
+            <div class="p-6 md:p-10">
+                <!-- Barcode API Scan Bereich -->
+                <div class="mb-10 bg-orange-50 p-6 rounded-2xl border border-orange-200 shadow-inner">
+                    <h3 class="font-bold text-orange-900 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                        Daten automatisch laden (Wie Yuka)
+                    </h3>
+                    <p class="text-sm text-orange-800 mb-4">Tippe die Strichcode-Nummer (EAN) der Verpackung ab. Wir laden Bild und Zutaten aus der Open Food Facts Datenbank.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="barcodeInput" placeholder="z.B. 4005500332211" class="flex-1 px-4 py-3 bg-white border border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none shadow-sm font-mono tracking-widest">
+                        <button type="button" id="fetchBarcodeBtn" class="bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap flex items-center gap-2">
+                            Suchen
+                        </button>
+                    </div>
+                    <p id="barcodeStatus" class="text-sm mt-3 font-medium hidden"></p>
+                </div>
+
+                <form id="productForm" class="space-y-8">
+                    <div class="flex items-center gap-6">
+                        <div id="prodImagePreviewContainer" class="w-32 h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden relative group shrink-0">
+                            <span id="prodImagePlaceholder" class="text-gray-400 flex flex-col items-center">
+                                <span class="text-3xl mb-1">📷</span>
+                            </span>
+                            <img id="prodImagePreview" src="" class="hidden w-full h-full object-contain p-2">
+                            <button type="button" id="removeProdImageBtn" class="hidden absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                        <div class="flex-1">
+                            <label class="cursor-pointer bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2.5 px-5 rounded-xl transition-colors inline-block shadow-sm">
+                                <span>Foto auswählen...</span>
+                                <input type="file" id="prodImageInput" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-1">Produkt Name <span class="text-red-600">*</span></label>
+                            <input type="text" id="prodName" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm" placeholder="z.B. Sweet Apple BBQ Glaze">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-800 mb-1">Marke</label>
+                            <input type="text" id="prodBrand" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm" placeholder="z.B. Stubbs">
+                        </div>
+                    </div>
+
+                    <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
+                        <div class="flex items-center gap-4">
+                            <img src="GFEmilia.png" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                        </div>
+                        <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-black text-gray-900 mb-2">Zutatenliste des Produkts</label>
+                        <textarea id="prodIngredients" rows="6" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors leading-relaxed text-gray-900 shadow-sm font-medium" placeholder="Zutaten laut Verpackung..."></textarea>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-200 flex justify-end">
+                        <button type="submit" class="flex items-center gap-1.5 text-white bg-orange-600 hover:bg-orange-700 font-bold px-6 py-3 rounded-xl shadow-md transition-colors">
+                            Produkt speichern
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- ZEN MODE -->
-        <div id="zenModeView" class="hidden fixed inset-0 bg-white z-[100] flex flex-col justify-between">
-            <div class="p-4 bg-gray-900 text-white flex justify-between items-center">
-                <button id="exitZenModeBtn" class="font-bold text-red-400">X Schließen</button>
-                <span id="zenCurrentStepNum" class="font-bold text-xl"></span>
+        <div id="zenModeView" class="hidden fixed inset-0 bg-[#E6E4DD] z-[100] flex flex-col justify-between overflow-hidden">
+            <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-md">
+                <button id="exitZenModeBtn" class="flex items-center gap-2 text-gray-300 hover:text-white font-bold">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    Schließen
+                </button>
+                <div class="text-sm font-bold tracking-widest uppercase text-gray-400">Schritt <span id="zenCurrentStepNum" class="text-white text-lg">1</span> von <span id="zenTotalStepsNum">X</span></div>
+                
+                <button id="ttsPlayBtn" class="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 font-bold bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                    Vorlesen
+                </button>
             </div>
-            <div class="flex-1 flex items-center justify-center p-8 text-center text-3xl font-black" id="zenInstructionText"></div>
-            <div class="p-4 bg-gray-100 flex justify-between">
-                <button id="zenPrevBtn" class="px-6 py-4 bg-gray-300 rounded-xl font-bold">Zurück</button>
-                <button id="zenNextBtn" class="px-10 py-4 bg-red-600 text-white rounded-xl font-bold">Weiter</button>
+            <div class="flex-1 p-6 md:p-12 overflow-y-auto flex items-center justify-center relative">
+                <p id="zenInstructionText" class="text-3xl md:text-5xl font-black text-gray-900 leading-tight max-w-4xl mx-auto text-center"></p>
+            </div>
+            <div class="bg-white p-6 md:p-8 flex items-center justify-between border-t border-gray-300 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                <button id="zenPrevBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 px-8 rounded-2xl text-xl flex items-center gap-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
+                    Zurück
+                </button>
+                <button id="zenNextBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-12 rounded-2xl text-2xl flex items-center gap-3 shadow-xl transition-transform transform hover:-translate-y-1">
+                    Weiter
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                </button>
             </div>
         </div>
-        
-        <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 print:hidden pointer-events-none *:pointer-events-auto"></div>
 
     </main>
 
@@ -266,61 +760,78 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ", authDomain: "rezepte-5cf2b.firebaseapp.com", projectId: "rezepte-5cf2b", storageBucket: "rezepte-5cf2b.firebasestorage.app", messagingSenderId: "309619660672", appId: "1:309619660672:web:59523676acc8b294415365", measurementId: "G-7VGKEKCWDV" };
-        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
+            authDomain: "rezepte-5cf2b.firebaseapp.com",
+            projectId: "rezepte-5cf2b",
+            storageBucket: "rezepte-5cf2b.firebasestorage.app",
+            messagingSenderId: "309619660672",
+            appId: "1:309619660672:web:59523676acc8b294415365"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
         const appNamespace = 'meine-rezepte-app'; 
 
         let currentUser = null, recipes = [], products = [], customIngredients = [], currentRecipeTags = [];
         let activeFilter = null, currentDetailRecipeId = null, currentEditRecipeId = null, currentEditProductId = null;
         let currentImageBase64 = null, currentProdImageBase64 = null, currentDetailRecipe = null, currentDisplayPortions = 4;
-        let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest', currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
-        let zenSteps = [], currentZenStepIndex = 0, activeTimers = [];
+        let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest';
+        let currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
+        let zenSteps = [], currentZenStepIndex = 0, activeTimers = [], wakeLock = null;
 
         const views = {
             login: document.getElementById('loginView'), list: document.getElementById('listView'), detail: document.getElementById('detailView'),
             form: document.getElementById('formView'), zen: document.getElementById('zenModeView'), productsList: document.getElementById('productsListView'),
             productForm: document.getElementById('productFormView'), productDetail: document.getElementById('productDetailView')
         };
+        const mainHeader = document.getElementById('mainHeader'), mainContent = document.getElementById('mainContent');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // VIEWS
-        function showView(viewName) {
-            Object.values(views).forEach(v => v?.classList.add('hidden'));
-            if(views[viewName]) views[viewName].classList.remove('hidden');
-            const searchCont = document.getElementById('searchContainer');
-            if(viewName === 'list') {
-                searchCont?.classList.remove('hidden');
-                document.getElementById('mainHeaderTitle').textContent = showTrashView ? "Papierkorb" : "Meine Rezepte";
-                renderRecipes();
-            } else {
-                searchCont?.classList.add('hidden');
-            }
-            window.scrollTo(0,0);
+        // CUSTOM MODALS
+        function showCustomConfirm(msg, onConfirm) {
+            const modal = document.getElementById('customModal');
+            const txt = document.getElementById('customModalText');
+            const cancelBtn = document.getElementById('customModalCancel');
+            const confirmBtn = document.getElementById('customModalConfirm');
+            if(!modal || !txt || !cancelBtn || !confirmBtn) return;
+            
+            txt.textContent = msg;
+            modal.classList.remove('hidden');
+            
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                cancelBtn.removeEventListener('click', onCancelClick);
+                confirmBtn.removeEventListener('click', onConfirmClick);
+            };
+            const onCancelClick = () => cleanup();
+            const onConfirmClick = () => { cleanup(); onConfirm(); };
+            
+            cancelBtn.addEventListener('click', onCancelClick);
+            confirmBtn.addEventListener('click', onConfirmClick);
         }
 
-        window.addEventListener('hashchange', () => {
-            if(!currentUser) return;
-            showTrashView = window.location.hash === '#trash';
-            const h = window.location.hash;
-            if(h === '#new') { resetForm(); showView('form'); }
-            else if(h === '#import') { resetForm(); showView('form'); }
-            else if(h === '#edit') showView('form');
-            else if(h === '#products') { showView('productsList'); renderProducts(); }
-            else if(h === '#new-product') { resetProductForm(); showView('productForm'); }
-            else if(h === '#edit-product') showView('productForm');
-            else if(h.startsWith('#product-')) openProductDetail(h.replace('#product-', ''));
-            else if(h.startsWith('#recipe-')) openRecipeDetail(h.replace('#recipe-', ''));
-            else showView('list');
-        });
+        function showToast(msg) {
+            const toast = document.getElementById('customToast');
+            if(!toast) return;
+            document.getElementById('customToastText').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.remove('translate-y-10', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100'); }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0'); toast.classList.remove('translate-y-0', 'opacity-100');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
 
-        document.getElementById('logoBtn')?.addEventListener('click', () => window.location.hash = '');
-        document.getElementById('navProductsBtn')?.addEventListener('click', () => window.location.hash = '#products');
-        document.getElementById('newProductBtn')?.addEventListener('click', () => window.location.hash = '#new-product');
-        document.getElementById('newRecipeBtn')?.addEventListener('click', () => window.location.hash = '#new');
-        document.getElementById('importBtn')?.addEventListener('click', () => window.location.hash = '#import');
-        document.getElementById('trashViewBtn')?.addEventListener('click', () => window.location.hash = showTrashView ? '' : '#trash');
-        document.querySelectorAll('.backToHomeBtn').forEach(b => b.addEventListener('click', () => window.location.hash = showTrashView ? '#trash' : ''));
-        document.querySelectorAll('.backToProductsBtn').forEach(b => b.addEventListener('click', () => window.location.hash = '#products'));
+        const tagColors = [ 'bg-blue-100 text-blue-800 border border-blue-200', 'bg-green-100 text-green-800 border border-green-200', 'bg-purple-100 text-purple-800 border border-purple-200', 'bg-yellow-100 text-yellow-800 border border-yellow-300', 'bg-pink-100 text-pink-800 border border-pink-200', 'bg-indigo-100 text-indigo-800 border border-indigo-200', 'bg-teal-100 text-teal-800 border border-teal-200', 'bg-orange-100 text-orange-800 border border-orange-200', 'bg-gray-200 text-gray-800 border border-gray-300', 'bg-cyan-100 text-cyan-800 border border-cyan-200', 'bg-lime-100 text-lime-800 border border-lime-300', 'bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200', 'bg-rose-100 text-rose-800 border border-rose-200' ];
+        function getColorForTag(tag) { let hash = 0; for(let i=0; i<tag.length; i++) hash = (hash<<5)-hash+tag.charCodeAt(i); return tagColors[Math.abs(hash+tag.length*37) % tagColors.length]; }
+        function getStarsHtml(rating) {
+            if(!rating || rating === 0) return '';
+            let html = '<div class="flex items-center gap-0.5 text-yellow-400">';
+            for(let i=0; i<rating; i++) html += '<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';
+            return html + '</div>';
+        }
 
         // VIEW TOGGLE
         const vGridBtn = document.getElementById('viewGridBtn'), vListBtn = document.getElementById('viewListBtn');
@@ -334,257 +845,1319 @@
         updateViewToggleUI();
 
         // AUTH
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                loadingOverlay?.classList.remove('hidden');
-                views.login?.classList.add('hidden');
-                document.getElementById('mainHeader')?.classList.remove('hidden');
-                document.getElementById('mainHeader')?.classList.add('flex');
-                document.getElementById('mainContent')?.classList.remove('hidden');
-                document.getElementById('mainContent')?.classList.add('flex-1');
-                startDatabaseListeners();
-                window.location.hash = ''; 
-            } else {
-                currentUser = null;
-                document.getElementById('mainHeader')?.classList.add('hidden');
-                document.getElementById('mainContent')?.classList.add('flex-1');
-                showView('login');
-                loadingOverlay?.classList.add('hidden');
-            }
+        let isLoginMode = true;
+        document.getElementById('toggleAuthModeBtn')?.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('authError')?.classList.add('hidden');
+            document.getElementById('loginTitle').textContent = isLoginMode ? "Willkommen zurück" : "Konto erstellen";
+            document.getElementById('loginSubtitle').textContent = isLoginMode ? "Melde dich an, um deine Rezepte zu sehen." : "Sichere deine Rezepte dauerhaft.";
+            document.getElementById('authSubmitBtn').textContent = isLoginMode ? "Einloggen" : "Registrieren";
+            document.getElementById('toggleAuthModeBtn').textContent = isLoginMode ? "Neu hier? Jetzt registrieren" : "Bereits ein Konto? Einloggen";
         });
 
         document.getElementById('authForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value;
-            try { await signInWithEmailAndPassword(auth, em, pw); } 
-            catch { alert("Fehler beim Login."); }
+            const btn = document.getElementById('authSubmitBtn');
+            document.getElementById('authError')?.classList.add('hidden');
+            btn.disabled = true; btn.innerHTML = 'Warten...';
+            try {
+                if (isLoginMode) await signInWithEmailAndPassword(auth, em, pw);
+                else await createUserWithEmailAndPassword(auth, em, pw);
+            } catch (err) {
+                document.getElementById('authError').classList.remove('hidden');
+                document.getElementById('authError').textContent = "Fehler bei der Anmeldung. Bitte prüfen.";
+                btn.disabled = false; btn.textContent = isLoginMode ? "Einloggen" : "Registrieren";
+            }
         });
 
-        // DB LISTENERS
+        document.getElementById('logoutBtn')?.addEventListener('click', () => showCustomConfirm("Wirklich abmelden?", async () => await signOut(auth)));
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadingOverlay?.classList.remove('hidden');
+                views.login?.classList.add('hidden');
+                mainHeader?.classList.remove('hidden'); mainHeader?.classList.add('flex');
+                mainContent?.classList.remove('hidden'); mainContent?.classList.add('flex-1');
+                startDatabaseListeners();
+                window.location.hash = ''; 
+            } else {
+                currentUser = null;
+                mainHeader?.classList.add('hidden'); mainHeader?.classList.remove('flex');
+                mainContent?.classList.add('hidden'); mainContent?.classList.remove('flex-1');
+                Object.values(views).forEach(v => v?.classList.add('hidden'));
+                loadingOverlay?.classList.add('hidden');
+                views.login?.classList.remove('hidden');
+                if(recipesUnsubscribe) recipesUnsubscribe(); if(settingsUnsubscribe) settingsUnsubscribe(); if(productsUnsubscribe) productsUnsubscribe();
+            }
+        });
+
+        let recipesUnsubscribe = null, settingsUnsubscribe = null, productsUnsubscribe = null;
+
         function startDatabaseListeners() {
-            if(!currentUser) return;
-            onSnapshot(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes'), (snap) => {
-                try {
-                    recipes = [];
-                    snap.forEach(d => { recipes.push({ id: d.id, ...d.data() }); });
-                    if(window.location.hash === '' || window.location.hash === '#trash') renderRecipes();
-                } catch(e) { console.error(e); } finally { loadingOverlay?.classList.add('hidden'); }
+            if (!currentUser) return;
+            recipesUnsubscribe = onSnapshot(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes'), (snap) => {
+                recipes = []; snap.forEach(doc => { recipes.push({ id: doc.id, ...doc.data() }); });
+                if(window.location.hash === '' || window.location.hash === '#trash') renderRecipes();
+                renderFilterTags(); updateTagDatalist();
+                loadingOverlay?.classList.add('hidden');
             });
-            onSnapshot(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products'), (snap) => {
-                products = []; snap.forEach(d => { products.push({ id: d.id, ...d.data() }); });
+            productsUnsubscribe = onSnapshot(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products'), (snap) => {
+                products = []; snap.forEach(doc => { products.push({ id: doc.id, ...doc.data() }); });
                 if(window.location.hash === '#products') renderProducts();
+                updateIngredientDatalist();
             });
-            onSnapshot(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients'), (d) => {
+            settingsUnsubscribe = onSnapshot(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients'), (d) => {
                 if (d.exists() && d.data().list) customIngredients = d.data().list;
+                updateIngredientDatalist();
             });
         }
 
-        // RENDER PRODUCTS
+        // ROUTING
+        function showView(viewName) {
+            Object.values(views).forEach(v => v?.classList.add('hidden'));
+            if(views[viewName]) views[viewName].classList.remove('hidden');
+            if (viewName === 'list') {
+                document.getElementById('searchContainer')?.classList.remove('hidden');
+                releaseWakeLock(); 
+                if(showTrashView) {
+                    document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
+                    document.getElementById('listControls')?.classList.add('hidden');
+                    document.getElementById('emptyStateTitle').textContent = "Papierkorb ist leer";
+                    document.getElementById('emptyStateDesc').textContent = "Gelöschte Rezepte tauchen hier auf.";
+                    document.getElementById('trashViewBtn')?.classList.add('text-red-600', 'bg-red-50');
+                } else {
+                    document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
+                    document.getElementById('listControls')?.classList.remove('hidden');
+                    document.getElementById('emptyStateTitle').textContent = "Noch keine Rezepte";
+                    document.getElementById('emptyStateDesc').textContent = "Klicke oben auf 'Neu' oder 'Import'.";
+                    document.getElementById('trashViewBtn')?.classList.remove('text-red-600', 'bg-red-50');
+                }
+                renderRecipes();
+            } else {
+                document.getElementById('searchContainer')?.classList.add('hidden');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        window.addEventListener('hashchange', () => {
+            if(!currentUser) return; 
+            showTrashView = window.location.hash === '#trash';
+            const h = window.location.hash;
+            
+            if (h === '#new') { resetForm(); document.getElementById('formHeaderTitle').textContent = "Neues Rezept"; document.getElementById('importSection')?.classList.remove('hidden'); showView('form'); }
+            else if (h === '#import') { resetForm(); document.getElementById('formHeaderTitle').textContent = "Rezept Importieren"; document.getElementById('importSection')?.classList.remove('hidden'); showView('form'); }
+            else if (h === '#edit') { document.getElementById('formHeaderTitle').textContent = "Rezept bearbeiten"; document.getElementById('importSection')?.classList.add('hidden'); showView('form'); }
+            else if (h === '#products') { showView('productsList'); renderProducts(); }
+            else if (h === '#new-product') { resetProductForm(); document.getElementById('productFormTitle').textContent = "Neues Produkt"; showView('productForm'); }
+            else if (h === '#edit-product') { document.getElementById('productFormTitle').textContent = "Produkt bearbeiten"; showView('productForm'); }
+            else if (h.startsWith('#product-')) openProductDetail(h.replace('#product-', ''));
+            else if (h.startsWith('#recipe-')) openRecipeDetail(h.replace('#recipe-', ''));
+            else showView('list');
+        });
+
+        document.getElementById('trashViewBtn')?.addEventListener('click', () => window.location.hash = showTrashView ? '' : '#trash');
+        document.getElementById('navProductsBtn')?.addEventListener('click', () => window.location.hash = '#products');
+        document.getElementById('newProductBtn')?.addEventListener('click', () => window.location.hash = '#new-product');
+        document.getElementById('logoBtn')?.addEventListener('click', () => window.location.hash = '');
+        document.getElementById('newRecipeBtn')?.addEventListener('click', () => window.location.hash = '#new');
+        document.getElementById('importBtn')?.addEventListener('click', () => window.location.hash = '#import');
+        document.querySelectorAll('.backToHomeBtn').forEach(b => b.addEventListener('click', () => window.location.hash = showTrashView ? '#trash' : ''));
+        document.querySelectorAll('.backToProductsBtn').forEach(b => b.addEventListener('click', () => window.location.hash = '#products'));
+
+        // ==========================================
+        // PRODUKTE LOGIK (SPEISEKAMMER)
+        // ==========================================
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
-            if(!grid) return; grid.innerHTML = '';
-            products.forEach(p => {
+            const emptyState = document.getElementById('emptyProductsState');
+            if(!grid || !emptyState) return;
+            
+            grid.innerHTML = ''; let count = 0;
+            const sortedProducts = [...products].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            sortedProducts.forEach(prod => {
+                count++;
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-2xl shadow border border-orange-200 cursor-pointer overflow-hidden";
-                card.onclick = () => window.location.hash = `#product-${p.id}`;
-                card.innerHTML = `
-                    <div class="h-32 bg-gray-100 flex justify-center items-center relative">
-                        ${p.isGlutenFree ? `<img src="GFEmilia.png" class="absolute top-2 left-2 h-6 rounded shadow border border-white/50">` : ''}
-                        ${p.imageBase64 ? `<img src="${p.imageBase64}" class="h-full w-full object-contain p-2">` : '🥫'}
-                    </div>
-                    <div class="p-3"><h3 class="font-bold text-sm truncate">${p.name}</h3><p class="text-xs text-orange-600">${p.brand}</p></div>
-                `;
-                grid.appendChild(card);
+                card.className = "bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-orange-200 overflow-hidden cursor-pointer flex flex-col transform hover:-translate-y-1";
+                card.addEventListener('click', () => { window.location.hash = `#product-${prod.id}`; });
+
+                const imgBox = document.createElement('div');
+                imgBox.className = "h-40 bg-gray-100 relative flex items-center justify-center border-b border-gray-200 overflow-hidden p-2";
+                
+                if (prod.imageBase64) {
+                    const img = document.createElement('img');
+                    img.src = prod.imageBase64; img.className = "w-full h-full object-contain mix-blend-multiply";
+                    imgBox.appendChild(img);
+                } else {
+                    const icon = document.createElement('span'); icon.className = "text-5xl opacity-20"; icon.textContent = "🥫";
+                    imgBox.appendChild(icon);
+                }
+
+                if (prod.isGlutenFree) {
+                    const gfBadge = document.createElement('div');
+                    gfBadge.className = "absolute top-2 left-2 z-10";
+                    gfBadge.innerHTML = '<img src="GFEmilia.png" class="h-6 w-auto rounded shadow-sm border border-white/50" onerror="this.style.display=\'none\'">';
+                    imgBox.appendChild(gfBadge);
+                }
+
+                const infoBox = document.createElement('div');
+                infoBox.className = "p-4 flex-1 flex flex-col justify-between";
+                infoBox.innerHTML = `<div><h3 class="font-bold text-gray-900 leading-tight line-clamp-2">${prod.name}</h3>${prod.brand ? `<p class="text-xs text-orange-700 font-bold mt-1 uppercase tracking-wider">${prod.brand}</p>` : ''}</div>`;
+
+                card.appendChild(imgBox); card.appendChild(infoBox); grid.appendChild(card);
             });
+
+            if (count === 0) emptyState.classList.remove('hidden'); else emptyState.classList.add('hidden');
         }
 
-        // PRODUCT DETAIL
         function openProductDetail(id) {
-            const p = products.find(x => x.id === id);
-            if(!p) return;
-            currentEditProductId = p.id;
-            document.getElementById('detailProdName').textContent = p.name;
-            document.getElementById('detailProdBrand').textContent = p.brand;
-            document.getElementById('detailProdIngredients').textContent = p.ingredients || 'Keine Zutaten.';
-            document.getElementById('detailProdImage').src = p.imageBase64 || '';
-            document.getElementById('detailProdGfBadge').style.display = p.isGlutenFree ? 'block' : 'none';
+            const prod = products.find(p => p.id === id);
+            if(!prod) { window.location.hash = '#products'; return; }
+            currentEditProductId = id;
+
+            document.getElementById('detailProdName').textContent = prod.name;
+            const brandEl = document.getElementById('detailProdBrand');
+            if(prod.brand) { brandEl.textContent = prod.brand; brandEl.classList.remove('hidden'); } else brandEl.classList.add('hidden');
+
+            const barcodeEl = document.getElementById('detailProdBarcode');
+            if(prod.barcode) { barcodeEl.textContent = "EAN: " + prod.barcode; barcodeEl.classList.remove('hidden'); } else barcodeEl.classList.add('hidden');
+
+            const imgEl = document.getElementById('detailProdImage');
+            if(prod.imageBase64) imgEl.src = prod.imageBase64;
+            else imgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="1"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+
+            document.getElementById('detailProdGfBadge').style.display = prod.isGlutenFree ? 'block' : 'none';
+
+            const ingEl = document.getElementById('detailProdIngredients');
+            if(prod.ingredients && prod.ingredients.trim() !== '') {
+                ingEl.textContent = prod.ingredients; ingEl.classList.remove('text-gray-400', 'italic');
+            } else {
+                ingEl.textContent = "Keine Zutaten hinterlegt."; ingEl.classList.add('text-gray-400', 'italic');
+            }
             showView('productDetail');
         }
 
         document.getElementById('editProductBtn')?.addEventListener('click', () => {
-            const p = products.find(x => x.id === currentEditProductId);
-            if(!p) return;
+            const prod = products.find(p => p.id === currentEditProductId);
+            if(!prod) return;
             resetProductForm();
-            currentEditProductId = p.id;
-            document.getElementById('prodName').value = p.name || '';
-            document.getElementById('prodBrand').value = p.brand || '';
-            document.getElementById('barcodeInput').value = p.barcode || '';
-            document.getElementById('prodIngredients').value = p.ingredients || '';
-            document.getElementById('prodGlutenFree').checked = p.isGlutenFree;
-            currentProdImageBase64 = p.imageBase64;
-            if(p.imageBase64) {
-                document.getElementById('prodImagePreview').src = p.imageBase64;
+            currentEditProductId = prod.id;
+            document.getElementById('prodName').value = prod.name || '';
+            document.getElementById('prodBrand').value = prod.brand || '';
+            document.getElementById('barcodeInput').value = prod.barcode || '';
+            document.getElementById('prodIngredients').value = prod.ingredients || '';
+            document.getElementById('prodGlutenFree').checked = prod.isGlutenFree || false;
+            if(prod.imageBase64) {
+                currentProdImageBase64 = prod.imageBase64;
+                document.getElementById('prodImagePreview').src = currentProdImageBase64;
                 document.getElementById('prodImagePreview').classList.remove('hidden');
+                document.getElementById('prodImagePlaceholder').classList.add('hidden');
+                document.getElementById('removeProdImageBtn').classList.remove('hidden');
             }
             window.location.hash = '#edit-product';
         });
 
-        document.getElementById('deleteProductBtn')?.addEventListener('click', async () => {
-            if(confirm("Löschen?") && currentEditProductId) {
-                await deleteDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products', currentEditProductId));
-                window.location.hash = '#products';
-            }
+        document.getElementById('deleteProductBtn')?.addEventListener('click', () => {
+            showCustomConfirm('Dieses Produkt endgültig aus der Speisekammer löschen?', async () => {
+                if (currentEditProductId && currentUser) {
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products', currentEditProductId));
+                        showToast('Produkt gelöscht');
+                        window.location.hash = '#products'; 
+                    } catch (e) { alert("Fehler beim Löschen"); }
+                }
+            });
         });
 
         function resetProductForm() {
             document.getElementById('productForm')?.reset();
             currentEditProductId = null; currentProdImageBase64 = null;
-            document.getElementById('prodImagePreview')?.classList.add('hidden');
+            document.getElementById('barcodeInput').value = '';
+            document.getElementById('barcodeStatus').classList.add('hidden');
+            document.getElementById('prodGlutenFree').checked = false;
+            document.getElementById('prodImagePreview').classList.add('hidden');
+            document.getElementById('prodImagePlaceholder').classList.remove('hidden');
+            document.getElementById('removeProdImageBtn').classList.add('hidden');
         }
 
         document.getElementById('prodImageInput')?.addEventListener('change', (e) => {
-            const r = new FileReader();
-            r.onload = (ev) => { currentProdImageBase64 = ev.target.result; document.getElementById('prodImagePreview').src = currentProdImageBase64; document.getElementById('prodImagePreview').classList.remove('hidden'); };
-            if(e.target.files[0]) r.readAsDataURL(e.target.files[0]);
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height; const max = 800;
+                    if (w > h && w > max) { h *= max / w; w = max; } else if (h > max) { w *= max / h; h = max; }
+                    canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    currentProdImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('prodImagePreview').src = currentProdImageBase64;
+                    document.getElementById('prodImagePreview').classList.remove('hidden');
+                    document.getElementById('prodImagePlaceholder').classList.add('hidden');
+                    document.getElementById('removeProdImageBtn').classList.remove('hidden');
+                }; img.src = event.target.result;
+            }; reader.readAsDataURL(file);
+        });
+
+        document.getElementById('removeProdImageBtn')?.addEventListener('click', () => {
+            currentProdImageBase64 = null;
+            document.getElementById('prodImageInput').value = '';
+            document.getElementById('prodImagePreview').classList.add('hidden');
+            document.getElementById('prodImagePlaceholder').classList.remove('hidden');
+            document.getElementById('removeProdImageBtn').classList.add('hidden');
         });
 
         document.getElementById('productForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); if (!currentUser) return;
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML; btn.innerHTML = 'Speichern...'; btn.disabled = true;
+
             const d = {
-                name: document.getElementById('prodName').value, brand: document.getElementById('prodBrand').value,
-                barcode: document.getElementById('barcodeInput').value, ingredients: document.getElementById('prodIngredients').value,
+                name: document.getElementById('prodName').value.trim(), brand: document.getElementById('prodBrand').value.trim(),
+                barcode: document.getElementById('barcodeInput').value.trim(), ingredients: document.getElementById('prodIngredients').value.trim(),
                 isGlutenFree: document.getElementById('prodGlutenFree').checked, imageBase64: currentProdImageBase64
             };
-            if(currentEditProductId) await updateDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products', currentEditProductId), d);
-            else await addDoc(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products'), { ...d, createdAt: new Date().toISOString() });
-            window.location.hash = '#products';
+
+            try {
+                if(currentEditProductId) await updateDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products', currentEditProductId), d);
+                else await addDoc(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'products'), { ...d, createdAt: new Date().toISOString() });
+                showToast('Produkt gespeichert!');
+                window.location.hash = '#products'; 
+            } catch (err) { alert("Fehler beim Speichern!"); } 
+            finally { btn.innerHTML = originalContent; btn.disabled = false; }
         });
 
         // YUKA FETCH
         document.getElementById('fetchBarcodeBtn')?.addEventListener('click', async () => {
-            const b = document.getElementById('barcodeInput').value;
-            if(!b) return;
+            const b = document.getElementById('barcodeInput').value.trim();
+            const statusEl = document.getElementById('barcodeStatus');
+            if(!b) { statusEl.textContent = "Bitte Barcode eingeben."; statusEl.className = "text-sm mt-3 font-medium text-red-600 block"; return; }
+            statusEl.textContent = 'Suche in der OpenFoodFacts Datenbank...'; statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
+
             try {
                 const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${b}.json`);
                 const data = await res.json();
-                if(data.product) {
-                    document.getElementById('prodName').value = data.product.product_name_de || data.product.product_name || '';
-                    document.getElementById('prodBrand').value = data.product.brands || '';
-                    document.getElementById('prodIngredients').value = data.product.ingredients_text_de || data.product.ingredients_text || '';
-                    if(data.product.allergens_tags?.includes('en:gluten')) document.getElementById('prodGlutenFree').checked = false;
+                
+                if (data.status === 1 && data.product) {
+                    const p = data.product;
+                    const name = p.product_name_de || p.product_name || '';
+                    if(name) document.getElementById('prodName').value = name;
+                    if(p.brands) document.getElementById('prodBrand').value = p.brands;
+                    if(p.ingredients_text_de || p.ingredients_text) document.getElementById('prodIngredients').value = p.ingredients_text_de || p.ingredients_text;
+                    if(p.allergens_tags?.includes('en:gluten')) document.getElementById('prodGlutenFree').checked = false;
+                    
+                    const imgUrl = p.image_front_url || p.image_url;
+                    if (imgUrl) {
+                        statusEl.textContent = 'Lade Produktbild...';
+                        const imgRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`);
+                        const blob = await imgRes.blob();
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            currentProdImageBase64 = reader.result;
+                            document.getElementById('prodImagePreview').src = currentProdImageBase64;
+                            document.getElementById('prodImagePreview').classList.remove('hidden');
+                            document.getElementById('prodImagePlaceholder').classList.add('hidden');
+                            document.getElementById('removeProdImageBtn').classList.remove('hidden');
+                            statusEl.textContent = 'Produkt importiert! ✅'; statusEl.className = 'text-sm mt-3 font-bold text-green-600 block';
+                        }; reader.readAsDataURL(blob);
+                    } else {
+                        statusEl.textContent = 'Produkt gefunden (ohne Bild).'; statusEl.className = 'text-sm mt-3 font-bold text-green-600 block';
+                    }
+                } else {
+                    statusEl.textContent = 'Produkt nicht gefunden. Bitte manuell eingeben.'; statusEl.className = 'text-sm mt-3 font-medium text-gray-600 block';
                 }
-            } catch(e) { alert("Barcode nicht gefunden."); }
+            } catch(e) { statusEl.textContent = 'Fehler bei der Suche.'; statusEl.className = 'text-sm mt-3 font-medium text-red-600 block'; }
         });
 
-        // RENDER RECIPES
-        function renderRecipes() {
-            const grid = document.getElementById('recipeGrid');
-            if(!grid) return;
-            grid.className = currentViewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3";
-            grid.innerHTML = '';
-            
-            let filtered = recipes.filter(r => showTrashView ? r.isDeleted : !r.isDeleted);
-            filtered.forEach(r => {
-                const c = document.createElement('div');
-                c.onclick = () => window.location.hash = `#recipe-${r.id}`;
-                let gfBadge = r.isGlutenFree ? `<img src="GFEmilia.png" class="absolute top-2 left-2 h-6 sm:h-8 rounded border border-white/40 shadow">` : '';
-                
-                if(currentViewMode === 'grid') {
-                    c.className = "bg-white rounded-3xl shadow-sm hover:shadow-lg border cursor-pointer flex flex-col h-full";
-                    let img = r.imageBase64 ? `<img src="${r.imageBase64}" class="w-full h-full object-cover">` : `<div class="w-full h-full bg-gray-200 flex justify-center items-center text-3xl font-black">${r.title[0]}</div>`;
-                    c.innerHTML = `
-                        <div class="h-48 relative rounded-t-3xl overflow-hidden">${gfBadge}${img}</div>
-                        <div class="p-5 flex-1 flex flex-col"><h3 class="font-bold text-lg mb-2">${r.title}</h3>
-                        <div class="flex flex-wrap gap-1 mt-auto">${(r.tags||[]).slice(0,3).map(t => `<span class="text-[10px] bg-gray-100 px-2 py-1 rounded font-bold">${t}</span>`).join('')}</div></div>
-                    `;
-                } else {
-                    c.className = "bg-white rounded-xl shadow-sm hover:shadow-md border cursor-pointer flex p-2 h-auto min-h-[90px]";
-                    let img = r.imageBase64 ? `<img src="${r.imageBase64}" class="w-full h-full object-cover rounded-lg">` : `<div class="w-full h-full bg-gray-200 rounded-lg flex justify-center items-center text-xl font-black">${r.title[0]}</div>`;
-                    
-                    let nut = [];
-                    if(r.nutrition?.kcal) nut.push(`<span class="bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded text-[10px] font-bold">${r.nutrition.kcal} kcal</span>`);
-                    if(r.nutrition?.carbs) nut.push(`<span class="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-[10px] font-bold">${r.nutrition.carbs}g KH</span>`);
-                    if(r.nutrition?.sugar) nut.push(`<span class="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded text-[10px] font-bold">${r.nutrition.sugar}g Zucker</span>`);
-                    if(r.nutrition?.protein) nut.push(`<span class="bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded text-[10px] font-bold">${r.nutrition.protein}g Prot</span>`);
-                    if(r.nutrition?.fat) nut.push(`<span class="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded text-[10px] font-bold">${r.nutrition.fat}g Fett</span>`);
 
-                    c.innerHTML = `
-                        <div class="h-16 w-16 sm:h-20 sm:w-20 relative shrink-0 mr-3">${gfBadge}${img}</div>
-                        <div class="flex-1 min-w-0 py-1"><h3 class="font-bold text-sm sm:text-base leading-tight truncate mb-1">${r.title}</h3>
-                        <div class="flex flex-wrap gap-1">${nut.join('')}</div></div>
-                    `;
+        // ==========================================
+        // REZEPTE LOGIK (LISTEN, DETAILS, FORMS)
+        // ==========================================
+        const toggleFavBtn = document.getElementById('toggleFavViewBtn');
+        if (toggleFavBtn) {
+            toggleFavBtn.addEventListener('click', function() {
+                showFavoritesOnly = !showFavoritesOnly;
+                if(showFavoritesOnly) {
+                    this.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
+                    this.classList.remove('bg-white', 'border-gray-300', 'text-gray-700');
+                    document.getElementById('favViewIcon')?.classList.replace('text-gray-400', 'text-red-500');
+                } else {
+                    this.classList.remove('bg-red-50', 'border-red-300', 'text-red-700');
+                    this.classList.add('bg-white', 'border-gray-300', 'text-gray-700');
+                    document.getElementById('favViewIcon')?.classList.replace('text-red-500', 'text-gray-400');
                 }
-                grid.appendChild(c);
+                renderRecipes();
             });
         }
 
-        // RECIPE DETAIL
-        function openRecipeDetail(id) {
-            const r = recipes.find(x => x.id === id);
-            if(!r) return;
-            currentDetailRecipe = r; currentDetailRecipeId = r.id;
-            document.getElementById('detailTitle').textContent = r.title;
-            const img = document.getElementById('detailImage');
-            if(img) { img.src = r.imageBase64 || ''; img.parentElement.style.display = r.imageBase64 ? 'block' : 'none'; }
-            const gf = document.getElementById('detailGfBanner');
-            if(gf) gf.style.display = r.isGlutenFree ? 'block' : 'none';
+        document.getElementById('sortSelect')?.addEventListener('change', function() { currentSortOption = this.value; renderRecipes(); });
+
+        function renderFilterTags() {
+            const container = document.getElementById('filterTagsContainer');
+            if(!container) return;
+            const allTags = new Set();
+            recipes.filter(r => !r.isDeleted).forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+            container.innerHTML = '<span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>';
+            Array.from(allTags).sort().forEach(tag => {
+                const isActive = tag === activeFilter;
+                const colors = getColorForTag(tag);
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap transition-all ${isActive ? 'ring-2 ring-offset-2 ring-red-600 shadow-md ' + colors : 'opacity-80 hover:opacity-100 hover:shadow ' + colors}`;
+                btn.textContent = tag;
+                btn.addEventListener('click', () => { activeFilter = isActive ? null : tag; updateActiveFilterUI(); renderRecipes(); renderFilterTags(); });
+                container.appendChild(btn);
+            });
+        }
+
+        function updateActiveFilterUI() {
+            const note = document.getElementById('activeFilterNote'), text = document.getElementById('activeFilterText');
+            if(!note || !text) return;
+            if (activeFilter && !showTrashView) { note.classList.remove('hidden'); text.innerHTML = `Zeige Rezepte für: <strong class="ml-1">${activeFilter}</strong>`; } 
+            else { note.classList.add('hidden'); }
+        }
+
+        document.getElementById('clearFilterBtn')?.addEventListener('click', () => { activeFilter = null; updateActiveFilterUI(); renderRecipes(); renderFilterTags(); });
+
+        function renderRecipes() {
+            const grid = document.getElementById('recipeGrid');
+            const emptyState = document.getElementById('emptyState');
+            if(!grid || !emptyState) return;
             
-            document.getElementById('detailInstructions').innerHTML = (r.instructions||'').split('\n').map(s=>`<div class="p-2 border-b"><p>${s}</p></div>`).join('');
-            document.getElementById('detailIngredients').innerHTML = (r.ingredients||[]).map(i=>`<li class="flex justify-between py-1 border-b"><span>${i.name}</span><span class="font-bold">${i.amount} ${i.unit}</span></li>`).join('');
+            grid.className = currentViewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4";
+
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            grid.innerHTML = ''; let count = 0;
+
+            let filtered = recipes.filter(r => showTrashView ? r.isDeleted : !r.isDeleted);
+            if (!showTrashView && showFavoritesOnly) filtered = filtered.filter(r => r.isFavorite);
+
+            filtered = filtered.filter(recipe => {
+                if (searchTerm) {
+                    const inTitle = recipe.title.toLowerCase().includes(searchTerm);
+                    const inTags = recipe.tags && recipe.tags.some(t => t.toLowerCase().includes(searchTerm));
+                    const inIngredients = recipe.ingredients && recipe.ingredients.some(i => i.name.toLowerCase().includes(searchTerm));
+                    if (!inTitle && !inTags && !inIngredients) return false;
+                }
+                if (!showTrashView && activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return false;
+                return true;
+            });
+
+            filtered.sort((a,b) => {
+                if(currentSortOption === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
+                if(currentSortOption === 'az') return a.title.localeCompare(b.title);
+                if(currentSortOption === 'time') return (parseInt(a.times.total)||9999) - (parseInt(b.times.total)||9999);
+                if(currentSortOption === 'kcal') return (parseInt(b.nutrition.kcal)||0) - (parseInt(a.nutrition.kcal)||0);
+                if(currentSortOption === 'protein') return (parseInt(b.nutrition.protein)||0) - (parseInt(a.nutrition.protein)||0);
+                return 0;
+            });
+
+            filtered.forEach(recipe => {
+                count++;
+                const card = document.createElement('div');
+                card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
+
+                let recipeTagsToRender = recipe.tags ? [...recipe.tags] : [];
+
+                if (currentViewMode === 'grid') {
+                    card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                    const cardHeader = document.createElement('div');
+                    cardHeader.className = "h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden border-b border-gray-200 shrink-0";
+                    
+                    if (recipe.imageBase64) {
+                        const img = document.createElement('img'); img.src = recipe.imageBase64; img.className = "w-full h-full object-cover"; cardHeader.appendChild(img);
+                    } else {
+                        cardHeader.className += " bg-gradient-to-br from-gray-100 to-gray-200";
+                        cardHeader.innerHTML = `<div class="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800">${recipe.title.charAt(0).toUpperCase()}</div>`;
+                    }
+
+                    if (recipe.isGlutenFree) {
+                        const gfBadge = document.createElement('div'); gfBadge.className = "absolute top-2 left-2 z-10";
+                        gfBadge.innerHTML = '<img src="GFEmilia.png" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display=\'none\'">';
+                        cardHeader.appendChild(gfBadge);
+                    }
+
+                    let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
+                    if(recipe.isFavorite && !showTrashView) badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
+                    if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
+                    if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
+                    if(recipe.times && recipe.times.total) badgesHtml += `<div class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-700/50">${recipe.times.total} Min</div>`;
+                    badgesHtml += '</div>';
+                    cardHeader.innerHTML += badgesHtml;
+
+                    const cardBody = document.createElement('div');
+                    cardBody.className = "p-5 flex-1 flex flex-col justify-between";
+                    const tagsHtml = recipeTagsToRender.slice(0, 3).map(tag => `<span class="text-xs px-2.5 py-1 rounded-md font-bold shadow-sm ${getColorForTag(tag)}">${tag}</span>`).join('');
+                    cardBody.innerHTML = `<div><h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">${recipe.title}</h3><div class="flex flex-wrap gap-1.5 mt-auto">${tagsHtml}</div></div>`;
+                    
+                    card.appendChild(cardHeader); card.appendChild(cardBody);
+                } else {
+                    // --- LISTEN ANSICHT (Fokus: Nährwerte & GF Badge) ---
+                    card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-auto min-h-[90px] ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = "h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 bg-gray-200 rounded-lg relative overflow-hidden border border-gray-200 mr-4";
+                    
+                    if (recipe.imageBase64) {
+                        imgContainer.innerHTML = `<img src="${recipe.imageBase64}" class="w-full h-full object-cover">`;
+                    } else {
+                        imgContainer.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800";
+                        imgContainer.textContent = recipe.title.charAt(0).toUpperCase();
+                    }
+
+                    if (recipe.isGlutenFree) {
+                        const gfBadge = document.createElement('div');
+                        gfBadge.className = "absolute top-1 left-1 bg-amber-400/95 backdrop-blur text-amber-950 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-300 z-10 flex items-center gap-0.5";
+                        gfBadge.innerHTML = '<span>🌾</span> GF';
+                        imgContainer.appendChild(gfBadge);
+                    }
+
+                    const infoContainer = document.createElement('div');
+                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-center py-0.5";
+
+                    let metaHtml = '';
+                    if (recipe.isFavorite && !showTrashView) metaHtml += `<svg class="w-4 h-4 text-red-500 fill-current inline-block mr-1" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>`;
+                    if(recipe.times && recipe.times.total) metaHtml += `<span class="text-[10px] font-bold text-gray-500 inline-flex items-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total}m</span>`;
+                    
+                    const headerRow = document.createElement('div');
+                    headerRow.className = "flex justify-between items-start gap-2 mb-1";
+                    headerRow.innerHTML = `<div class="flex-1"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight">${recipe.title}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap">${metaHtml}</div>`;
+
+                    let nutritionLine = '';
+                    if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.sugar || recipe.nutrition.fat)) {
+                        nutritionLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">`;
+                        if (recipe.nutrition.kcal) nutritionLine += `<span class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.kcal} kcal</span>`;
+                        if (recipe.nutrition.carbs) nutritionLine += `<span class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.carbs}g KH</span>`;
+                        if (recipe.nutrition.sugar) nutritionLine += `<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g Zucker</span>`;
+                        if (recipe.nutrition.protein) nutritionLine += `<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.protein}g Prot</span>`;
+                        if (recipe.nutrition.fat) nutritionLine += `<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fat}g Fett</span>`;
+                        nutritionLine += `</div>`;
+                    }
+
+                    infoContainer.appendChild(headerRow);
+                    if(nutritionLine) infoContainer.insertAdjacentHTML('beforeend', nutritionLine);
+
+                    card.appendChild(imgContainer);
+                    card.appendChild(infoContainer);
+                }
+
+                grid.appendChild(card);
+            });
+
+            if (count === 0) emptyState?.classList.remove('hidden'); else emptyState?.classList.add('hidden');
+        }
+
+        document.getElementById('searchInput')?.addEventListener('input', renderRecipes);
+
+        function scaleAndFormatIngredient(amountStr, unitStr, ratio) {
+            let str = (amountStr || '').toString().trim().replace(',', '.');
+            if (str.match(/^\d+\/\d+$/)) { let parts = str.split('/'); str = (parseFloat(parts[0]) / parseFloat(parts[1])).toString(); }
+            let val = parseFloat(str);
+            if (isNaN(val)) return { amt: amountStr, unt: unitStr }; 
+            let scaled = val * ratio;
+            let u = (unitStr || '').trim().toLowerCase();
+            if (u === 'g' && scaled >= 1000) return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'kg' };
+            if (u === 'ml' && scaled >= 1000) return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'l' };
+            return { amt: (Math.round(scaled * 10) / 10).toString().replace('.', ','), unt: unitStr };
+        }
+
+        function renderDetailIngredientsList(recipe, portionsToDisplay) {
+            const ingList = document.getElementById('detailIngredients');
+            if(!ingList) return; ingList.innerHTML = '';
+            const basePortions = recipe.portions > 0 ? recipe.portions : 1; 
+            const ratio = portionsToDisplay / basePortions;
+
+            if (recipe.ingredients) {
+                recipe.ingredients.forEach(ing => {
+                    const li = document.createElement('li');
+                    li.className = "flex justify-between items-center py-2.5 px-3 -mx-3 rounded-xl border-b border-gray-300/50 last:border-0 gap-4 cursor-pointer hover:bg-gray-200/50 transition-all select-none group page-break-inside-avoid print:px-0 print:mx-0 print:py-1";
+                    
+                    const formatted = scaleAndFormatIngredient(ing.amount, ing.unit, ratio);
+                    const fullAmount = `${formatted.amt} ${formatted.unt}`.trim();
+
+                    let amountHtml = fullAmount ? `<div class="flex-shrink-0"><span class="text-gray-900 font-bold bg-white px-3 py-1.5 rounded text-sm shadow-sm whitespace-nowrap min-w-[70px] text-center inline-block group-[.is-checked]:bg-gray-100 group-[.is-checked]:text-gray-400 group-[.is-checked]:shadow-none transition-all print:shadow-none print:border-gray-400">${fullAmount}</span></div>` : '';
+                    const checkmarkHtml = `<svg class="ing-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mr-1 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2" class="opacity-100"></circle></svg>`;
+
+                    li.innerHTML = `<div class="flex items-center gap-2 flex-1 min-w-0">${checkmarkHtml}<span class="font-bold text-gray-900 break-words leading-snug ing-text transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400">${ing.name}</span></div>${amountHtml}`;
+
+                    li.addEventListener('click', function() {
+                        this.classList.toggle('is-checked');
+                        const svg = this.querySelector('.ing-checkbox');
+                        if (this.classList.contains('is-checked')) {
+                            svg.classList.replace('text-gray-300', 'text-green-500');
+                            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                        } else {
+                            svg.classList.replace('text-green-500', 'text-gray-300');
+                            svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
+                        }
+                    });
+                    ingList.appendChild(li);
+                });
+            }
+        }
+
+        document.getElementById('btnPortionMinus')?.addEventListener('click', () => {
+            if (currentDisplayPortions > 1 && currentDetailRecipe) {
+                currentDisplayPortions--;
+                const detPortionsCount = document.getElementById('detailPortionsCount'); if(detPortionsCount) detPortionsCount.textContent = currentDisplayPortions;
+                const prntPortionsCount = document.getElementById('printPortionsCount'); if(prntPortionsCount) prntPortionsCount.textContent = currentDisplayPortions;
+                renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
+            }
+        });
+
+        document.getElementById('btnPortionPlus')?.addEventListener('click', () => {
+            if (currentDetailRecipe) {
+                currentDisplayPortions++;
+                const detPortionsCount = document.getElementById('detailPortionsCount'); if(detPortionsCount) detPortionsCount.textContent = currentDisplayPortions;
+                const prntPortionsCount = document.getElementById('printPortionsCount'); if(prntPortionsCount) prntPortionsCount.textContent = currentDisplayPortions;
+                renderDetailIngredientsList(currentDetailRecipe, currentDisplayPortions);
+            }
+        });
+
+        function openRecipeDetail(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) { window.location.hash = ''; return; }
+
+            currentDetailRecipe = recipe;
+            currentDisplayPortions = recipe.portions > 0 ? recipe.portions : 4;
+            currentDetailRecipeId = id;
+            
+            const detTitle = document.getElementById('detailTitle');
+            if(detTitle) detTitle.textContent = recipe.title;
+            
+            if(recipe.isDeleted) {
+                document.getElementById('editRecipeBtn')?.classList.add('hidden');
+                document.getElementById('deleteRecipeBtn')?.classList.add('hidden');
+                document.getElementById('printRecipeBtn')?.classList.add('hidden');
+                document.getElementById('shareRecipeBtn')?.classList.add('hidden');
+                document.getElementById('favRecipeBtn')?.classList.add('hidden');
+                document.getElementById('startZenModeBtn')?.classList.add('hidden');
+                document.getElementById('restoreRecipeBtn')?.classList.remove('hidden');
+                document.getElementById('hardDeleteRecipeBtn')?.classList.remove('hidden');
+            } else {
+                document.getElementById('editRecipeBtn')?.classList.remove('hidden');
+                document.getElementById('deleteRecipeBtn')?.classList.remove('hidden');
+                document.getElementById('printRecipeBtn')?.classList.remove('hidden');
+                document.getElementById('shareRecipeBtn')?.classList.remove('hidden');
+                document.getElementById('favRecipeBtn')?.classList.remove('hidden');
+                document.getElementById('startZenModeBtn')?.classList.remove('hidden');
+                document.getElementById('restoreRecipeBtn')?.classList.add('hidden');
+                document.getElementById('hardDeleteRecipeBtn')?.classList.add('hidden');
+                
+                const favBtn = document.getElementById('favRecipeBtn');
+                if(favBtn) {
+                    if(recipe.isFavorite) {
+                        favBtn.classList.add('fav-active');
+                        const svg = favBtn.querySelector('svg');
+                        if(svg) svg.innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
+                    } else {
+                        favBtn.classList.remove('fav-active');
+                        const svg = favBtn.querySelector('svg');
+                        if(svg) svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                    }
+                }
+            }
+            
+            const imgContainer = document.getElementById('detailImageContainer');
+            const imgEl = document.getElementById('detailImage');
+            if(recipe.imageBase64) {
+                if(imgEl) imgEl.src = recipe.imageBase64;
+                imgContainer?.classList.remove('hidden');
+            } else {
+                imgContainer?.classList.add('hidden');
+                if(imgEl) imgEl.src = '';
+            }
+
+            const gfBanner = document.getElementById('detailGfBanner');
+            if (gfBanner) {
+                if (recipe.isGlutenFree) gfBanner.classList.remove('hidden');
+                else gfBanner.classList.add('hidden');
+            }
+
+            const tagsContainer = document.getElementById('detailTags');
+            if(tagsContainer) {
+                tagsContainer.innerHTML = '';
+                if(recipe.difficulty) {
+                    const diffSpan = document.createElement('span');
+                    diffSpan.className = `px-3 py-1 rounded-lg text-sm font-black uppercase tracking-wider bg-gray-200 text-gray-800 border border-gray-300 print:border-gray-400`;
+                    diffSpan.textContent = recipe.difficulty;
+                    tagsContainer.appendChild(diffSpan);
+                }
+                if(recipe.rating > 0) {
+                    const starSpan = document.createElement('span');
+                    starSpan.className = `px-3 py-1 rounded-lg bg-gray-50 border border-gray-300 print:border-gray-400`;
+                    starSpan.innerHTML = getStarsHtml(recipe.rating);
+                    tagsContainer.appendChild(starSpan);
+                }
+                if (recipe.tags) {
+                    recipe.tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = `px-3 py-1 rounded-lg text-sm font-bold ${getColorForTag(tag)}`;
+                        span.textContent = tag;
+                        tagsContainer.appendChild(span);
+                    });
+                }
+            }
+
+            const timesContainer = document.getElementById('detailTimesContainer');
+            const boxTotal = document.getElementById('timeTotalBox');
+            const boxPrep = document.getElementById('timePrepBox');
+            const boxCook = document.getElementById('timeCookBox');
+            const boxRest = document.getElementById('timeRestBox');
+            
+            let hasTimes = false;
+            if (recipe.times) {
+                if (recipe.times.total) { boxTotal?.classList.remove('hidden'); const detailTimeTotal = document.getElementById('detailTimeTotal'); if(detailTimeTotal) detailTimeTotal.textContent = recipe.times.total; hasTimes = true; } else { boxTotal?.classList.add('hidden'); }
+                if (recipe.times.prep) { boxPrep?.classList.remove('hidden'); const detailTimePrep = document.getElementById('detailTimePrep'); if(detailTimePrep) detailTimePrep.textContent = recipe.times.prep; hasTimes = true; } else { boxPrep?.classList.add('hidden'); }
+                if (recipe.times.cook) { boxCook?.classList.remove('hidden'); const detailTimeCook = document.getElementById('detailTimeCook'); if(detailTimeCook) detailTimeCook.textContent = recipe.times.cook; hasTimes = true; } else { boxCook?.classList.add('hidden'); }
+                if (recipe.times.rest) { boxRest?.classList.remove('hidden'); const detailTimeRest = document.getElementById('detailTimeRest'); if(detailTimeRest) detailTimeRest.textContent = recipe.times.rest; hasTimes = true; } else { boxRest?.classList.add('hidden'); }
+            }
+            if (hasTimes) timesContainer?.classList.remove('hidden'); else timesContainer?.classList.add('hidden');
+
+            const nutContainer = document.getElementById('detailNutritionContainer');
+            if (recipe.nutrition && (recipe.nutrition.kcal || recipe.nutrition.protein || recipe.nutrition.carbs || recipe.nutrition.fat || recipe.nutrition.sugar)) {
+                nutContainer?.classList.remove('hidden');
+                const detKcal = document.getElementById('detailKcal'); if(detKcal) detKcal.textContent = recipe.nutrition.kcal || '-';
+                const detProt = document.getElementById('detailProtein'); if(detProt) detProt.textContent = recipe.nutrition.protein || '-';
+                const detCarbs = document.getElementById('detailCarbs'); if(detCarbs) detCarbs.textContent = recipe.nutrition.carbs || '-';
+                const detSug = document.getElementById('detailSugar'); if(detSug) detSug.textContent = recipe.nutrition.sugar || '-';
+                const detFat = document.getElementById('detailFat'); if(detFat) detFat.textContent = recipe.nutrition.fat || '-';
+            } else {
+                nutContainer?.classList.add('hidden');
+            }
+
+            const detPortions = document.getElementById('detailPortionsCount'); if(detPortions) detPortions.textContent = currentDisplayPortions;
+            const printPortions = document.getElementById('printPortionsCount'); if(printPortions) printPortions.textContent = currentDisplayPortions;
+            renderDetailIngredientsList(recipe, currentDisplayPortions);
+
+            const instrContainer = document.getElementById('detailInstructions');
+            if(instrContainer) {
+                instrContainer.innerHTML = '';
+                if (recipe.instructions) {
+                    const steps = recipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
+                    steps.forEach(step => {
+                        const stepEl = document.createElement('div');
+                        stepEl.className = "flex items-start gap-3 p-3 -mx-3 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer select-none print:px-0 print:mx-0 print:p-1";
+                        const checkmarkHtml = `<svg class="step-checkbox w-6 h-6 text-gray-300 flex-shrink-0 transition-colors mt-0.5 print:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle></svg>`;
+                        const textWithTimers = parseTextForTimers(step.trim());
+                        stepEl.innerHTML = `${checkmarkHtml}<p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${textWithTimers}</p>`;
+                        stepEl.querySelectorAll('.timer-trigger').forEach(trigger => {
+                            trigger.addEventListener('click', (e) => {
+                                e.stopPropagation(); 
+                                const mins = parseInt(trigger.getAttribute('data-time'));
+                                if(!isNaN(mins)) startTimer(mins);
+                            });
+                        });
+                        stepEl.addEventListener('click', function(e) {
+                            if(e.target.classList.contains('timer-trigger') || e.target.closest('.timer-trigger')) return; 
+                            this.classList.toggle('is-checked');
+                            const svg = this.querySelector('.step-checkbox');
+                            if (this.classList.contains('is-checked')) {
+                                svg.classList.replace('text-gray-300', 'text-green-500');
+                                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                            } else {
+                                svg.classList.replace('text-green-500', 'text-gray-300');
+                                svg.innerHTML = '<circle cx="12" cy="12" r="9" stroke-width="2"></circle>';
+                            }
+                        });
+                        instrContainer.appendChild(stepEl);
+                    });
+                }
+            }
+
+            const notesContainer = document.getElementById('detailNotesContainer');
+            if(recipe.notes && recipe.notes.trim() !== '') {
+                notesContainer?.classList.remove('hidden');
+                const detNotesTxt = document.getElementById('detailNotesText');
+                if(detNotesTxt) detNotesTxt.textContent = recipe.notes.trim();
+            } else {
+                notesContainer?.classList.add('hidden');
+            }
+
+            const sourceContainer = document.getElementById('detailSourceContainer');
+            const sourceLink = document.getElementById('detailSourceLink');
+            if (recipe.sourceUrl) {
+                sourceContainer?.classList.remove('hidden');
+                if(sourceLink) sourceLink.href = recipe.sourceUrl;
+            } else {
+                sourceContainer?.classList.add('hidden');
+            }
+
             showView('detail');
         }
 
-        // FORM
-        function resetForm() { document.getElementById('recipeForm')?.reset(); currentEditRecipeId=null; currentImageBase64=null; document.getElementById('formImagePreview').style.display='none'; }
-        document.getElementById('imageInput')?.addEventListener('change', e => {
-            const reader = new FileReader();
-            reader.onload = ev => { currentImageBase64 = ev.target.result; document.getElementById('formImagePreview').src = currentImageBase64; document.getElementById('formImagePreview').style.display = 'block'; };
-            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        document.getElementById('deleteRecipeBtn')?.addEventListener('click', () => {
+            showCustomConfirm('Rezept in den Papierkorb verschieben?', async () => {
+                if (currentDetailRecipeId && currentUser) {
+                    try {
+                        await updateDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId), { isDeleted: true });
+                        showToast('Rezept in den Papierkorb verschoben');
+                        window.location.hash = ''; 
+                    } catch (e) { alert("Fehler beim Löschen"); }
+                }
+            });
         });
 
-        document.getElementById('addIngredientBtn')?.addEventListener('click', () => {
-            const r = document.querySelector('.ingredient-row').cloneNode(true);
-            r.querySelectorAll('input').forEach(i=>i.value='');
-            r.querySelector('.remove-ingredient').onclick = () => r.remove();
-            document.getElementById('ingredientsList').appendChild(r);
+        document.getElementById('restoreRecipeBtn')?.addEventListener('click', async () => {
+            if (currentDetailRecipeId && currentUser) {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId), { isDeleted: false });
+                    showToast('Rezept wiederhergestellt');
+                    window.location.hash = '#trash'; 
+                } catch (e) { alert("Fehler beim Wiederherstellen"); }
+            }
         });
+
+        document.getElementById('hardDeleteRecipeBtn')?.addEventListener('click', () => {
+            showCustomConfirm('Dieses Rezept ENDGÜLTIG und unwiderruflich löschen?', async () => {
+                if (currentDetailRecipeId && currentUser) {
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId));
+                        showToast('Rezept endgültig gelöscht');
+                        window.location.hash = '#trash'; 
+                    } catch (e) { alert("Fehler beim Löschen"); }
+                }
+            });
+        });
+
+        function resetForm() {
+            const form = document.getElementById('recipeForm');
+            if(form) form.reset();
+            currentRecipeTags = []; currentEditRecipeId = null; currentImageBase64 = null;
+            renderFormTags(); updateImagePreviewUI();
+            
+            const list = document.getElementById('ingredientsList');
+            if(list) {
+                const rows = list.querySelectorAll('.ingredient-row');
+                for(let i=1; i<rows.length; i++) rows[i].remove();
+                const firstRow = list.querySelector('.ingredient-row');
+                if(firstRow) {
+                    firstRow.querySelector('.ingredient-name').value = '';
+                    firstRow.querySelector('.ingredient-amount').value = '';
+                    firstRow.querySelector('.ingredient-unit').value = 'g';
+                }
+            }
+
+            ['formPortions', 'formPrepTime', 'formCookTime', 'formRestTime', 'formTotalTime', 'formKcal', 'formProtein', 'formCarbs', 'formSugar', 'formFat', 'formSourceUrl', 'formNotes', 'formRating', 'formDifficulty'].forEach(id => {
+                if(document.getElementById(id)) {
+                    if(id === 'formPortions') document.getElementById(id).value = '4';
+                    else if(id === 'formRating') document.getElementById(id).value = '0';
+                    else document.getElementById(id).value = '';
+                }
+            });
+            if(document.getElementById('formGlutenFree')) document.getElementById('formGlutenFree').checked = false;
+        }
+
+        document.getElementById('editRecipeBtn')?.addEventListener('click', () => {
+            const recipe = recipes.find(r => r.id === currentDetailRecipeId);
+            if(!recipe) return;
+
+            resetForm();
+            currentEditRecipeId = recipe.id;
+            
+            const fTitle = document.getElementById('formTitle'); if(fTitle) fTitle.value = recipe.title;
+            const fInst = document.getElementById('formInstructions'); if(fInst) fInst.value = recipe.instructions;
+            
+            if(document.getElementById('formPortions')) document.getElementById('formPortions').value = recipe.portions || '4';
+            if(document.getElementById('formSourceUrl')) document.getElementById('formSourceUrl').value = recipe.sourceUrl || '';
+            if(document.getElementById('formNotes')) document.getElementById('formNotes').value = recipe.notes || '';
+            if(document.getElementById('formRating')) document.getElementById('formRating').value = recipe.rating || '0';
+            if(document.getElementById('formDifficulty')) document.getElementById('formDifficulty').value = recipe.difficulty || '';
+            if(document.getElementById('formGlutenFree')) document.getElementById('formGlutenFree').checked = recipe.isGlutenFree || false;
+
+            if(recipe.times) {
+                if(document.getElementById('formPrepTime')) document.getElementById('formPrepTime').value = recipe.times.prep || '';
+                if(document.getElementById('formCookTime')) document.getElementById('formCookTime').value = recipe.times.cook || '';
+                if(document.getElementById('formRestTime')) document.getElementById('formRestTime').value = recipe.times.rest || ''; 
+                if(document.getElementById('formTotalTime')) document.getElementById('formTotalTime').value = recipe.times.total || '';
+            }
+            
+            if (recipe.nutrition) {
+                if(document.getElementById('formKcal')) document.getElementById('formKcal').value = recipe.nutrition.kcal || '';
+                if(document.getElementById('formProtein')) document.getElementById('formProtein').value = recipe.nutrition.protein || '';
+                if(document.getElementById('formCarbs')) document.getElementById('formCarbs').value = recipe.nutrition.carbs || '';
+                if(document.getElementById('formSugar')) document.getElementById('formSugar').value = recipe.nutrition.sugar || '';
+                if(document.getElementById('formFat')) document.getElementById('formFat').value = recipe.nutrition.fat || '';
+            }
+
+            if(recipe.imageBase64) {
+                currentImageBase64 = recipe.imageBase64;
+                updateImagePreviewUI();
+            }
+
+            if(recipe.tags) {
+                currentRecipeTags = [...recipe.tags];
+                renderFormTags();
+            }
+
+            const list = document.getElementById('ingredientsList');
+            if(list) {
+                const firstRow = list.querySelector('.ingredient-row');
+                if (recipe.ingredients && recipe.ingredients.length > 0) {
+                    recipe.ingredients.forEach((ing, index) => {
+                        let targetRow;
+                        if(index === 0) { targetRow = firstRow; } 
+                        else {
+                            targetRow = firstRow.cloneNode(true);
+                            attachRemoveEventToRow(targetRow);
+                            list.appendChild(targetRow);
+                        }
+                        targetRow.querySelector('.ingredient-name').value = ing.name || '';
+                        targetRow.querySelector('.ingredient-amount').value = ing.amount || '';
+                        targetRow.querySelector('.ingredient-unit').value = ing.unit || '';
+                    });
+                }
+            }
+            window.location.hash = '#edit';
+        });
+
+        document.getElementById('imageInput')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width, height = img.height; const maxSize = 800; 
+                    if (width > height && width > maxSize) { height *= maxSize / width; width = maxSize; } else if (height > maxSize) { width *= maxSize / height; height = maxSize; }
+                    canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    currentImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    updateImagePreviewUI();
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('removeImageBtn')?.addEventListener('click', () => {
+            currentImageBase64 = null;
+            if(document.getElementById('imageInput')) document.getElementById('imageInput').value = '';
+            updateImagePreviewUI();
+        });
+
+        function updateImagePreviewUI() {
+            const preview = document.getElementById('formImagePreview');
+            const placeholder = document.getElementById('imagePreviewPlaceholder');
+            const removeBtn = document.getElementById('removeImageBtn');
+            if(!preview || !placeholder || !removeBtn) return;
+
+            if (currentImageBase64) {
+                preview.src = currentImageBase64;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                removeBtn.classList.remove('hidden');
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                removeBtn.classList.add('hidden');
+            }
+        }
+
+        function updateIngredientDatalist() {
+            const datalist = document.getElementById('ingredientSuggestions');
+            if(!datalist) return;
+            datalist.innerHTML = '';
+            // Produkte + Custom Ingredients im Autocomplete
+            const prodNames = products.map(p => p.name).filter(n => n.length > 0);
+            const allIngs = new Set([...customIngredients, ...prodNames]);
+            const sorted = Array.from(allIngs).sort((a, b) => a.localeCompare(b, 'de'));
+            sorted.forEach(ing => {
+                const option = document.createElement('option');
+                option.value = ing;
+                datalist.appendChild(option);
+            });
+        }
+
+        function updateTagDatalist() {
+            const datalist = document.getElementById('tagSuggestions');
+            if(!datalist) return;
+            datalist.innerHTML = '';
+            const allTags = new Set();
+            recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+            Array.from(allTags).sort().forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                datalist.appendChild(option);
+            });
+        }
+
+        const tagContainer = document.getElementById('tagInputContainer');
+        const tagInput = document.getElementById('formTagInput');
+        if (tagContainer && tagInput) {
+            tagContainer.addEventListener('click', () => tagInput.focus());
+        }
+
+        function renderFormTags() {
+            const container = document.getElementById('activeTagsContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            currentRecipeTags.forEach(tag => {
+                const el = document.createElement('div');
+                el.className = `flex items-center gap-1 px-2.5 py-1 rounded-md text-sm font-bold ${getColorForTag(tag)}`;
+                el.innerHTML = `${tag}<button type="button" class="text-current opacity-60 hover:opacity-100 ml-1 focus:outline-none" onclick="removeFormTag('${tag}')">&times;</button>`;
+                container.appendChild(el);
+            });
+        }
+        window.removeFormTag = function(t) { currentRecipeTags = currentRecipeTags.filter(x => x !== t); renderFormTags(); }
+
+        if (tagInput) {
+            tagInput.addEventListener('input', (e) => {
+                let val = tagInput.value.trim().replace(',', '');
+                const allTags = new Set();
+                recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+                
+                if (Array.from(allTags).includes(val)) {
+                    if (!currentRecipeTags.includes(val)) {
+                        currentRecipeTags.push(val);
+                        tagInput.value = '';
+                        renderFormTags();
+                    }
+                }
+            });
+
+            tagInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    let val = tagInput.value.trim().replace(',', '');
+                    if (val && !currentRecipeTags.includes(val)) {
+                        val = val.charAt(0).toUpperCase() + val.slice(1);
+                        currentRecipeTags.push(val);
+                        tagInput.value = '';
+                        renderFormTags();
+                    }
+                } else if (e.key === 'Backspace' && tagInput.value === '' && currentRecipeTags.length > 0) {
+                    currentRecipeTags.pop();
+                    renderFormTags();
+                }
+            });
+        }
+
+        function attachRemoveEventToRow(row) {
+            const btn = row.querySelector('.remove-ingredient');
+            if(btn) {
+                btn.addEventListener('click', function(e) {
+                    const list = document.getElementById('ingredientsList');
+                    if(list.querySelectorAll('.ingredient-row').length > 1) {
+                        row.remove();
+                    } else {
+                        row.querySelector('.ingredient-name').value = '';
+                        row.querySelector('.ingredient-amount').value = '';
+                    }
+                });
+            }
+        }
+
+        document.getElementById('addIngredientBtn')?.addEventListener('click', () => {
+            const list = document.getElementById('ingredientsList');
+            const firstRow = list.querySelector('.ingredient-row');
+            const newRow = firstRow.cloneNode(true);
+            newRow.querySelector('.ingredient-name').value = '';
+            newRow.querySelector('.ingredient-amount').value = '';
+            newRow.querySelector('.ingredient-unit').value = 'g';
+            attachRemoveEventToRow(newRow);
+            list.appendChild(newRow);
+            newRow.querySelector('.ingredient-name').focus();
+        });
+        
+        const firstIngRow = document.querySelector('.ingredient-row');
+        if(firstIngRow) attachRemoveEventToRow(firstIngRow);
 
         document.getElementById('recipeForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const ings = Array.from(document.querySelectorAll('.ingredient-row')).map(r => ({
-                name: r.querySelector('.ingredient-name').value, amount: r.querySelector('.ingredient-amount').value, unit: r.querySelector('.ingredient-unit').value
-            })).filter(i => i.name);
+            if (!currentUser) return;
 
-            const d = {
-                title: document.getElementById('formTitle').value, isGlutenFree: document.getElementById('formGlutenFree').checked,
-                ingredients: ings, instructions: document.getElementById('formInstructions').value, imageBase64: currentImageBase64,
-                nutrition: { kcal: document.getElementById('formKcal').value, carbs: document.getElementById('formCarbs').value, sugar: document.getElementById('formSugar').value, protein: document.getElementById('formProtein').value, fat: document.getElementById('formFat').value }
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loader inline-block border-2 w-4 h-4 mr-1" style="border-top-color: #4b5563; width: 16px; height: 16px; border-width: 2px;"></div> Bitte warten...';
+            submitBtn.disabled = true;
+
+            const ingredients = [];
+            let foundNewIngredients = false;
+            let updatedIngredientsList = [...customIngredients];
+
+            document.querySelectorAll('.ingredient-row').forEach(row => {
+                const name = row.querySelector('.ingredient-name').value.trim();
+                const amount = row.querySelector('.ingredient-amount').value.trim();
+                const unit = row.querySelector('.ingredient-unit').value;
+                if (name) {
+                    const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+                    ingredients.push({ name: formattedName, amount, unit });
+                    // Produkte ignorieren beim Speichern von Custom Ingredients
+                    const isProduct = products.some(p => p.name === formattedName);
+                    if (!isProduct && !updatedIngredientsList.includes(formattedName)) {
+                        updatedIngredientsList.push(formattedName);
+                        foundNewIngredients = true;
+                    }
+                }
+            });
+
+            const recipeData = {
+                title: document.getElementById('formTitle').value,
+                tags: currentRecipeTags,
+                portions: parseInt(document.getElementById('formPortions').value) || 4,
+                times: {
+                    prep: document.getElementById('formPrepTime').value,
+                    cook: document.getElementById('formCookTime').value,
+                    rest: document.getElementById('formRestTime').value, 
+                    total: document.getElementById('formTotalTime').value
+                },
+                ingredients: ingredients,
+                instructions: document.getElementById('formInstructions').value,
+                notes: document.getElementById('formNotes').value,
+                rating: document.getElementById('formRating').value,
+                difficulty: document.getElementById('formDifficulty').value,
+                sourceUrl: document.getElementById('formSourceUrl').value,
+                isGlutenFree: document.getElementById('formGlutenFree').checked,
+                nutrition: {
+                    kcal: document.getElementById('formKcal').value,
+                    protein: document.getElementById('formProtein').value,
+                    carbs: document.getElementById('formCarbs').value,
+                    sugar: document.getElementById('formSugar').value,
+                    fat: document.getElementById('formFat').value
+                },
+                imageBase64: currentImageBase64
             };
-            
-            if(currentEditRecipeId) await updateDoc(doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentEditRecipeId), d);
-            else await addDoc(collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes'), { ...d, createdAt: new Date().toISOString(), isDeleted: false });
-            window.location.hash = '';
+
+            try {
+                if(currentEditRecipeId) {
+                    const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentEditRecipeId);
+                    await updateDoc(ref, recipeData);
+                } else {
+                    recipeData.createdAt = new Date().toISOString();
+                    recipeData.isFavorite = false;
+                    recipeData.isDeleted = false;
+                    const recipesRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes');
+                    await addDoc(recipesRef, recipeData);
+                }
+
+                if (foundNewIngredients) await saveNewIngredientsToFirebase(updatedIngredientsList);
+                showToast('Rezept gespeichert!');
+                window.location.hash = showTrashView ? '#trash' : ''; 
+            } catch (error) {
+                console.error("Speicherfehler:", error);
+                alert("Fehler beim Speichern!");
+            } finally {
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+            }
         });
 
-        // URL SCRAPER
+        // ==========================================
+        // URL IMPORT (Extrem Robuster JSON-LD Scraper)
+        // ==========================================
+        function parseIsoDuration(duration) {
+            if(!duration || typeof duration !== 'string') return '';
+            let total = 0;
+            const hMatch = duration.match(/(\d+)H/);
+            const mMatch = duration.match(/(\d+)M/);
+            if (hMatch) total += parseInt(hMatch[1], 10) * 60;
+            if (mMatch) total += parseInt(mMatch[1], 10);
+            return total > 0 ? total.toString() : '';
+        }
+
+        function extractNumber(str) {
+            if(!str) return '';
+            const match = str.toString().match(/\d+/);
+            return match ? match[0] : '';
+        }
+
+        function extractRecipeFromJsonLd(data) {
+            let bestRecipe = null;
+            const search = (obj) => {
+                if (!obj) return;
+                if (typeof obj === 'object') {
+                    if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
+                        if (!bestRecipe || (obj.recipeIngredient && obj.recipeInstructions)) {
+                            bestRecipe = obj;
+                        }
+                    }
+                    for (let key in obj) search(obj[key]);
+                } else if (Array.isArray(obj)) {
+                    obj.forEach(item => search(item));
+                }
+            };
+            search(data);
+            return bestRecipe;
+        }
+
         document.getElementById('startImportBtn')?.addEventListener('click', async () => {
-            const url = document.getElementById('importUrlInput').value; if(!url) return;
+            let url = document.getElementById('importUrlInput').value.trim();
+            const statusEl = document.getElementById('importStatus');
+            if(!url) return;
+
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+            statusEl.textContent = 'Versuche Daten abzurufen...';
+            statusEl.classList.remove('hidden');
+            statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
+
+            const proxies = [
+                `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                `https://corsproxy.io/?${encodeURIComponent(url)}`
+            ];
+
+            let html = null;
+
+            for (let proxy of proxies) {
+                try {
+                    const response = await fetch(proxy);
+                    if (proxy.includes('allorigins')) {
+                        const data = await response.json();
+                        if (data.contents) { html = data.contents; break; }
+                    } else {
+                        if (response.ok) { html = await response.text(); break; }
+                    }
+                } catch (e) {}
+            }
+
+            if (!html) {
+                statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert (z.B. durch Captcha oder Firewall).';
+                statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
+                return;
+            }
+
             try {
-                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-                const html = (await res.json()).contents;
-                const docObj = new DOMParser().parseFromString(html, 'text/html');
-                
-                let title = docObj.querySelector('h1')?.textContent.trim();
-                let inst = Array.from(docObj.querySelectorAll('.recipe-instructions, .instructions, [itemprop="recipeInstructions"]')).map(e=>e.textContent.trim()).join('\n');
-                
+                const parser = new DOMParser();
+                const docObj = parser.parseFromString(html, 'text/html');
+
+                let title = '', instructions = '', portions = '', timesData = {};
+                let ingredientsList = [], nutritionData = {};
+
+                const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"], script#__NEXT_DATA__');
+                for (const script of ldScripts) {
+                    try {
+                        const data = JSON.parse(script.textContent);
+                        const r = extractRecipeFromJsonLd(data);
+
+                        if (r) {
+                            title = r.name || title;
+
+                            let instText = '';
+                            const parseInst = (instArray) => {
+                                instArray.forEach(step => {
+                                    if (typeof step === 'string') { instText += step + '\n\n'; } 
+                                    else if (step.text) { instText += step.text + '\n\n'; } 
+                                    else if (step.itemListElement && Array.isArray(step.itemListElement)) {
+                                        if (step.name) instText += step.name + ':\n';
+                                        parseInst(step.itemListElement);
+                                    }
+                                });
+                            };
+
+                            if (r.recipeInstructions) {
+                                if (typeof r.recipeInstructions === 'string') { instructions = r.recipeInstructions; } 
+                                else if (Array.isArray(r.recipeInstructions)) { parseInst(r.recipeInstructions); instructions = instText; }
+                            }
+
+                            if (r.recipeIngredient) {
+                                if (Array.isArray(r.recipeIngredient)) { ingredientsList = r.recipeIngredient; } 
+                                else if (typeof r.recipeIngredient === 'string') { ingredientsList = [r.recipeIngredient]; }
+                            }
+                            
+                            if (r.recipeYield) portions = extractNumber(r.recipeYield);
+                            if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
+                            if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
+                            if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
+
+                            if (r.nutrition && typeof r.nutrition === 'object') {
+                                if(r.nutrition.calories) nutritionData.kcal = extractNumber(r.nutrition.calories);
+                                if(r.nutrition.proteinContent) nutritionData.protein = extractNumber(r.nutrition.proteinContent);
+                                if(r.nutrition.carbohydrateContent) nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
+                                if(r.nutrition.sugarContent) nutritionData.sugar = extractNumber(r.nutrition.sugarContent);
+                                if(r.nutrition.fatContent) nutritionData.fat = extractNumber(r.nutrition.fatContent);
+                            }
+                            break; 
+                        }
+                    } catch(e) {}
+                }
+
+                if (!title) { const h1 = docObj.querySelector('h1'); if (h1) title = h1.textContent.trim(); }
+                if (!instructions) {
+                    const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation, .recipe-steps, [class*="zubereitung"]');
+                    if (instructionBlocks.length > 0) { instructionBlocks.forEach(block => { let text = block.textContent.replace(/\s+/g, ' ').trim(); if(text) instructions += text + '\n\n'; }); }
+                }
+
+                if (ingredientsList.length === 0) {
+                    const trs = docObj.querySelectorAll('table.ingredients tr, .recipe-ingredients tr, table.zutaten tr');
+                    if (trs.length > 0) {
+                        trs.forEach(row => {
+                            const cols = row.querySelectorAll('td');
+                            if (cols.length >= 2) ingredientsList.push(`${cols[0].textContent.trim()} ${cols[1].textContent.trim()}`);
+                            else if (cols.length === 1) ingredientsList.push(cols[0].textContent.trim());
+                        });
+                    } else {
+                        const lis = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, [class*="zutat"] li');
+                        lis.forEach(el => { let text = el.textContent.replace(/\s+/g, ' ').trim(); if(text.length > 2 && text.length < 100) ingredientsList.push(text); });
+                    }
+                }
+
                 if(title) document.getElementById('formTitle').value = title;
-                if(inst) document.getElementById('formInstructions').value = inst;
-                if(html.toLowerCase().includes('glutenfrei')) document.getElementById('formGlutenFree').checked = true;
+                if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                 
-                document.getElementById('importStatus').textContent = "Importiert! Bitte prüfen.";
-                document.getElementById('importStatus').classList.remove('hidden');
-            } catch { alert("Fehler beim Import."); }
+                document.getElementById('formSourceUrl').value = url;
+
+                if(nutritionData.kcal) document.getElementById('formKcal').value = nutritionData.kcal;
+                if(nutritionData.protein) document.getElementById('formProtein').value = nutritionData.protein;
+                if(nutritionData.carbs) document.getElementById('formCarbs').value = nutritionData.carbs;
+                if(nutritionData.sugar) document.getElementById('formSugar').value = nutritionData.sugar;
+                if(nutritionData.fat) document.getElementById('formFat').value = nutritionData.fat;
+                
+                if (html.toLowerCase().includes('glutenfrei') || html.toLowerCase().includes('gluten-free') || title.toLowerCase().includes('glutenfrei')) {
+                    document.getElementById('formGlutenFree').checked = true;
+                } else {
+                    document.getElementById('formGlutenFree').checked = false;
+                }
+
+                if(portions) document.getElementById('formPortions').value = portions;
+                if(timesData.prep) document.getElementById('formPrepTime').value = timesData.prep;
+                if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
+                if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
+
+                if(ingredientsList.length > 0) {
+                    const list = document.getElementById('ingredientsList');
+                    const rows = list.querySelectorAll('.ingredient-row');
+                    for(let i=1; i<rows.length; i++) rows[i].remove();
+
+                    const firstRow = list.querySelector('.ingredient-row');
+                    
+                    ingredientsList.forEach((ingStr, index) => {
+                        const parsed = parseIngredientString(ingStr);
+                        let targetRow;
+                        
+                        if(index === 0) { targetRow = firstRow; } 
+                        else {
+                            targetRow = firstRow.cloneNode(true);
+                            attachRemoveEventToRow(targetRow);
+                            list.appendChild(targetRow);
+                        }
+                        
+                        targetRow.querySelector('.ingredient-name').value = parsed.name;
+                        targetRow.querySelector('.ingredient-amount').value = parsed.amount;
+                        
+                        const unitSelect = targetRow.querySelector('.ingredient-unit');
+                        let foundUnit = '';
+                        if(parsed.unit) {
+                            const opt = Array.from(unitSelect.options).find(o => o.value.toLowerCase() === parsed.unit.toLowerCase());
+                            if(opt) foundUnit = opt.value;
+                        }
+                        unitSelect.value = foundUnit;
+                    });
+                }
+
+                if(title || instructions || ingredientsList.length > 0) {
+                    statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
+                    statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
+                } else {
+                    statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
+                    statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
+                }
+
+            } catch(e) {
+                statusEl.textContent = 'Fehler beim Verarbeiten der Rezeptdaten (Format nicht kompatibel).';
+                statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
+            }
         });
 
     </script>
