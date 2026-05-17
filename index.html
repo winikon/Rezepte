@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
-    <!-- Trick: ?v=2 zwingt Handys, das Bild neu zu laden -->
     <link rel="apple-touch-icon" href="logomr78brutalist.png?v=2">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
@@ -21,11 +20,17 @@
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
-        ::-webkit-scrollbar { width: 8px; }
+        
+        /* Globale Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #E6E4DD; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
+        /* Versteckt den hässlichen grauen Balken unter den Filter-Tags */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         .loader {
             border: 4px solid #f3f3f3; border-top: 4px solid #dc2626; border-radius: 50%;
             width: 40px; height: 40px; animation: spin 1s linear infinite;
@@ -69,6 +74,7 @@
 </head>
 <body class="text-gray-900 h-screen flex flex-col overflow-hidden bg-[#E6E4DD]">
 
+    <!-- LADEBILDSCHIRM -->
     <div id="loadingOverlay" class="fixed inset-0 bg-[#E6E4DD] z-[60] flex flex-col items-center justify-center print:hidden">
         <div class="loader mb-4"></div>
         <p class="text-gray-600 font-medium" id="loadingText">App wird geladen...</p>
@@ -143,17 +149,18 @@
         <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1" id="filterTagsContainer">
+                <!-- HIER WURDE DIE SCROLLBAR AUSGEBLENDET (hide-scrollbar) -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1 hide-scrollbar" id="filterTagsContainer">
                     <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
                 </div>
                 
                 <div class="flex items-center gap-3 flex-wrap">
-                    <!-- NEU: VIEW TOGGLE (Raster/Liste) -->
+                    <!-- VIEW TOGGLE (Raster/Liste) -->
                     <div class="flex items-center gap-1 bg-white border border-gray-300 rounded-full p-1 shadow-sm">
                         <button id="viewGridBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kachelansicht">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                         </button>
-                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Listenansicht">
+                        <button id="viewListBtn" class="p-1.5 rounded-full transition-colors focus:outline-none" title="Kompakte Listenansicht">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
@@ -188,7 +195,7 @@
             </div>
 
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: Zen-Mode Classic v1.2 (+ Listenansicht) | Stand: 17.05.2026, 10:05 Uhr
+                Version: 1.3 Stabil (Chefkoch-Fix, Kompakt-Ansicht) | Stand: 17.05.2026, 10:20 Uhr
             </div>
         </div>
 
@@ -216,16 +223,15 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                         <span class="hidden sm:inline">Drucken</span>
                     </button>
-                    <button id="editRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                    <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        <span class="hidden sm:inline">Bearbeiten</span>
+                        Bearbeiten
                     </button>
-                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        <span class="hidden sm:inline">Löschen</span>
+                        Löschen
                     </button>
-
-                    <!-- Trash View Buttons -->
+                    
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -420,22 +426,20 @@
 
             <div class="p-6 md:p-10">
                 
+                <!-- IMPORT BEREICH (NUR URL) -->
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
-                    <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        Rezept Importieren
+                        Rezept aus dem Internet importieren
                     </h3>
-                    
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                            <p class="text-sm font-bold text-gray-800 mb-2">Von Webseite (z.B. Chefkoch)</p>
-                            <div class="flex gap-2">
-                                <input type="url" id="importUrlInput" placeholder="https://..." class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-sm">
-                                <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm">Laden</button>
-                            </div>
-                        </div>
+                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung, Zeiten und Nährwerte automatisch aus.</p>
+                    <div class="flex gap-2">
+                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
+                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                            Auslesen
+                        </button>
                     </div>
-                    <p id="importStatus" class="text-sm mt-4 font-medium hidden"></p>
+                    <p id="importStatus" class="text-sm mt-3 font-medium hidden"></p>
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
@@ -649,6 +653,8 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Google API Key wurde hier vollständig entfernt, da das Feature zurückgebaut wurde.
+
         const firebaseConfig = {
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ",
             authDomain: "rezepte-5cf2b.firebaseapp.com",
@@ -682,7 +688,6 @@
         let showTrashView = false;
         let currentSortOption = 'newest';
         
-        // NEU: View Mode State
         let currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
         
         let zenSteps = [];
@@ -740,7 +745,7 @@
         }
 
         // ==========================================
-        // VIEW TOGGLE LOGIC (NEU)
+        // VIEW TOGGLE LOGIC
         // ==========================================
         const viewGridBtn = document.getElementById('viewGridBtn');
         const viewListBtn = document.getElementById('viewListBtn');
@@ -1429,11 +1434,12 @@
             const emptyState = document.getElementById('emptyState');
             if(!grid || !emptyState) return;
             
-            // Ansicht anpassen
+            // NEU: Umschalten der Raster/Spalten Logik für die Listenansicht
             if (currentViewMode === 'grid') {
                 grid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6";
             } else {
-                grid.className = "grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4";
+                // 3 Spalten Layout für große Bildschirme
+                grid.className = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4";
             }
 
             const sInput = document.getElementById('searchInput');
@@ -1486,7 +1492,7 @@
                 const card = document.createElement('div');
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
-                // VORBEREITUNG DER TAGS FÜR BEIDE ANSICHTEN
+                // Vorbereitung der Tags
                 let recipeTagsToRender = recipe.tags ? [...recipe.tags].slice(0, 3) : [];
                 if (recipe.nutrition) {
                     let protein = parseInt(recipe.nutrition.protein) || 0;
@@ -1502,7 +1508,7 @@
                 if (currentViewMode === 'grid') {
                     // --- KACHEL ANSICHT ---
                     card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
-                    
+
                     const cardHeader = document.createElement('div');
                     cardHeader.className = "h-48 bg-gray-200 flex items-center justify-center relative overflow-hidden border-b border-gray-200";
                     
@@ -1541,7 +1547,7 @@
                     recipeTagsToRender.forEach(tag => {
                         const t = document.createElement('span');
                         let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
-                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white' : 'bg-green-700 text-white') : getColorForTag(tag);
+                        let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white border-transparent' : 'bg-green-700 text-white border-transparent') : getColorForTag(tag);
                         
                         t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${colorClass}`;
                         t.textContent = tag;
@@ -1579,11 +1585,11 @@
                     card.appendChild(cardHeader);
                     card.appendChild(cardBody);
                 } else {
-                    // --- LISTEN ANSICHT ---
-                    card.className = `bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-28 ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                    // --- KOMPAKTE LISTENANSICHT (Max 2 Zeilen) ---
+                    card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-2 h-20 ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
                     
                     const imgContainer = document.createElement('div');
-                    imgContainer.className = "h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 bg-gray-200 rounded-xl relative overflow-hidden border border-gray-200 mr-4";
+                    imgContainer.className = "h-16 w-16 flex-shrink-0 bg-gray-200 rounded-lg relative overflow-hidden border border-gray-200 mr-3";
                     
                     if (recipe.imageBase64) {
                         const img = document.createElement('img');
@@ -1591,26 +1597,28 @@
                         img.className = "w-full h-full object-cover";
                         imgContainer.appendChild(img);
                     } else {
-                        imgContainer.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800";
+                        imgContainer.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-xl font-black text-gray-800";
                         imgContainer.textContent = recipe.title.charAt(0).toUpperCase();
                     }
 
                     const infoContainer = document.createElement('div');
-                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-center py-1";
+                    infoContainer.className = "flex-1 min-w-0 flex flex-col justify-center py-0.5";
 
+                    // Zeile 1: Titel
                     const title = document.createElement('h3');
-                    title.className = "text-base sm:text-lg font-bold text-gray-900 truncate mb-1";
+                    title.className = "text-sm sm:text-base font-bold text-gray-900 truncate";
                     title.textContent = recipe.title;
 
+                    // Zeile 2: Tags
                     const tagsContainer = document.createElement('div');
-                    tagsContainer.className = "flex flex-wrap gap-1.5 mt-1 overflow-hidden h-6";
+                    tagsContainer.className = "flex flex-wrap gap-1 mt-1 overflow-hidden h-5";
 
                     recipeTagsToRender.forEach(tag => {
                         const t = document.createElement('span');
                         let isSpecial = (tag === "High Protein 💪" || tag === "Low Carb 🥗");
                         let colorClass = isSpecial ? (tag === "High Protein 💪" ? 'bg-gray-800 text-white border-transparent' : 'bg-green-700 text-white border-transparent') : getColorForTag(tag);
                         
-                        t.className = `text-[10px] px-2 py-0.5 rounded font-bold truncate max-w-[100px] border ${colorClass}`;
+                        t.className = `text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded font-bold truncate max-w-[80px] sm:max-w-[100px] border ${colorClass}`;
                         t.textContent = tag;
                         tagsContainer.appendChild(t);
                     });
@@ -1619,14 +1627,14 @@
                     infoContainer.appendChild(tagsContainer);
 
                     const metaContainer = document.createElement('div');
-                    metaContainer.className = "hidden sm:flex flex-col items-end justify-center gap-2 min-w-[60px]";
+                    metaContainer.className = "hidden sm:flex flex-col items-end justify-center gap-1.5 min-w-[50px] pl-2";
 
                     if (recipe.isFavorite && !showTrashView) {
-                        metaContainer.innerHTML += `<svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>`;
+                        metaContainer.innerHTML += `<svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>`;
                     }
 
                     if(recipe.times && recipe.times.total) {
-                         metaContainer.innerHTML += `<span class="text-xs font-bold text-gray-500 flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total}m</span>`;
+                         metaContainer.innerHTML += `<span class="text-[10px] font-bold text-gray-500 flex items-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>${recipe.times.total}m</span>`;
                     }
 
                     card.appendChild(imgContainer);
@@ -2346,7 +2354,7 @@
         }
 
         // ==========================================
-        // URL IMPORT (Klassisch via JSON-LD)
+        // URL IMPORT (Extrem Robuster JSON-LD Scraper + Fallback)
         // ==========================================
         function parseIsoDuration(duration) {
             if(!duration || typeof duration !== 'string') return '';
@@ -2364,14 +2372,32 @@
             return match ? match[0] : '';
         }
 
+        function parseIngredientString(str) {
+            const match = str.trim().match(/^([\d\.\,\/¼½¾\-\s]+)?\s*(g|kg|ml|l|EL|TL|Stk|Prise|Bund|Pck\.|Pck|Dose|Zehe|Tropfen|Schuss|Msp\.|Msp|Tasse|Scheiben?)\b\s*(.*)$/i);
+            if (match) {
+                let amount = (match[1] || '').trim();
+                let unitRaw = (match[2] || '').trim();
+                let name = (match[3] || '').trim();
+                let unit = '';
+                if (unitRaw) {
+                    const foundUnit = Array.from(document.querySelectorAll('.ingredient-unit option')).find(opt => opt.value.toLowerCase() === unitRaw.toLowerCase().replace('scheiben', 'scheibe').replace('pck', 'pck.').replace('msp', 'msp.'));
+                    if (foundUnit) unit = foundUnit.value;
+                }
+                if (!name && !amount && !unit) name = str.trim();
+                return { amount, unit, name };
+            }
+            return { amount: '', unit: '', name: str.trim() };
+        }
+
         function extractRecipeFromJsonLd(data) {
-            let recipeObj = null;
+            let bestRecipe = null;
             const search = (obj) => {
-                if (!obj || recipeObj) return;
+                if (!obj) return;
                 if (typeof obj === 'object') {
                     if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
-                        recipeObj = obj;
-                        return;
+                        if (!bestRecipe || (obj.recipeIngredient && obj.recipeInstructions)) {
+                            bestRecipe = obj;
+                        }
                     }
                     for (let key in obj) search(obj[key]);
                 } else if (Array.isArray(obj)) {
@@ -2379,7 +2405,7 @@
                 }
             };
             search(data);
-            return recipeObj;
+            return bestRecipe;
         }
 
         const startImpBtn = document.getElementById('startImportBtn');
@@ -2396,8 +2422,8 @@
                 statusEl.className = 'text-sm mt-3 font-medium text-gray-800 block';
 
                 const proxies = [
-                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(url)}`
                 ];
 
                 let html = null;
@@ -2415,7 +2441,7 @@
                 }
 
                 if (!html) {
-                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert.';
+                    statusEl.textContent = 'Fehler: Die Webseite hat den Zugriff blockiert (z.B. durch Captcha oder Firewall).';
                     statusEl.className = 'text-sm mt-3 font-medium text-red-600 block';
                     return;
                 }
@@ -2431,7 +2457,8 @@
                     let ingredientsList = [];
                     let nutritionData = {};
 
-                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"]');
+                    // 1. JSON-LD SCAN (z.B. Chefkoch, Betty Bossi)
+                    const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"], script[type="application/json"], script#__NEXT_DATA__');
                     for (const script of ldScripts) {
                         try {
                             const data = JSON.parse(script.textContent);
@@ -2440,49 +2467,87 @@
                             if (r) {
                                 title = r.name || title;
 
+                                let instText = '';
+                                const parseInst = (instArray) => {
+                                    instArray.forEach(step => {
+                                        if (typeof step === 'string') {
+                                            instText += step + '\n\n';
+                                        } else if (step.text) {
+                                            instText += step.text + '\n\n';
+                                        } else if (step.itemListElement && Array.isArray(step.itemListElement)) {
+                                            if (step.name) instText += step.name + ':\n';
+                                            parseInst(step.itemListElement);
+                                        }
+                                    });
+                                };
+
                                 if (r.recipeInstructions) {
                                     if (typeof r.recipeInstructions === 'string') {
                                         instructions = r.recipeInstructions;
                                     } else if (Array.isArray(r.recipeInstructions)) {
-                                        instructions = r.recipeInstructions.map(step => step.text || step).join('\n\n');
+                                        parseInst(r.recipeInstructions);
+                                        instructions = instText;
                                     }
                                 }
 
-                                if (r.recipeIngredient && Array.isArray(r.recipeIngredient)) {
-                                    ingredientsList = r.recipeIngredient;
+                                if (r.recipeIngredient) {
+                                    if (Array.isArray(r.recipeIngredient)) {
+                                        ingredientsList = r.recipeIngredient;
+                                    } else if (typeof r.recipeIngredient === 'string') {
+                                        ingredientsList = [r.recipeIngredient];
+                                    }
                                 }
                                 
-                                if (r.recipeYield) {
-                                    portions = extractNumber(r.recipeYield);
-                                }
-
+                                if (r.recipeYield) portions = extractNumber(r.recipeYield);
                                 if (r.prepTime) timesData.prep = parseIsoDuration(r.prepTime);
                                 if (r.cookTime) timesData.cook = parseIsoDuration(r.cookTime);
                                 if (r.totalTime) timesData.total = parseIsoDuration(r.totalTime);
 
-                                if (r.nutrition) {
-                                    nutritionData.kcal = extractNumber(r.nutrition.calories);
-                                    nutritionData.protein = extractNumber(r.nutrition.proteinContent);
-                                    nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
-                                    nutritionData.fat = extractNumber(r.nutrition.fatContent);
+                                if (r.nutrition && typeof r.nutrition === 'object') {
+                                    if(r.nutrition.calories) nutritionData.kcal = extractNumber(r.nutrition.calories);
+                                    if(r.nutrition.proteinContent) nutritionData.protein = extractNumber(r.nutrition.proteinContent);
+                                    if(r.nutrition.carbohydrateContent) nutritionData.carbs = extractNumber(r.nutrition.carbohydrateContent);
+                                    if(r.nutrition.fatContent) nutritionData.fat = extractNumber(r.nutrition.fatContent);
                                 }
                                 break; 
                             }
                         } catch(e) {}
                     }
 
+                    // 2. HTML FALLBACK (Falls JSON-LD kaputt/unvollständig ist)
                     if (!title) {
                         const h1 = docObj.querySelector('h1');
                         if (h1) title = h1.textContent.trim();
                     }
                     
                     if (!instructions) {
-                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation');
+                        const instructionBlocks = docObj.querySelectorAll('.recipe-instructions, [itemprop="recipeInstructions"], .instructions, .preparation, .recipe-steps, [class*="zubereitung"]');
                         if (instructionBlocks.length > 0) {
-                            instructionBlocks.forEach(block => { instructions += block.textContent.trim() + '\n\n'; });
+                            instructionBlocks.forEach(block => { 
+                                let text = block.textContent.replace(/\s+/g, ' ').trim();
+                                if(text) instructions += text + '\n\n'; 
+                            });
                         }
                     }
 
+                    if (ingredientsList.length === 0) {
+                        const trs = docObj.querySelectorAll('table.ingredients tr, .recipe-ingredients tr, table.zutaten tr');
+                        if (trs.length > 0) {
+                            trs.forEach(row => {
+                                const cols = row.querySelectorAll('td');
+                                if (cols.length >= 2) ingredientsList.push(`${cols[0].textContent.trim()} ${cols[1].textContent.trim()}`);
+                                else if (cols.length === 1) ingredientsList.push(cols[0].textContent.trim());
+                            });
+                        } else {
+                            const lis = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, [class*="zutat"] li');
+                            lis.forEach(el => {
+                                let text = el.textContent.replace(/\s+/g, ' ').trim();
+                                if(text.length > 2 && text.length < 100) ingredientsList.push(text);
+                            });
+                        }
+                    }
+
+                    // Formular befüllen
                     if(title) document.getElementById('formTitle').value = title;
                     if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                     
@@ -2534,7 +2599,7 @@
                         statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
                         statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
                     } else {
-                        statusEl.textContent = 'Webseite geladen, aber keine Rezeptdaten gefunden.';
+                        statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
                         statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
                     }
 
