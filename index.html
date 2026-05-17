@@ -2,24 +2,11 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meine Rezept-App</title>
-    
-    <!-- MOBILE APP / PWA SETTINGS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Rezepte">
-    <!-- Trick: ?v=2 zwingt Handys, das Bild neu zu laden -->
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=2">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#E6E4DD">
-    
-    <!-- Dynamisches App Manifest für Android & Installation -->
-    <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"mr78 Rezepte","short_name":"Rezepte","start_url":".","display":"standalone","background_color":"#E6E4DD","theme_color":"#E6E4DD","icons":[{"src":"https://winikon.github.io/Rezepte/logomr78brutalist.png","sizes":"512x512","type":"image/png"}]}'>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Erzwingt, dass Hintergrundfarben gedruckt werden */
+        /* Erzwingt, dass Hintergrundfarben (wie das Grau bei Zutaten) gedruckt werden */
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #E6E4DD; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .tag-chip { transition: all 0.2s ease-in-out; }
         .tag-chip:hover { transform: scale(1.05); }
@@ -37,10 +24,6 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Anpassung für iPhone Notch (Safe Areas) */
-        .safe-pt { padding-top: max(1rem, env(safe-area-inset-top)); }
-        .safe-pb { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
 
         .glass-header { background: rgba(230, 228, 221, 0.95); backdrop-filter: blur(8px); }
         .recipe-image-preview { object-fit: cover; width: 100%; height: 100%; border-radius: 0.75rem; }
@@ -62,18 +45,6 @@
             #detailImageContainer { height: 160px !important; margin-bottom: 12px !important; border-radius: 8px; overflow: hidden; }
             h2#detailTitle { font-size: 2rem !important; margin-bottom: 12px !important; line-height: 1.1 !important; }
             .page-break-inside-avoid { page-break-inside: avoid; }
-        }
-
-        .fav-active svg { fill: #dc2626; color: #dc2626; }
-        
-        /* Floating Timer Styles */
-        .timer-box { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .timer-ringing { animation: pulseRed 1s infinite; }
-        @keyframes pulseRed { 
-            0% { background-color: #fee2e2; border-color: #f87171; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); color: #7f1d1d;} 
-            50% { background-color: #ef4444; border-color: #b91c1c; color: white; box-shadow: 0 0 20px 5px rgba(239, 68, 68, 0.5); } 
-            100% { background-color: #fee2e2; border-color: #f87171; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); color: #7f1d1d;} 
         }
     </style>
 </head>
@@ -120,21 +91,18 @@
     </div>
 
     <!-- HEADER (App Navigation) -->
-    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
+    <header id="mainHeader" class="hidden glass-header shadow-sm z-10 p-4 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
             <img src="logomr78brutalist.png" alt="mr 78 Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34\'></path><polygon points=\'18 2 22 6 12 16 8 16 8 12 18 2\'></polygon></svg>'; this.className='h-6 w-6 text-gray-800';">
-            <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Meine Rezepte</h1>
         </div>
         
         <div class="flex-1 max-w-xl relative" id="searchContainer">
-            <input type="text" id="searchInput" placeholder="Suchen in Titel, Tags & Zutaten..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 focus:border-red-500 rounded-full focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner">
+            <input type="text" id="searchInput" placeholder="Rezepte durchsuchen..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 focus:border-red-500 rounded-full focus:outline-none focus:ring-4 focus:ring-red-500/10 transition-all shadow-inner">
             <svg class="w-5 h-5 text-gray-400 absolute left-4 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-            <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </button>
             <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                 Import
@@ -150,30 +118,13 @@
     </header>
 
     <!-- HAUPTBEREICH -->
-    <main id="mainContent" class="hidden flex-1 overflow-y-auto px-4 pt-6 safe-pb relative print:p-0 print:overflow-visible">
+    <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ANSICHT 1: LISTENANSICHT -->
         <div id="listView" class="max-w-[1600px] w-full mx-auto block print:hidden">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6" id="listControls">
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 flex-1" id="filterTagsContainer">
-                    <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
-                </div>
-                
-                <div class="flex items-center gap-3 flex-wrap">
-                    <button id="toggleFavViewBtn" class="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 hover:text-red-600 hover:border-red-300 shadow-sm transition-all">
-                        <svg class="w-4 h-4 text-gray-400 transition-colors" id="favViewIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        Nur Favoriten
-                    </button>
-                    <select id="sortSelect" class="px-4 py-2 bg-white border border-gray-300 rounded-full text-sm font-bold text-gray-700 focus:ring-2 focus:ring-red-500 outline-none shadow-sm cursor-pointer">
-                        <option value="newest">Neueste zuerst</option>
-                        <option value="az">A - Z</option>
-                        <option value="time">Kürzeste Dauer</option>
-                        <option value="kcal">Meiste Kalorien</option>
-                        <option value="protein">Meistes Protein</option>
-                    </select>
-                </div>
+            <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2" id="filterTagsContainer">
+                <span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>
             </div>
-
             <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
                 <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
@@ -182,63 +133,45 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6" id="recipeGrid"></div>
             
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4" id="emptyStateIcon">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
-                <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
+                <h3 class="text-xl font-bold text-gray-900">Noch keine Rezepte</h3>
+                <p class="text-gray-600 mt-2 max-w-sm mx-auto">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
+            </div>
+
+            <!-- VERSIONS-STEMPEL -->
+            <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
+                Version: Stabil-Rollback | Stand: 17.05.2026, 08:35 Uhr
             </div>
         </div>
 
         <!-- ANSICHT 2: REZEPT DETAILS -->
         <div id="detailView" class="max-w-5xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:w-full print:shadow-none print:border-none">
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10 print:hidden">
+                <!-- ZURÜCK BUTTON -->
                 <button class="backToHomeBtn flex items-center gap-1.5 text-gray-700 hover:text-red-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Zurück
                 </button>
-                <div class="flex gap-2 flex-wrap justify-end" id="detailActionBar">
-                    <button id="startZenModeBtn" class="text-white bg-gray-900 hover:bg-black font-bold text-sm flex items-center gap-1.5 px-4 py-2 rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span class="hidden sm:inline">Kochen Starten</span>
-                    </button>
-
-                    <button id="favRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        <span class="hidden sm:inline">Favorit</span>
-                    </button>
-                    <button id="shareRecipeBtn" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        <span id="shareRecipeText" class="hidden sm:inline">Teilen</span>
-                    </button>
+                <div class="flex gap-2 flex-wrap justify-end">
                     <button id="printRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        <span class="hidden sm:inline">Drucken</span>
+                        Drucken
                     </button>
-                    <button id="editRecipeBtn" class="text-gray-700 hover:text-gray-900 hover:bg-gray-200 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                    <button id="editRecipeBtn" class="text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        <span class="hidden sm:inline">Bearbeiten</span>
+                        Bearbeiten
                     </button>
-                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">
+                    <button id="deleteRecipeBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent hover:border-red-100">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        <span class="hidden sm:inline">Löschen</span>
-                    </button>
-
-                    <!-- Trash View Buttons -->
-                    <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Wiederherstellen
-                    </button>
-                    <button id="hardDeleteRecipeBtn" class="hidden text-white bg-red-600 hover:bg-red-700 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Endgültig löschen
+                        Löschen
                     </button>
                 </div>
             </div>
             
-            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3 relative group">
+            <div id="detailImageContainer" class="w-full h-64 md:h-[400px] bg-gray-200 hidden border-b border-gray-200 print:h-40 print:mb-3">
                 <img id="detailImage" src="" alt="Rezept Bild" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity print:hidden"></div>
             </div>
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
@@ -280,7 +213,7 @@
                     </div>
                 </div>
 
-                <!-- Nährwerte (Makros) -->
+                <!-- Nährwerte -->
                 <div id="detailNutritionContainer" class="mb-8 hidden page-break-inside-avoid print:mb-6">
                     <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm print:shadow-none print:border-gray-400 print:p-3">
                         <h3 class="text-base font-bold text-gray-900 whitespace-nowrap flex items-center gap-2 m-0">
@@ -288,6 +221,7 @@
                             Nährwerte pro Portion (ca.)
                         </h3>
                         <div class="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto md:ml-auto">
+                            <!-- Reihenfolge: Kcal, Kohlenhydrate, Protein, Fett -->
                             <div class="bg-gray-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-gray-200 print:bg-transparent">
                                 <span class="text-gray-500 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-gray-900"></span>
@@ -319,17 +253,14 @@
                                 Zutaten
                             </h3>
                             <div class="flex flex-wrap items-center gap-2 print:hidden">
-                                
                                 <button id="copyIngredientsBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-blue-600 transition-colors" title="Zutaten als Liste kopieren">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
                                     <span class="hidden xl:inline" id="copyIngredientsText">Kopieren</span>
                                 </button>
-                                
                                 <button id="wakeLockBtn" class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-lg border border-gray-300 shadow-sm text-xs font-bold text-gray-600 hover:text-yellow-600 transition-colors" title="Display beim Kochen anlassen">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                                     <span class="hidden sm:inline" id="wakeLockText">Wach</span>
                                 </button>
-
                                 <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-gray-300 shadow-sm text-sm">
                                     <button id="btnPortionMinus" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors bg-gray-50 border border-gray-200">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"></path></svg>
@@ -375,40 +306,6 @@
             </div>
         </div>
 
-        <!-- ZEN KOCH-MODUS VIEW -->
-        <div id="zenModeView" class="hidden fixed inset-0 bg-[#E6E4DD] z-[100] flex flex-col justify-between overflow-hidden">
-            <div class="bg-gray-900 text-white p-4 flex items-center justify-between shadow-md">
-                <button id="exitZenModeBtn" class="flex items-center gap-2 text-gray-300 hover:text-white font-bold">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    Schließen
-                </button>
-                <div class="text-sm font-bold tracking-widest uppercase text-gray-400">Schritt <span id="zenCurrentStepNum" class="text-white text-lg">1</span> von <span id="zenTotalStepsNum">X</span></div>
-                
-                <button id="ttsPlayBtn" class="flex items-center gap-2 text-yellow-400 hover:text-yellow-300 font-bold bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
-                    Vorlesen
-                </button>
-            </div>
-            
-            <div class="flex-1 p-6 md:p-12 overflow-y-auto flex items-center justify-center relative">
-                <p id="zenInstructionText" class="text-3xl md:text-5xl font-black text-gray-900 leading-tight max-w-4xl mx-auto text-center"></p>
-            </div>
-
-            <div class="bg-white p-6 md:p-8 flex items-center justify-between border-t border-gray-300 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-                <button id="zenPrevBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 px-8 rounded-2xl text-xl flex items-center gap-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
-                    Zurück
-                </button>
-                <button id="zenNextBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-12 rounded-2xl text-2xl flex items-center gap-3 shadow-xl transition-transform transform hover:-translate-y-1">
-                    Weiter
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- FLOATING TIMER CONTAINER -->
-        <div id="floatingTimerContainer" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 print:hidden pointer-events-none *:pointer-events-auto"></div>
-
         <!-- ANSICHT 3: FORMULAR -->
         <div id="formView" class="max-w-4xl mx-auto hidden bg-white rounded-3xl shadow-md border border-gray-200 overflow-hidden print:hidden">
              <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
@@ -422,22 +319,20 @@
 
             <div class="p-6 md:p-10">
                 
+                <!-- IMPORT BEREICH (NUR URL) -->
                 <div id="importSection" class="mb-10 bg-gray-100 p-6 rounded-2xl border border-gray-300 hidden shadow-inner">
-                    <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        Rezept Importieren
+                        Rezept aus dem Internet importieren
                     </h3>
-                    
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                            <p class="text-sm font-bold text-gray-800 mb-2">Von Webseite (z.B. Chefkoch)</p>
-                            <div class="flex gap-2">
-                                <input type="url" id="importUrlInput" placeholder="https://..." class="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-sm">
-                                <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm">Laden</button>
-                            </div>
-                        </div>
+                    <p class="text-sm text-gray-700 mb-4">Füge einen Link (z.B. von Chefkoch) ein. Die App liest Zutaten, Anleitung, Zeiten und Nährwerte automatisch aus.</p>
+                    <div class="flex gap-2">
+                        <input type="url" id="importUrlInput" placeholder="https://www.chefkoch.de/rezepte/..." class="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none shadow-sm">
+                        <button type="button" id="startImportBtn" class="bg-gray-900 hover:bg-black text-white font-medium px-6 py-3 rounded-xl shadow-md transition-colors whitespace-nowrap">
+                            Auslesen
+                        </button>
                     </div>
-                    <p id="importStatus" class="text-sm mt-4 font-medium hidden"></p>
+                    <p id="importStatus" class="text-sm mt-3 font-medium hidden"></p>
                 </div>
 
                 <form id="recipeForm" class="space-y-8">
@@ -636,8 +531,8 @@
 
                     <!-- Submit -->
                     <div class="pt-6 border-t border-gray-200 flex justify-end">
-                        <button type="submit" class="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 hover:bg-gray-50 font-medium text-sm transition-colors bg-white px-4 py-2.5 rounded-lg shadow-sm border border-gray-300">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <button type="submit" class="flex items-center gap-1.5 text-green-700 hover:text-green-900 hover:bg-green-50 font-medium text-sm transition-colors bg-white px-5 py-2.5 rounded-lg shadow-sm border border-green-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Rezept speichern
                         </button>
                     </div>
@@ -676,27 +571,12 @@
         let currentEditRecipeId = null;
         let currentImageBase64 = null;
         
-        let currentDetailRecipe = null;
-        let currentDisplayPortions = 4;
-        let wakeLock = null;
-
-        let showFavoritesOnly = false;
-        let showTrashView = false;
-        let currentSortOption = 'newest';
-        
-        let zenSteps = [];
-        let currentZenStepIndex = 0;
-
-        let activeTimers = [];
-
         const views = {
             login: document.getElementById('loginView'),
             list: document.getElementById('listView'),
             detail: document.getElementById('detailView'),
-            form: document.getElementById('formView'),
-            zen: document.getElementById('zenModeView')
+            form: document.getElementById('formView')
         };
-        
         const mainHeader = document.getElementById('mainHeader');
         const mainContent = document.getElementById('mainContent');
         const searchInput = document.getElementById('searchInput');
@@ -728,375 +608,6 @@
             return tagColors[hash % tagColors.length];
         }
 
-        function getStarsHtml(rating) {
-            if(!rating || rating === 0) return '';
-            let html = '<div class="flex items-center gap-0.5 text-yellow-400">';
-            for(let i=0; i<rating; i++) {
-                html += '<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';
-            }
-            html += '</div>';
-            return html;
-        }
-
-        // ==========================================
-        // ZEN MODUS
-        // ==========================================
-        const startZenBtn = document.getElementById('startZenModeBtn');
-        if(startZenBtn) {
-            startZenBtn.addEventListener('click', () => {
-                if (!currentDetailRecipe || !currentDetailRecipe.instructions) return;
-                zenSteps = currentDetailRecipe.instructions.split(/\n+/).filter(s => s.trim().length > 0);
-                if (zenSteps.length === 0) return;
-
-                currentZenStepIndex = 0;
-                document.getElementById('zenTotalStepsNum').textContent = zenSteps.length;
-                
-                views.detail.classList.add('hidden');
-                mainHeader.classList.add('hidden');
-                views.zen.classList.remove('hidden');
-                
-                requestWakeLock();
-                updateZenModeUI();
-            });
-        }
-
-        const exitZenBtn = document.getElementById('exitZenModeBtn');
-        if(exitZenBtn) {
-            exitZenBtn.addEventListener('click', () => {
-                window.speechSynthesis.cancel();
-                views.zen.classList.add('hidden');
-                views.detail.classList.remove('hidden');
-                mainHeader.classList.remove('hidden');
-                releaseWakeLock();
-            });
-        }
-
-        const zenPrevBtn = document.getElementById('zenPrevBtn');
-        if(zenPrevBtn) {
-            zenPrevBtn.addEventListener('click', () => {
-                if (currentZenStepIndex > 0) {
-                    currentZenStepIndex--;
-                    updateZenModeUI();
-                }
-            });
-        }
-
-        const zenNextBtn = document.getElementById('zenNextBtn');
-        if(zenNextBtn) {
-            zenNextBtn.addEventListener('click', () => {
-                if (currentZenStepIndex < zenSteps.length - 1) {
-                    currentZenStepIndex++;
-                    updateZenModeUI();
-                } else {
-                    document.getElementById('exitZenModeBtn').click(); 
-                }
-            });
-        }
-
-        const ttsBtn = document.getElementById('ttsPlayBtn');
-        if(ttsBtn) {
-            ttsBtn.addEventListener('click', () => {
-                const text = zenSteps[currentZenStepIndex];
-                if (!text) return;
-                
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'de-DE';
-                utterance.rate = 0.95; 
-                window.speechSynthesis.speak(utterance);
-            });
-        }
-
-        function updateZenModeUI() {
-            window.speechSynthesis.cancel(); 
-            document.getElementById('zenCurrentStepNum').textContent = currentZenStepIndex + 1;
-            
-            const stepText = zenSteps[currentZenStepIndex];
-            const textWithTimers = parseTextForTimers(stepText);
-            const instrContainer = document.getElementById('zenInstructionText');
-            instrContainer.innerHTML = textWithTimers;
-
-            instrContainer.querySelectorAll('.timer-trigger').forEach(trigger => {
-                trigger.addEventListener('click', (e) => {
-                    e.stopPropagation(); 
-                    const mins = parseInt(trigger.getAttribute('data-time'));
-                    if(!isNaN(mins)) startTimer(mins);
-                });
-            });
-            
-            document.getElementById('zenPrevBtn').disabled = currentZenStepIndex === 0;
-            
-            const nextBtn = document.getElementById('zenNextBtn');
-            if (currentZenStepIndex === zenSteps.length - 1) {
-                nextBtn.innerHTML = `Fertig <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
-                nextBtn.classList.replace('bg-red-600', 'bg-green-600');
-                nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
-            } else {
-                nextBtn.innerHTML = `Weiter <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>`;
-                nextBtn.classList.replace('bg-green-600', 'bg-red-600');
-                nextBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
-            }
-        }
-
-        // ==========================================
-        // TIMERS
-        // ==========================================
-        function parseTextForTimers(text) {
-            const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
-            return text.replace(regex, (match, number, unit) => {
-                let minutes = parseInt(number);
-                if (unit.toLowerCase().startsWith('st') || unit.toLowerCase() === 'h') {
-                    minutes = minutes * 60;
-                }
-                return `<button type="button" class="timer-trigger inline-flex items-center gap-1.5 whitespace-nowrap bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-xl shadow-sm border-2 border-blue-300 cursor-pointer hover:bg-blue-200 hover:-translate-y-0.5 active:translate-y-0 transition-all mx-1.5 align-middle print:hidden" data-time="${minutes}">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    ${match}
-                </button><span class="hidden print:inline font-bold">${match}</span>`;
-            });
-        }
-
-        function renderTimers() {
-            const container = document.getElementById('floatingTimerContainer');
-            if(!container) return;
-            container.innerHTML = '';
-            
-            activeTimers.forEach((timer, index) => {
-                const el = document.createElement('div');
-                const isFinished = timer.remaining <= 0;
-                
-                el.className = `timer-box flex items-center justify-between gap-4 p-3 rounded-xl border-2 shadow-lg backdrop-blur-md ${isFinished ? 'timer-ringing border-red-600 text-red-900' : 'bg-gray-900/90 border-gray-700 text-white'}`;
-                
-                const absRem = Math.abs(timer.remaining);
-                const mins = Math.floor(absRem / 60);
-                const secs = absRem % 60;
-                const timeStr = `${isFinished ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                
-                el.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-70">Timer ${index + 1}</span>
-                        <span class="text-2xl font-black tabular-nums">${timeStr}</span>
-                    </div>
-                    <button class="stop-timer-btn p-2 hover:bg-white/20 rounded-lg transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
-                
-                el.querySelector('.stop-timer-btn').addEventListener('click', () => {
-                    clearInterval(timer.intervalId);
-                    activeTimers.splice(index, 1);
-                    renderTimers();
-                });
-                
-                container.appendChild(el);
-            });
-        }
-
-        let alarmAudioCtx = null;
-        function playAnnoyingAlarm() {
-            try {
-                if (!alarmAudioCtx) alarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (alarmAudioCtx.state === 'suspended') alarmAudioCtx.resume();
-                
-                let osc1 = alarmAudioCtx.createOscillator();
-                let gain1 = alarmAudioCtx.createGain();
-                osc1.type = 'sawtooth';
-                osc1.frequency.setValueAtTime(900, alarmAudioCtx.currentTime);
-                gain1.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime);
-                gain1.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.15);
-                osc1.connect(gain1);
-                gain1.connect(alarmAudioCtx.destination);
-                osc1.start(alarmAudioCtx.currentTime);
-                osc1.stop(alarmAudioCtx.currentTime + 0.15);
-
-                let osc2 = alarmAudioCtx.createOscillator();
-                let gain2 = alarmAudioCtx.createGain();
-                osc2.type = 'sawtooth';
-                osc2.frequency.setValueAtTime(1100, alarmAudioCtx.currentTime + 0.2);
-                gain2.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime + 0.2);
-                gain2.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.35);
-                osc2.connect(gain2);
-                gain2.connect(alarmAudioCtx.destination);
-                osc2.start(alarmAudioCtx.currentTime + 0.2);
-                osc2.stop(alarmAudioCtx.currentTime + 0.35);
-            } catch(e) {}
-        }
-
-        function startTimer(minutes) {
-            const timer = { remaining: minutes * 60, intervalId: null };
-            
-            timer.intervalId = setInterval(() => {
-                timer.remaining--;
-                if(timer.remaining <= 0) {
-                    playAnnoyingAlarm();
-                }
-                renderTimers();
-            }, 1000);
-            
-            activeTimers.push(timer);
-            renderTimers();
-        }
-
-        // ==========================================
-        // UI & EVENT LISTENER REZEPTE
-        // ==========================================
-        const toggleFavBtn = document.getElementById('toggleFavViewBtn');
-        if (toggleFavBtn) {
-            toggleFavBtn.addEventListener('click', function() {
-                showFavoritesOnly = !showFavoritesOnly;
-                if(showFavoritesOnly) {
-                    this.classList.add('bg-red-50', 'border-red-300', 'text-red-700');
-                    this.classList.remove('bg-white', 'border-gray-300', 'text-gray-700');
-                    document.getElementById('favViewIcon').classList.replace('text-gray-400', 'text-red-500');
-                } else {
-                    this.classList.remove('bg-red-50', 'border-red-300', 'text-red-700');
-                    this.classList.add('bg-white', 'border-gray-300', 'text-gray-700');
-                    document.getElementById('favViewIcon').classList.replace('text-red-500', 'text-gray-400');
-                }
-                renderRecipes();
-            });
-        }
-
-        const sortSelect = document.getElementById('sortSelect');
-        if (sortSelect) {
-            sortSelect.addEventListener('change', function() {
-                currentSortOption = this.value;
-                renderRecipes();
-            });
-        }
-
-        const favRecipeBtn = document.getElementById('favRecipeBtn');
-        if (favRecipeBtn) {
-            favRecipeBtn.addEventListener('click', async function() {
-                if(!currentDetailRecipe || !currentUser) return;
-                const newFavStatus = !currentDetailRecipe.isFavorite;
-                try {
-                    const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipe.id);
-                    await updateDoc(ref, { isFavorite: newFavStatus });
-                    currentDetailRecipe.isFavorite = newFavStatus;
-                    
-                    if(newFavStatus) {
-                        this.classList.add('fav-active');
-                        this.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
-                    } else {
-                        this.classList.remove('fav-active');
-                        this.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
-                    }
-                } catch (e) { console.error("Fehler beim Favoriten speichern", e); }
-            });
-        }
-
-        const shareRecipeBtn = document.getElementById('shareRecipeBtn');
-        if (shareRecipeBtn) {
-            shareRecipeBtn.addEventListener('click', async () => {
-                if(!currentDetailRecipe) return;
-                const btn = document.getElementById('shareRecipeBtn');
-                const textSpan = document.getElementById('shareRecipeText');
-                
-                let text = `🍽️ *${currentDetailRecipe.title}*\n`;
-                if(currentDetailRecipe.times?.total) text += `⏱️ Gesamtzeit: ${currentDetailRecipe.times.total} Min.\n`;
-                if(currentDetailRecipe.nutrition?.kcal) text += `🔥 ${currentDetailRecipe.nutrition.kcal} kcal pro Portion\n`;
-                text += `\n🛒 *Zutaten (für ${currentDisplayPortions} Portionen):*\n`;
-                
-                const items = document.querySelectorAll('#detailIngredients li');
-                items.forEach(li => {
-                    const name = li.querySelector('.ing-text').textContent.trim();
-                    const amountBox = li.querySelector('.flex-shrink-0 span');
-                    const amount = amountBox ? amountBox.textContent.trim() : '';
-                    if(amount) text += `- ${amount} ${name}\n`;
-                    else text += `- ${name}\n`;
-                });
-                
-                text += `\n👨‍🍳 *Zubereitung:*\n${currentDetailRecipe.instructions}\n`;
-                
-                if(currentDetailRecipe.sourceUrl) {
-                    text += `\n🔗 Link zum Original-Rezept: ${currentDetailRecipe.sourceUrl}\n`;
-                }
-
-                try {
-                    if (navigator.share) {
-                        await navigator.share({ title: currentDetailRecipe.title, text: text });
-                    } else {
-                        await navigator.clipboard.writeText(text);
-                        textSpan.textContent = 'Kopiert!';
-                        btn.classList.replace('text-gray-700', 'text-blue-600');
-                        setTimeout(() => {
-                            textSpan.textContent = 'Teilen';
-                            btn.classList.replace('text-blue-600', 'text-gray-700');
-                        }, 2500);
-                    }
-                } catch(e) {}
-            });
-        }
-
-        const printRecipeBtn = document.getElementById('printRecipeBtn');
-        if (printRecipeBtn) {
-            printRecipeBtn.addEventListener('click', () => { window.print(); });
-        }
-
-        const copyIngredientsBtn = document.getElementById('copyIngredientsBtn');
-        if (copyIngredientsBtn) {
-            copyIngredientsBtn.addEventListener('click', () => {
-                if(!currentDetailRecipe) return;
-                const btn = document.getElementById('copyIngredientsBtn');
-                const textSpan = document.getElementById('copyIngredientsText');
-                let text = `Einkaufsliste: ${currentDetailRecipe.title}\n(für ${currentDisplayPortions} Portionen)\n\n`;
-                const items = document.querySelectorAll('#detailIngredients li');
-                items.forEach(li => {
-                    const name = li.querySelector('.ing-text').textContent.trim();
-                    const amountBox = li.querySelector('.flex-shrink-0 span');
-                    const amount = amountBox ? amountBox.textContent.trim() : '';
-                    if(amount) text += `- ${amount} ${name}\n`;
-                    else text += `- ${name}\n`;
-                });
-                navigator.clipboard.writeText(text).then(() => {
-                    textSpan.textContent = 'Kopiert!';
-                    btn.classList.replace('text-gray-600', 'text-blue-600');
-                    setTimeout(() => {
-                        textSpan.textContent = 'Kopieren';
-                        btn.classList.replace('text-blue-600', 'text-gray-600');
-                    }, 2000);
-                }).catch(err => alert("Konnte Text nicht kopieren."));
-            });
-        }
-
-        async function requestWakeLock() {
-            try {
-                wakeLock = await navigator.wakeLock.request('screen');
-                const btn = document.getElementById('wakeLockBtn');
-                if(btn) {
-                    btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
-                    btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
-                    document.getElementById('wakeLockText').textContent = 'Wach';
-                }
-            } catch (err) {}
-        }
-
-        function releaseWakeLock() {
-            if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
-            const btn = document.getElementById('wakeLockBtn');
-            if(btn) {
-                btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
-                btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
-                document.getElementById('wakeLockText').textContent = 'Wach';
-            }
-        }
-
-        const wakeLockBtn = document.getElementById('wakeLockBtn');
-        if (wakeLockBtn) {
-            wakeLockBtn.addEventListener('click', () => {
-                if (wakeLock !== null) releaseWakeLock(); else requestWakeLock();
-            });
-        }
-
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                wakeLock = await navigator.wakeLock.request('screen');
-            }
-        });
-
-        // ==========================================
-        // AUTHENTIFIZIERUNG
-        // ==========================================
         let isLoginMode = true;
         const authForm = document.getElementById('authForm');
         const toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
@@ -1154,9 +665,8 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                if(loadingOverlay) loadingOverlay.classList.remove('hidden');
-                const loadTxt = document.getElementById('loadingText');
-                if(loadTxt) loadTxt.textContent = "Lade deine Rezepte...";
+                loadingOverlay.classList.remove('hidden');
+                document.getElementById('loadingText').textContent = "Lade deine Rezepte...";
                 views.login.classList.add('hidden');
                 mainHeader.classList.remove('hidden');
                 mainHeader.classList.add('flex');
@@ -1173,9 +683,8 @@
                 views.list.classList.add('hidden');
                 views.detail.classList.add('hidden');
                 views.form.classList.add('hidden');
-                views.zen.classList.add('hidden');
                 
-                if(loadingOverlay) loadingOverlay.classList.add('hidden');
+                loadingOverlay.classList.add('hidden');
                 views.login.classList.remove('hidden');
                 if(authForm) authForm.reset();
                 if(authSubmitBtn) {
@@ -1213,18 +722,16 @@
                         sourceUrl: data.sourceUrl || '',
                         nutrition: data.nutrition || { kcal: '', protein: '', carbs: '', fat: '' },
                         imageBase64: data.imageBase64 || null,
-                        createdAt: data.createdAt || new Date().toISOString(),
-                        isFavorite: data.isFavorite || false,
-                        isDeleted: data.isDeleted || false
+                        createdAt: data.createdAt || new Date().toISOString()
                     });
                 });
                 
                 renderRecipes();
                 renderFilterTags();
                 updateTagDatalist();
-                if(loadingOverlay) loadingOverlay.classList.add('hidden');
+                loadingOverlay.classList.add('hidden');
             }, (error) => {
-                console.error("Fehler beim Laden:", error);
+                console.error("Fehler beim Laden der Rezepte:", error);
             });
 
             const settingsRef = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'settings', 'ingredients');
@@ -1245,15 +752,11 @@
             } catch (e) {}
         }
 
-        // ==========================================
-        // ROUTING & ANSICHTEN
-        // ==========================================
         function showView(viewName) {
             views.login.classList.add('hidden');
             views.list.classList.add('hidden');
             views.detail.classList.add('hidden');
             views.form.classList.add('hidden');
-            views.zen.classList.add('hidden');
             
             if(views[viewName]) {
                 views[viewName].classList.remove('hidden');
@@ -1263,24 +766,10 @@
                 const searchCont = document.getElementById('searchContainer');
                 if(searchCont) searchCont.classList.remove('hidden');
                 
-                releaseWakeLock(); 
-                
+                document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
                 const listCtrl = document.getElementById('listControls');
-                const trBtn = document.getElementById('trashViewBtn');
+                if(listCtrl) listCtrl.classList.remove('hidden');
                 
-                if(showTrashView) {
-                    document.getElementById('mainHeaderTitle').textContent = "Papierkorb";
-                    if(listCtrl) listCtrl.classList.add('hidden');
-                    document.getElementById('emptyStateTitle').textContent = "Papierkorb ist leer";
-                    document.getElementById('emptyStateDesc').textContent = "Gelöschte Rezepte tauchen hier auf.";
-                    if(trBtn) trBtn.classList.add('text-red-600', 'bg-red-50');
-                } else {
-                    document.getElementById('mainHeaderTitle').textContent = "Meine Rezepte";
-                    if(listCtrl) listCtrl.classList.remove('hidden');
-                    document.getElementById('emptyStateTitle').textContent = "Noch keine Rezepte";
-                    document.getElementById('emptyStateDesc').textContent = "Klicke oben auf 'Neu' oder 'Import'.";
-                    if(trBtn) trBtn.classList.remove('text-red-600', 'bg-red-50');
-                }
                 renderRecipes();
             } else {
                 const searchCont = document.getElementById('searchContainer');
@@ -1289,17 +778,8 @@
             window.scrollTo(0, 0);
         }
 
-        const tBtn = document.getElementById('trashViewBtn');
-        if (tBtn) {
-            tBtn.addEventListener('click', () => {
-                window.location.hash = showTrashView ? '' : '#trash';
-            });
-        }
-
         window.addEventListener('hashchange', () => {
             if(!currentUser) return; 
-            
-            showTrashView = window.location.hash === '#trash';
             
             if (window.location.hash === '#new') {
                 resetForm();
@@ -1334,7 +814,7 @@
         
         document.querySelectorAll('.backToHomeBtn').forEach(btn => {
             btn.addEventListener('click', () => { 
-                window.location.hash = showTrashView ? '#trash' : ''; 
+                window.location.hash = ''; 
             });
         });
 
@@ -1343,7 +823,7 @@
             if(!container) return;
             
             const allTags = new Set();
-            recipes.filter(r => !r.isDeleted).forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
+            recipes.forEach(r => { if (r.tags) r.tags.forEach(t => allTags.add(t)); });
 
             container.innerHTML = '<span class="text-sm font-semibold text-gray-600 uppercase tracking-wider mr-2 whitespace-nowrap">Filter:</span>';
             
@@ -1368,7 +848,7 @@
             const text = document.getElementById('activeFilterText');
             if(!note || !text) return;
             
-            if (activeFilter && !showTrashView) {
+            if (activeFilter) {
                 note.classList.remove('hidden');
                 text.innerHTML = `Zeige Rezepte für Kategorie: <strong class="ml-1">${activeFilter}</strong>`;
             } else {
@@ -1397,11 +877,7 @@
             grid.innerHTML = '';
             let count = 0;
 
-            let filteredRecipes = recipes.filter(r => showTrashView ? r.isDeleted : !r.isDeleted);
-            
-            if (!showTrashView && showFavoritesOnly) {
-                filteredRecipes = filteredRecipes.filter(r => r.isFavorite);
-            }
+            let filteredRecipes = recipes;
 
             filteredRecipes = filteredRecipes.filter(recipe => {
                 if (searchTerm) {
@@ -1410,36 +886,17 @@
                     const inIngredients = recipe.ingredients && recipe.ingredients.some(i => i.name.toLowerCase().includes(searchTerm));
                     if (!inTitle && !inTags && !inIngredients) return false;
                 }
-                if (!showTrashView && activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return false;
+                if (activeFilter && (!recipe.tags || !recipe.tags.includes(activeFilter))) return false;
                 return true;
             });
 
-            filteredRecipes.sort((a,b) => {
-                if(currentSortOption === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
-                if(currentSortOption === 'az') return a.title.localeCompare(b.title);
-                if(currentSortOption === 'time') {
-                    let ta = parseInt(a.times.total) || 9999;
-                    let tb = parseInt(b.times.total) || 9999;
-                    return ta - tb;
-                }
-                if(currentSortOption === 'kcal') {
-                    let ka = parseInt(a.nutrition.kcal) || 0;
-                    let kb = parseInt(b.nutrition.kcal) || 0;
-                    return kb - ka;
-                }
-                if(currentSortOption === 'protein') {
-                    let pa = parseInt(a.nutrition.protein) || 0;
-                    let pb = parseInt(b.nutrition.protein) || 0;
-                    return pb - pa;
-                }
-                return 0;
-            });
+            filteredRecipes.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
             filteredRecipes.forEach(recipe => {
                 count++;
                 
                 const card = document.createElement('div');
-                card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
+                card.className = `bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 border border-gray-300 overflow-hidden cursor-pointer transform hover:-translate-y-1 flex flex-col h-full`;
                 card.addEventListener('click', () => { window.location.hash = `#recipe-${recipe.id}`; });
 
                 const cardHeader = document.createElement('div');
@@ -1459,9 +916,6 @@
                 }
 
                 let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
-                if(recipe.isFavorite && !showTrashView) {
-                    badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
-                }
                 if(recipe.difficulty) badgesHtml += `<span class="bg-white/90 backdrop-blur text-gray-800 text-[10px] font-black uppercase px-2 py-1 rounded shadow-sm border border-gray-200/50">${recipe.difficulty}</span>`;
                 if(recipe.rating > 0) badgesHtml += `<div class="bg-white/90 backdrop-blur px-2 py-1 rounded shadow-sm border border-gray-200/50">${getStarsHtml(recipe.rating)}</div>`;
                 badgesHtml += '</div>';
@@ -1479,23 +933,6 @@
                 
                 let recipeTagsToRender = recipe.tags ? [...recipe.tags].slice(0, 3) : [];
                 
-                if (recipe.nutrition) {
-                    let protein = parseInt(recipe.nutrition.protein) || 0;
-                    let carbs = parseInt(recipe.nutrition.carbs) || 999;
-                    if(protein >= 25 && !recipeTagsToRender.includes("High Protein 💪")) {
-                        const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform bg-gray-800 text-white`;
-                        t.textContent = "High Protein 💪";
-                        tagsContainer.appendChild(t);
-                    }
-                    if(carbs <= 15 && recipe.nutrition.carbs !== '' && !recipeTagsToRender.includes("Low Carb 🥗")) {
-                        const t = document.createElement('span');
-                        t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform bg-green-700 text-white`;
-                        t.textContent = "Low Carb 🥗";
-                        tagsContainer.appendChild(t);
-                    }
-                }
-
                 recipeTagsToRender.forEach(tag => {
                     const t = document.createElement('span');
                     t.className = `text-xs px-2.5 py-1 rounded-md font-bold hover:-translate-y-0.5 shadow-sm transition-transform ${getColorForTag(tag)}`;
@@ -1538,9 +975,8 @@
             else emptyState.classList.add('hidden');
         }
 
-        const sInput = document.getElementById('searchInput');
-        if (sInput) {
-            sInput.addEventListener('input', renderRecipes);
+        if (searchInput) {
+            searchInput.addEventListener('input', renderRecipes);
         }
 
         function scaleAndFormatIngredient(amountStr, unitStr, ratio) {
@@ -1556,13 +992,6 @@
             let scaled = val * ratio;
             let u = (unitStr || '').trim();
             let lowerU = u.toLowerCase();
-            
-            if (lowerU === 'g' && scaled >= 1000) {
-                return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'kg' };
-            }
-            if (lowerU === 'ml' && scaled >= 1000) {
-                return { amt: (Math.round((scaled / 1000) * 10) / 10).toString().replace('.', ','), unt: 'l' };
-            }
             
             return { amt: (Math.round(scaled * 10) / 10).toString().replace('.', ','), unt: unitStr };
         }
@@ -1655,37 +1084,6 @@
 
             currentDetailRecipeId = id;
             document.getElementById('detailTitle').textContent = recipe.title;
-            
-            if(recipe.isDeleted) {
-                document.getElementById('editRecipeBtn').classList.add('hidden');
-                document.getElementById('deleteRecipeBtn').classList.add('hidden');
-                document.getElementById('printRecipeBtn').classList.add('hidden');
-                document.getElementById('shareRecipeBtn').classList.add('hidden');
-                document.getElementById('favRecipeBtn').classList.add('hidden');
-                document.getElementById('startZenModeBtn').classList.add('hidden');
-                
-                document.getElementById('restoreRecipeBtn').classList.remove('hidden');
-                document.getElementById('hardDeleteRecipeBtn').classList.remove('hidden');
-            } else {
-                document.getElementById('editRecipeBtn').classList.remove('hidden');
-                document.getElementById('deleteRecipeBtn').classList.remove('hidden');
-                document.getElementById('printRecipeBtn').classList.remove('hidden');
-                document.getElementById('shareRecipeBtn').classList.remove('hidden');
-                document.getElementById('favRecipeBtn').classList.remove('hidden');
-                document.getElementById('startZenModeBtn').classList.remove('hidden');
-                
-                document.getElementById('restoreRecipeBtn').classList.add('hidden');
-                document.getElementById('hardDeleteRecipeBtn').classList.add('hidden');
-                
-                const favBtn = document.getElementById('favRecipeBtn');
-                if(recipe.isFavorite) {
-                    favBtn.classList.add('fav-active');
-                    favBtn.querySelector('svg').innerHTML = '<path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>';
-                } else {
-                    favBtn.classList.remove('fav-active');
-                    favBtn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
-                }
-            }
             
             const imgContainer = document.getElementById('detailImageContainer');
             const imgEl = document.getElementById('detailImage');
@@ -1787,24 +1185,12 @@
                         <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
                     </svg>`;
 
-                    const textWithTimers = parseTextForTimers(step.trim());
-
                     stepEl.innerHTML = `
                         ${checkmarkHtml}
-                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${textWithTimers}</p>
+                        <p class="font-medium text-gray-800 leading-relaxed transition-all group-[.is-checked]:line-through group-[.is-checked]:text-gray-400 m-0 print:font-normal print:mb-2">${step.trim()}</p>
                     `;
 
-                    stepEl.querySelectorAll('.timer-trigger').forEach(trigger => {
-                        trigger.addEventListener('click', (e) => {
-                            e.stopPropagation(); 
-                            const mins = parseInt(trigger.getAttribute('data-time'));
-                            if(!isNaN(mins)) startTimer(mins);
-                        });
-                    });
-
                     stepEl.addEventListener('click', function(e) {
-                        if(e.target.classList.contains('timer-trigger') || e.target.closest('.timer-trigger')) return; 
-                        
                         this.classList.toggle('is-checked');
                         const svg = this.querySelector('.step-checkbox');
                         if (this.classList.contains('is-checked')) {
@@ -1843,40 +1229,12 @@
         const delRecBtn = document.getElementById('deleteRecipeBtn');
         if (delRecBtn) {
             delRecBtn.addEventListener('click', async () => {
-                if (confirm('Rezept in den Papierkorb verschieben?')) {
-                    if (currentDetailRecipeId && currentUser) {
-                        try {
-                            const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
-                            await updateDoc(ref, { isDeleted: true });
-                            window.location.hash = ''; 
-                        } catch (e) { alert("Fehler beim Löschen"); }
-                    }
-                }
-            });
-        }
-
-        const restRecBtn = document.getElementById('restoreRecipeBtn');
-        if (restRecBtn) {
-            restRecBtn.addEventListener('click', async () => {
-                if (currentDetailRecipeId && currentUser) {
-                    try {
-                        const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
-                        await updateDoc(ref, { isDeleted: false });
-                        window.location.hash = '#trash'; 
-                    } catch (e) { alert("Fehler beim Wiederherstellen"); }
-                }
-            });
-        }
-
-        const hdDelRecBtn = document.getElementById('hardDeleteRecipeBtn');
-        if (hdDelRecBtn) {
-            hdDelRecBtn.addEventListener('click', async () => {
-                if (confirm('Dieses Rezept ENDGÜLTIG und unwiderruflich löschen?')) {
+                if (confirm('Dieses Rezept unwiderruflich löschen?')) {
                     if (currentDetailRecipeId && currentUser) {
                         try {
                             const ref = doc(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes', currentDetailRecipeId);
                             await deleteDoc(ref);
-                            window.location.hash = '#trash'; 
+                            window.location.hash = ''; 
                         } catch (e) { alert("Fehler beim Löschen"); }
                     }
                 }
@@ -2223,15 +1581,13 @@
                         await updateDoc(ref, recipeData);
                     } else {
                         recipeData.createdAt = new Date().toISOString();
-                        recipeData.isFavorite = false;
-                        recipeData.isDeleted = false;
                         const recipesRef = collection(db, 'artifacts', appNamespace, 'users', currentUser.uid, 'recipes');
                         await addDoc(recipesRef, recipeData);
                     }
 
                     if (foundNewIngredients) await saveNewIngredientsToFirebase(updatedIngredientsList);
                     
-                    window.location.hash = showTrashView ? '#trash' : ''; 
+                    window.location.hash = ''; 
                 } catch (error) {
                     console.error("Speicherfehler:", error);
                     alert("Fehler beim Speichern!");
@@ -2243,9 +1599,8 @@
         }
 
         // ==========================================
-        // FEATURE: URL IMPORT (Erweitert & Robuster)
+        // URL IMPORT (Ohne KI)
         // ==========================================
-        
         function extractRecipeFromJsonLd(data) {
             let recipeObj = null;
             const search = (obj) => {
@@ -2313,7 +1668,6 @@
                     let ingredientsList = [];
                     let nutritionData = {};
 
-                    // 1. VERSUCH: JSON-LD (Standard für Rezepte)
                     const ldScripts = docObj.querySelectorAll('script[type="application/ld+json"]');
                     for (const script of ldScripts) {
                         try {
@@ -2354,7 +1708,6 @@
                         } catch(e) {}
                     }
 
-                    // 2. VERSUCH: Manuelles Auslesen aus dem HTML-Code (Wenn JSON-LD fehlt)
                     if (!title) {
                         const h1 = docObj.querySelector('h1');
                         if (h1) title = h1.textContent.trim();
@@ -2368,14 +1721,12 @@
                     }
 
                     if (ingredientsList.length === 0) {
-                        // Suche nach typischen Zutatenlisten
                         const ingBlocks = docObj.querySelectorAll('.ingredients li, .zutaten li, [class*="ingredient"] li, li[itemprop="recipeIngredient"]');
                         if (ingBlocks.length > 0) {
                             ingBlocks.forEach(el => ingredientsList.push(el.textContent.trim()));
                         }
                     }
 
-                    // Formular befüllen
                     if(title) document.getElementById('formTitle').value = title;
                     if(instructions) document.getElementById('formInstructions').value = instructions.replace(/\s{3,}/g, '\n').trim();
                     
@@ -2391,7 +1742,6 @@
                     if(timesData.cook) document.getElementById('formCookTime').value = timesData.cook;
                     if(timesData.total) document.getElementById('formTotalTime').value = timesData.total;
 
-                    // Zutaten ins Formular übertragen
                     if(ingredientsList.length > 0) {
                         const list = document.getElementById('ingredientsList');
                         const rows = list.querySelectorAll('.ingredient-row');
@@ -2421,7 +1771,6 @@
                         statusEl.textContent = 'Daten erfolgreich eingelesen! Bitte überprüfe die Felder.';
                         statusEl.className = 'text-sm mt-3 font-medium text-green-700 block';
                     } else {
-                        // Wichtig: Wir stürzen nicht mehr ab, sondern geben eine höfliche Meldung
                         statusEl.textContent = 'Webseite geladen, aber das Format wird nicht unterstützt (keine Rezeptdaten gefunden).';
                         statusEl.className = 'text-sm mt-3 font-medium text-orange-600 block';
                     }
@@ -2432,7 +1781,6 @@
                 }
             });
         }
-
     </script>
 </body>
 </html>
