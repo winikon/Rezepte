@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=15">
+    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=16">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     
@@ -83,7 +83,7 @@
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png?v=15" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.style.display='none'">
+                <img src="logomr78brutalist.png?v=16" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
                 <p class="text-gray-500 mt-2" id="loginSubtitle">Melde dich an, um deine Rezepte zu sehen.</p>
             </div>
@@ -97,12 +97,18 @@
                     <label class="block text-sm font-medium text-gray-800 mb-1">Passwort</label>
                     <input type="password" id="authPassword" required minlength="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600" placeholder="Min. 6 Zeichen">
                 </div>
+                
                 <div id="authError" class="hidden text-red-600 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">Fehler bei der Anmeldung.</div>
-                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">Einloggen</button>
+
+                <button type="submit" id="authSubmitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-transform transform hover:-translate-y-0.5">
+                    Einloggen
+                </button>
             </form>
 
             <div class="mt-6 text-center">
-                <button type="button" id="toggleAuthModeBtn" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors">Neu hier? Jetzt registrieren</button>
+                <button type="button" id="toggleAuthModeBtn" class="text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
+                    Neu hier? Jetzt registrieren
+                </button>
             </div>
         </div>
     </div>
@@ -110,7 +116,7 @@
     <!-- HAUPT NAVIGATION (HEADER) -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png?v=15" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
+            <img src="logomr78brutalist.png?v=16" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         
@@ -122,23 +128,35 @@
         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
             <!-- SPEISEKAMMER BUTTON -->
             <button id="navProductsBtn" class="flex-shrink-0 bg-white hover:bg-orange-50 text-orange-700 font-bold py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-orange-200 shadow-sm" title="Produkte & Speisekammer">
-                <span class="text-lg leading-none">🥫</span><span class="hidden sm:inline">Produkte</span>
+                <span class="text-lg leading-none">🥫</span>
+                <span class="hidden sm:inline">Produkte</span>
             </button>
+
+            <!-- PAPIERKORB -->
             <button id="trashViewBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Papierkorb">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
+            
+            <!-- IMPORT -->
             <button id="importBtn" class="flex-shrink-0 bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-full transition-colors flex items-center gap-2 border border-gray-300 shadow-sm">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Import
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Import
             </button>
+
+            <!-- NEUES REZEPT -->
             <button id="newRecipeBtn" class="flex-shrink-0 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-5 rounded-full shadow-md shadow-red-500/30 transition-all flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Neu
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Neu
             </button>
+
+            <!-- LOGOUT -->
             <button id="logoutBtn" class="flex-shrink-0 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Abmelden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             </button>
         </div>
     </header>
 
+    <!-- ZENTRALER MAIN CONTAINER -->
     <main id="mainContent" class="hidden flex-1 overflow-y-auto p-4 md:p-6 pb-20 relative print:p-0 print:overflow-visible">
 
         <!-- ========================================================================= -->
@@ -177,13 +195,16 @@
                 </div>
             </div>
 
+            <!-- Wenn ein Filter aktiv ist -->
             <div id="activeFilterNote" class="hidden mb-6 bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-center justify-between border border-red-100">
                 <span id="activeFilterText">Zeige Rezepte für: </span>
                 <button id="clearFilterBtn" class="text-red-700 hover:text-red-900 font-medium text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-red-200 transition-colors">Filter aufheben</button>
             </div>
             
+            <!-- Grid für Rezepte -->
             <div id="recipeGrid"></div>
             
+            <!-- Leerer Zustand -->
             <div id="emptyState" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-gray-400 mt-8 shadow-sm">
                 <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span class="text-4xl text-gray-400">🍽️</span>
@@ -194,7 +215,7 @@
 
             <!-- Version Info -->
             <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">
-                Version: 3.5 (Golden Fix) | Stand: 18.05.2026
+                Version: 3.6 (Nährwerte Liste Fix) | Stand: 18.05.2026, 11:30 Uhr
             </div>
         </div>
 
@@ -261,6 +282,7 @@
                         Löschen
                     </button>
                     
+                    <!-- Trash View Buttons -->
                     <button id="restoreRecipeBtn" class="hidden text-green-600 hover:bg-green-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-green-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Wiederherstellen
@@ -279,8 +301,9 @@
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
                 
+                <!-- GF Banner Emilia in Detailansicht -->
                 <div id="detailGfBanner" class="hidden mb-6 flex justify-center md:justify-start print:justify-start transition-all duration-300 transform hover:scale-105">
-                    <img src="GFEmilia.png?v=15" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
+                    <img src="GFEmilia.png?v=16" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
@@ -328,7 +351,7 @@
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             Nährwerte pro Portion (ca.)
                         </h3>
-                        <div class="flex flex-wrap gap-2 w-full">
+                        <div class="flex flex-wrap gap-2 md:gap-3 w-full">
                             <div class="bg-orange-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-orange-200 print:bg-transparent">
                                 <span class="text-orange-600 font-medium text-sm">Kcal:</span>
                                 <span id="detailKcal" class="font-bold text-orange-900"></span>
@@ -446,7 +469,7 @@
                 <div class="w-48 h-48 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative flex items-center justify-center">
                     <img id="detailProdImage" src="" class="w-full h-full object-contain p-2 mix-blend-multiply">
                     <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden">
-                        <img src="GFEmilia.png?v=15" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
+                        <img src="GFEmilia.png?v=16" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'">
                     </div>
                 </div>
                 <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
@@ -520,7 +543,7 @@
                     <!-- GF TOGGLE -->
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=15" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=16" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -692,7 +715,7 @@
 
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
                         <div class="flex items-center gap-4">
-                            <img src="GFEmilia.png?v=15" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
+                            <img src="GFEmilia.png?v=16" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'">
                         </div>
                         <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
@@ -751,168 +774,6 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // WAKELOCK
-        let wakeLock = null;
-        async function requestWakeLock() {
-            try {
-                wakeLock = await navigator.wakeLock.request('screen');
-                const btn = document.getElementById('wakeLockBtn');
-                if(btn) {
-                    btn.classList.add('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
-                    btn.classList.remove('text-gray-600', 'border-gray-300', 'bg-white');
-                    const wlTxt = document.getElementById('wakeLockText');
-                    if(wlTxt) wlTxt.textContent = 'Wach';
-                }
-            } catch (err) {}
-        }
-
-        function releaseWakeLock() {
-            if (wakeLock !== null) { wakeLock.release().then(() => { wakeLock = null; }); }
-            const btn = document.getElementById('wakeLockBtn');
-            if(btn) {
-                btn.classList.remove('text-yellow-600', 'border-yellow-300', 'bg-yellow-50');
-                btn.classList.add('text-gray-600', 'border-gray-300', 'bg-white');
-                const wlTxt = document.getElementById('wakeLockText');
-                if(wlTxt) wlTxt.textContent = 'Wach';
-            }
-        }
-
-        // TIMERS
-        let activeTimers = [];
-        let alarmAudioCtx = null;
-        function playAnnoyingAlarm() {
-            try {
-                if (!alarmAudioCtx) alarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (alarmAudioCtx.state === 'suspended') alarmAudioCtx.resume();
-                
-                let osc1 = alarmAudioCtx.createOscillator();
-                let gain1 = alarmAudioCtx.createGain();
-                osc1.type = 'sawtooth';
-                osc1.frequency.setValueAtTime(900, alarmAudioCtx.currentTime);
-                gain1.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime);
-                gain1.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.15);
-                osc1.connect(gain1);
-                gain1.connect(alarmAudioCtx.destination);
-                osc1.start(alarmAudioCtx.currentTime);
-                osc1.stop(alarmAudioCtx.currentTime + 0.15);
-
-                let osc2 = alarmAudioCtx.createOscillator();
-                let gain2 = alarmAudioCtx.createGain();
-                osc2.type = 'sawtooth';
-                osc2.frequency.setValueAtTime(1100, alarmAudioCtx.currentTime + 0.2);
-                gain2.gain.setValueAtTime(0.1, alarmAudioCtx.currentTime + 0.2);
-                gain2.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.35);
-                osc2.connect(gain2);
-                gain2.connect(alarmAudioCtx.destination);
-                osc2.start(alarmAudioCtx.currentTime + 0.2);
-                osc2.stop(alarmAudioCtx.currentTime + 0.35);
-            } catch(e) {}
-        }
-
-        function renderTimers() {
-            const container = document.getElementById('floatingTimerContainer');
-            if(!container) return;
-            container.innerHTML = '';
-            activeTimers.forEach((timer, index) => {
-                const el = document.createElement('div');
-                const isFinished = timer.remaining <= 0;
-                el.className = `timer-box flex items-center justify-between gap-4 p-3 rounded-xl border-2 shadow-lg backdrop-blur-md ${isFinished ? 'timer-ringing border-red-600 text-red-900' : 'bg-gray-900/90 border-gray-700 text-white'}`;
-                const absRem = Math.abs(timer.remaining);
-                const mins = Math.floor(absRem / 60);
-                const secs = absRem % 60;
-                const timeStr = `${isFinished ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                el.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-70">Timer ${index + 1}</span>
-                        <span class="text-2xl font-black tabular-nums">${timeStr}</span>
-                    </div>
-                    <button class="stop-timer-btn p-2 hover:bg-white/20 rounded-lg transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
-                el.querySelector('.stop-timer-btn').addEventListener('click', () => {
-                    clearInterval(timer.intervalId);
-                    activeTimers.splice(index, 1);
-                    renderTimers();
-                });
-                container.appendChild(el);
-            });
-        }
-
-        function startTimer(minutes) {
-            const timer = { remaining: minutes * 60, intervalId: null };
-            timer.intervalId = setInterval(() => {
-                timer.remaining--;
-                if(timer.remaining <= 0) playAnnoyingAlarm();
-                renderTimers();
-            }, 1000);
-            activeTimers.push(timer);
-            renderTimers();
-        }
-
-        function parseTextForTimers(text) {
-            if (!text) return '';
-            const regex = /(\d+)\s*(minuten?|min\.?|stunden?|std\.?|h)\b/gi;
-            return text.replace(regex, (match, number, unit) => {
-                let minutes = parseInt(number);
-                if (unit.toLowerCase().startsWith('st') || unit.toLowerCase() === 'h') minutes = minutes * 60;
-                return `<button type="button" class="timer-trigger inline-flex items-center gap-1.5 whitespace-nowrap bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-xl shadow-sm border-2 border-blue-300 cursor-pointer hover:bg-blue-200 hover:-translate-y-0.5 active:translate-y-0 transition-all mx-1.5 align-middle print:hidden" data-time="${minutes}">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    ${match}
-                </button><span class="hidden print:inline font-bold">${match}</span>`;
-            });
-        }
-
-        // SCRAPER HELPERS
-        function extractNumber(str) {
-            if(!str) return '';
-            const match = str.toString().match(/\d+/);
-            return match ? match[0] : '';
-        }
-
-        function parseIsoDuration(duration) {
-            if(!duration || typeof duration !== 'string') return '';
-            let total = 0;
-            const hMatch = duration.match(/(\d+)H/i);
-            const mMatch = duration.match(/(\d+)M/i);
-            if (hMatch) total += parseInt(hMatch[1], 10) * 60;
-            if (mMatch) total += parseInt(mMatch[1], 10);
-            return total > 0 ? total.toString() : '';
-        }
-
-        function extractRecipeFromJsonLd(data) {
-            let bestRecipe = null;
-            const search = (obj) => {
-                if (!obj) return;
-                if (typeof obj === 'object') {
-                    if (obj['@type'] === 'Recipe' || (Array.isArray(obj['@type']) && obj['@type'].includes('Recipe'))) {
-                        if (!bestRecipe || (obj.recipeIngredient && obj.recipeInstructions)) {
-                            bestRecipe = obj;
-                        }
-                    }
-                    for (let key in obj) search(obj[key]);
-                } else if (Array.isArray(obj)) {
-                    obj.forEach(item => search(item));
-                }
-            };
-            search(data);
-            return bestRecipe;
-        }
-
-        function parseIngredientString(str) {
-            let amount = '';
-            let unit = '';
-            let name = str.trim().replace(/\s+/g, ' ');
-            const match = name.match(/^([\d\.\,\/½¼¾\s]+)\s*(g|kg|ml|l|el|tl|stk|prise|bund|pck\.|dose|zehe|msp\.|tasse|scheibe|stk\.)?\s+(.*)$/i);
-            if (match) {
-                amount = match[1].trim();
-                unit = match[2] ? match[2].trim() : '';
-                name = match[3].trim();
-            }
-            name = name.replace(/^[-•*]\s*/, '');
-            return { name, amount, unit };
-        }
-
         const firebaseConfig = { 
             apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ", 
             authDomain: "rezepte-5cf2b.firebaseapp.com", 
@@ -930,7 +791,7 @@
         let activeFilter = null, currentDetailRecipeId = null, currentEditRecipeId = null, currentEditProductId = null;
         let currentImageBase64 = null, currentProdImageBase64 = null, currentDetailRecipe = null, currentDisplayPortions = 4;
         let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest', currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
-        let zenSteps = [], currentZenStepIndex = 0;
+        let zenSteps = [], currentZenStepIndex = 0, activeTimers = [], wakeLock = null;
         let recipesUnsubscribe = null, settingsUnsubscribe = null, productsUnsubscribe = null;
 
         const loadingOverlay = document.getElementById('loadingOverlay');
@@ -1018,7 +879,6 @@
         // ==========================================
         // AUTH LOGIC
         // ==========================================
-        let isLoginMode = true;
         document.getElementById('toggleAuthModeBtn')?.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             const errEl = document.getElementById('authError'); if(errEl) errEl.classList.add('hidden');
@@ -1115,7 +975,7 @@
         }
 
         // ==========================================
-        // ROUTING (Mit sicherem Ansichts-Wechsel)
+        // ROUTING
         // ==========================================
         function showView(viewName) {
             const currentViews = getViews();
@@ -1131,7 +991,7 @@
                 const searchCont = document.getElementById('searchContainer');
                 if(searchCont) searchCont.classList.remove('hidden');
                 
-                releaseWakeLock(); 
+                if (typeof releaseWakeLock === 'function') releaseWakeLock(); 
                 
                 const listCtrl = document.getElementById('listControls');
                 const trBtn = document.getElementById('trashViewBtn');
@@ -1207,6 +1067,9 @@
             }
         });
 
+        // ==========================================
+        // NAVIGATION EVENT LISTENERS
+        // ==========================================
         document.getElementById('trashViewBtn')?.addEventListener('click', () => { window.location.hash = showTrashView ? '' : '#trash'; });
         document.getElementById('logoBtn')?.addEventListener('click', () => { window.location.hash = ''; });
         document.getElementById('newRecipeBtn')?.addEventListener('click', () => { window.location.hash = '#new'; });
@@ -1360,7 +1223,7 @@
                         }
 
                         if (recipe.isGlutenFree) {
-                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=15" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
+                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=11" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
                         }
 
                         let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
@@ -1395,7 +1258,7 @@
                         card.appendChild(header); card.appendChild(body);
                         
                     } else {
-                        // --- LISTEN ANSICHT ---
+                        // --- LISTEN ANSICHT (Nährwerte & GF Badge) ---
                         card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-auto min-h-[90px] ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
                         
                         const imgCont = document.createElement('div');
@@ -1422,7 +1285,7 @@
                         const headerRow = document.createElement('div');
                         headerRow.className = "flex justify-between items-start gap-2 mb-1";
                         
-                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=15" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
+                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=11" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
                         headerRow.innerHTML = `<div class="flex-1 min-w-0"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">${recipe.title || ''}${titleGf}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>`;
 
                         let nutLine = '';
@@ -1430,10 +1293,10 @@
                             let nut = [];
                             if(recipe.nutrition.kcal) nut.push(`<span class="bg-orange-100 text-orange-800 border border-orange-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.kcal} kcal</span>`);
                             if(recipe.nutrition.carbs) nut.push(`<span class="bg-blue-100 text-blue-800 border border-blue-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.carbs}g KH</span>`);
-                            if(recipe.nutrition.sugar) nut.push(`<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g Zucker</span>`);
+                            if(recipe.nutrition.sugar) nut.push(`<span class="bg-pink-100 text-pink-800 border border-pink-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.sugar}g davon Zucker</span>`);
                             if(recipe.nutrition.protein) nut.push(`<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.protein}g Prot</span>`);
                             if(recipe.nutrition.fat) nut.push(`<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fat}g Fett</span>`);
-                            if(recipe.nutrition.fiber) nut.push(`<span class="bg-lime-100 text-lime-800 border border-lime-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fiber}g Faser</span>`);
+                            if(recipe.nutrition.fiber) nut.push(`<span class="bg-lime-100 text-lime-800 border border-lime-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">${recipe.nutrition.fiber}g Ballaststoffe</span>`);
                             nutLine = `<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">${nut.join('')}</div>`;
                         }
                         infoCont.appendChild(headerRow);
@@ -1473,7 +1336,7 @@
                 card.onclick = () => window.location.hash = `#product-${prod.id}`;
                 card.innerHTML = `
                     <div class="h-32 bg-gray-100 flex justify-center items-center relative p-2 border-b border-gray-200 overflow-hidden">
-                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=15" class="absolute top-2 left-2 h-6 w-auto rounded shadow border border-white/50 z-10" onerror="this.style.display='none'">` : ''}
+                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=11" class="absolute top-2 left-2 h-6 w-auto rounded shadow border border-white/50 z-10" onerror="this.style.display='none'">` : ''}
                         ${prod.imageBase64 ? `<img src="${prod.imageBase64}" class="h-full w-full object-contain mix-blend-multiply">` : '<span class="text-4xl opacity-20">🥫</span>'}
                     </div>
                     <div class="p-3 flex-1 flex flex-col justify-between">
@@ -1562,7 +1425,7 @@
                 const preview = document.getElementById('prodImagePreview'); if(preview) preview.classList.add('hidden');
                 const pce = document.getElementById('prodImagePlaceholder'); if(pce) pce.classList.remove('hidden');
                 const rb = document.getElementById('removeProdImageBtn'); if(rb) rb.classList.add('hidden');
-            } catch(e) {}
+            } catch(e) { console.error("Error in resetProductForm:", e); }
         }
 
         document.getElementById('prodImageInput')?.addEventListener('change', (e) => {
@@ -1620,7 +1483,7 @@
             }
         });
 
-        // YUKA FETCH (Einfacher und robuster)
+        // YUKA FETCH MIT ROBUSTEM OPENFOODFACTS FALLBACK
         document.getElementById('fetchBarcodeBtn')?.addEventListener('click', async () => {
             const bInput = document.getElementById('barcodeInput');
             if(!bInput) return;
@@ -1643,9 +1506,10 @@
             }
 
             try {
-                const url = `https://world.openfoodfacts.org/api/v0/product/${b}.json`;
-                const res = await fetch(url);
-                const data = await res.json();
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://world.openfoodfacts.org/api/v0/product/${b}.json`)}`;
+                const res = await fetch(proxyUrl);
+                const proxyData = await res.json();
+                const data = JSON.parse(proxyData.contents);
                 
                 if (data.status === 1 && data.product) {
                     const p = data.product;
@@ -1667,9 +1531,10 @@
                     const imgUrl = p.image_front_url || p.image_url;
                     
                     if (imgUrl) {
-                        if(statusEl) statusEl.textContent = 'Text importiert. Bild wird nur auf dem Handy blockiert? Nutze manuellen Upload.';
+                        if(statusEl) statusEl.textContent = 'Text importiert. Lade Bild...';
                         try {
-                            const imgRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`);
+                            const imgProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(imgUrl)}`;
+                            const imgRes = await fetch(imgProxyUrl);
                             if(imgRes.ok) {
                                 const blob = await imgRes.blob();
                                 const reader = new FileReader();
@@ -1686,9 +1551,7 @@
                                     }
                                 }; 
                                 reader.readAsDataURL(blob);
-                            } else {
-                                throw new Error("Blocked");
-                            }
+                            } else { throw new Error("Bild blockiert"); }
                         } catch(imgErr) {
                             if(statusEl) {
                                 statusEl.textContent = 'Daten importiert (Bild-Download blockiert). ✅'; 
