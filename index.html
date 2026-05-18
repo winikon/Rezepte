@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rezepte">
-    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=37">
+    <link rel="apple-touch-icon" href="logomr78brutalist.png?v=38">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#E6E4DD">
     <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"mr78 Rezepte","short_name":"Rezepte","start_url":".","display":"standalone","background_color":"#E6E4DD","theme_color":"#E6E4DD","icons":[{"src":"https://winikon.github.io/Rezepte/logomr78brutalist.png","sizes":"512x512","type":"image/png"}]}'>
@@ -65,7 +65,7 @@
     <div id="loginView" class="hidden fixed inset-0 bg-[#E6E4DD] z-50 flex items-center justify-center p-4 overflow-y-auto print:hidden">
         <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200">
             <div class="text-center mb-8">
-                <img src="logomr78brutalist.png?v=37" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
+                <img src="logomr78brutalist.png?v=38" alt="Logo" class="w-32 h-auto mx-auto mb-6 rounded-md shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'; this.className='w-16 h-16 mx-auto mb-6 text-gray-400';">
                 <h2 class="text-2xl font-bold text-gray-900" id="loginTitle">Willkommen zurück</h2>
             </div>
             <form id="authForm" class="space-y-5">
@@ -81,7 +81,7 @@
     <!-- HEADER -->
     <header id="mainHeader" class="hidden glass-header shadow-sm z-10 safe-pt px-4 pb-4 sticky top-0 flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-300 print:hidden">
         <div class="flex items-center gap-3 cursor-pointer" id="logoBtn">
-            <img src="logomr78brutalist.png?v=37" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
+            <img src="logomr78brutalist.png?v=38" alt="Logo" class="h-10 w-auto rounded shadow-sm bg-white p-0.5" onerror="this.style.display='none'">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight" id="mainHeaderTitle">Meine Rezepte</h1>
         </div>
         <div class="flex-1 max-w-xl relative" id="searchContainer">
@@ -123,7 +123,7 @@
                 <h3 class="text-xl font-bold text-gray-900" id="emptyStateTitle">Noch keine Rezepte</h3>
                 <p class="text-gray-600 mt-2 max-w-sm mx-auto" id="emptyStateDesc">Klicke oben auf "Neu" oder "Import", um dein erstes Rezept hinzuzufügen.</p>
             </div>
-            <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">Version: 3.7 Ultimate | Stand: 18.05.2026, 13:00 Uhr</div>
+            <div class="mt-12 text-center text-xs font-bold text-gray-400 opacity-60">Version: 3.8 (Action Buttons Fix) | Stand: 18.05.2026, 13:30 Uhr</div>
         </div>
 
         <!-- ANSICHT 2: PRODUKTE LISTE -->
@@ -163,7 +163,7 @@
 
             <div class="p-6 md:p-10 print:p-0 print:pt-4">
                 <div id="detailGfBanner" class="hidden mb-6 flex justify-center md:justify-start print:justify-start transition-all duration-300 transform hover:scale-105">
-                    <img src="GFEmilia.png?v=37" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
+                    <img src="GFEmilia.png?v=38" alt="Glutenfrei für Emilia" class="h-16 md:h-20 w-auto rounded-xl shadow-md border border-gray-200" onerror="this.style.display='none'">
                 </div>
                 <div class="flex flex-wrap items-center gap-2 mb-4 print:mb-2" id="detailTags"></div>
                 <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight print:text-3xl print:mb-4" id="detailTitle">Rezept Titel</h2>
@@ -171,10 +171,22 @@
                 <!-- ZEITEN -->
                 <div class="flex flex-wrap gap-4 mb-8 print:mb-4">
                     <div id="detailTimesContainer" class="flex flex-wrap gap-4 hidden print:gap-3">
-                        <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400"><svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg><div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Gesamtzeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p></div></div>
-                        <div id="timePrepBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400"><svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Arbeitszeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p></div></div>
-                        <div id="timeCookBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400"><svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10h14M7 10v6a4 4 0 004 4h2a4 4 0 004-4v-6M9 4h6M12 4v6"></path></svg><div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Koch-/Backzeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p></div></div>
-                        <div id="timeRestBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400"><svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 4H3m18 16H3m7-10l-4-4h12l-4 4m0 4l4 4H7l4-4"></path></svg><div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Ruhezeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimeRest"></span> Min.</p></div></div>
+                        <div id="timeTotalBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path></svg>
+                            <div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Gesamtzeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimeTotal"></span> Min.</p></div>
+                        </div>
+                        <div id="timePrepBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Arbeitszeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimePrep"></span> Min.</p></div>
+                        </div>
+                        <div id="timeCookBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10h14M7 10v6a4 4 0 004 4h2a4 4 0 004-4v-6M9 4h6M12 4v6"></path></svg>
+                            <div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Koch-/Backzeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimeCook"></span> Min.</p></div>
+                        </div>
+                        <div id="timeRestBox" class="bg-gray-50 border border-gray-200 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm hidden print:shadow-none print:py-2 print:px-3 print:border-gray-400">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 4H3m18 16H3m7-10l-4-4h12l-4 4m0 4l4 4H7l4-4"></path></svg>
+                            <div><p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Ruhezeit</p><p class="font-black text-gray-900 leading-tight"><span id="detailTimeRest"></span> Min.</p></div>
+                        </div>
                     </div>
                 </div>
 
@@ -230,14 +242,14 @@
             <div class="bg-gray-50 p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
                 <button class="backToProductsBtn flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium text-sm transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Zurück</button>
                 <div class="flex gap-2">
-                    <button id="editProductBtn" class="text-orange-600 hover:bg-orange-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">Bearbeiten</button>
-                    <button id="deleteProductBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent">Löschen</button>
+                    <button id="editProductBtn" class="text-orange-600 hover:bg-orange-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> Bearbeiten</button>
+                    <button id="deleteProductBtn" class="text-gray-500 hover:text-red-600 hover:bg-red-50 font-medium text-sm flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors border border-transparent"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Löschen</button>
                 </div>
             </div>
             <div class="p-6 md:p-10 flex flex-col items-center text-center border-b border-gray-200 bg-gray-50/50">
                 <div class="w-48 h-48 bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden mb-6 relative flex items-center justify-center">
                     <img id="detailProdImage" src="" class="w-full h-full object-contain p-2 mix-blend-multiply">
-                    <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden"><img src="GFEmilia.png?v=37" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'"></div>
+                    <div id="detailProdGfBadge" class="absolute top-2 left-2 z-10 hidden"><img src="GFEmilia.png?v=38" class="h-8 w-auto rounded shadow-sm border border-gray-200" onerror="this.style.display='none'"></div>
                 </div>
                 <h2 class="text-3xl font-black text-gray-900 mb-1" id="detailProdName">Produktname</h2>
                 <p class="text-lg text-orange-600 font-bold uppercase tracking-wider" id="detailProdBrand">Marke</p>
@@ -265,6 +277,7 @@
                     </div>
                     <p id="importStatus" class="text-sm mt-3 font-medium hidden"></p>
                 </div>
+
                 <form id="recipeForm" class="space-y-8">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2">Rezeptbild</label>
@@ -279,7 +292,7 @@
                     </div>
                     <div><label class="block text-sm font-bold text-gray-800 mb-1">Rezept Name <span class="text-red-600">*</span></label><input type="text" id="formTitle" required class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 shadow-sm" placeholder="z.B. Schnelle Lasagne"></div>
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('formGlutenFree').click()">
-                        <div class="flex items-center gap-4"><img src="GFEmilia.png?v=37" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'"></div>
+                        <div class="flex items-center gap-4"><img src="GFEmilia.png?v=38" alt="Glutenfrei" class="h-10 w-auto rounded shadow-sm" onerror="this.style.display='none'"></div>
                         <input type="checkbox" id="formGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
                     <div>
@@ -369,7 +382,7 @@
                         <div><label class="block text-sm font-bold text-gray-800 mb-1">Marke</label><input type="text" id="prodBrand" class="w-full border p-3 rounded-xl" placeholder="Marke"></div>
                     </div>
                     <div class="bg-[#1a1a1a] p-3 md:p-4 rounded-xl shadow-md flex items-center justify-between cursor-pointer" onclick="document.getElementById('prodGlutenFree').click()">
-                        <div class="flex items-center gap-4"><img src="GFEmilia.png?v=37" alt="Glutenfrei" class="h-10 rounded"></div>
+                        <div class="flex items-center gap-4"><img src="GFEmilia.png?v=38" alt="Glutenfrei" class="h-10 rounded"></div>
                         <input type="checkbox" id="prodGlutenFree" class="w-6 h-6 text-green-500 rounded focus:ring-green-500 border-gray-600 pointer-events-none bg-gray-800">
                     </div>
                     <div><label class="block text-lg font-black text-gray-900 mb-2">Zutatenliste des Produkts</label><textarea id="prodIngredients" rows="4" class="w-full border p-3 rounded-xl" placeholder="Zutaten..."></textarea></div>
@@ -400,6 +413,39 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // FIREBASE SETUP & INIT
+        // ==========================================
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ", 
+            authDomain: "rezepte-5cf2b.firebaseapp.com", 
+            projectId: "rezepte-5cf2b", 
+            storageBucket: "rezepte-5cf2b.firebasestorage.app", 
+            messagingSenderId: "309619660672", 
+            appId: "1:309619660672:web:59523676acc8b294415365"
+        };
+        const app = initializeApp(firebaseConfig); 
+        const auth = getAuth(app); 
+        const db = getFirestore(app);
+        const appNamespace = 'meine-rezepte-app'; 
+
+        let currentUser = null, recipes = [], products = [], customIngredients = [], currentRecipeTags = [];
+        let activeFilter = null, currentDetailRecipeId = null, currentEditRecipeId = null, currentEditProductId = null;
+        let currentImageBase64 = null, currentProdImageBase64 = null, currentDetailRecipe = null, currentDisplayPortions = 4;
+        let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest', currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
+        let zenSteps = [], currentZenStepIndex = 0, wakeLock = null;
+        let recipesUnsubscribe = null, settingsUnsubscribe = null, productsUnsubscribe = null;
+
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        function getViews() {
+            return {
+                login: document.getElementById('loginView'), list: document.getElementById('listView'), detail: document.getElementById('detailView'),
+                form: document.getElementById('formView'), zen: document.getElementById('zenModeView'), productsList: document.getElementById('productsListView'),
+                productForm: document.getElementById('productFormView'), productDetail: document.getElementById('productDetailView')
+            };
+        }
 
         // ==========================================
         // ACTION BAR LISTENERS (Drucken, Teilen, Fav, Kopieren)
@@ -539,39 +585,6 @@
             }, 1000);
             activeTimers.push(timer);
             renderTimers();
-        }
-
-        // ==========================================
-        // FIREBASE SETUP
-        // ==========================================
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAou4wXEFIAu8NgbC83CvgV5R-MQVbhjOQ", 
-            authDomain: "rezepte-5cf2b.firebaseapp.com", 
-            projectId: "rezepte-5cf2b", 
-            storageBucket: "rezepte-5cf2b.firebasestorage.app", 
-            messagingSenderId: "309619660672", 
-            appId: "1:309619660672:web:59523676acc8b294415365"
-        };
-        const app = initializeApp(firebaseConfig); 
-        const auth = getAuth(app); 
-        const db = getFirestore(app);
-        const appNamespace = 'meine-rezepte-app'; 
-
-        let currentUser = null, recipes = [], products = [], customIngredients = [], currentRecipeTags = [];
-        let activeFilter = null, currentDetailRecipeId = null, currentEditRecipeId = null, currentEditProductId = null;
-        let currentImageBase64 = null, currentProdImageBase64 = null, currentDetailRecipe = null, currentDisplayPortions = 4;
-        let showFavoritesOnly = false, showTrashView = false, currentSortOption = 'newest', currentViewMode = localStorage.getItem('recipeAppViewMode') || 'grid';
-        let zenSteps = [], currentZenStepIndex = 0, wakeLock = null;
-        let recipesUnsubscribe = null, settingsUnsubscribe = null, productsUnsubscribe = null;
-
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        function getViews() {
-            return {
-                login: document.getElementById('loginView'), list: document.getElementById('listView'), detail: document.getElementById('detailView'),
-                form: document.getElementById('formView'), zen: document.getElementById('zenModeView'), productsList: document.getElementById('productsListView'),
-                productForm: document.getElementById('productFormView'), productDetail: document.getElementById('productDetailView')
-            };
         }
 
         // ==========================================
@@ -927,12 +940,8 @@
                 const emptyState = document.getElementById('emptyState');
                 if(!grid || !emptyState) return;
                 
-                grid.className = currentViewMode === 'grid' 
-                    ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" 
-                    : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4";
-                
-                grid.innerHTML = ''; 
-                let count = 0;
+                grid.className = currentViewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" : "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4";
+                grid.innerHTML = ''; let count = 0;
                 const searchInput = document.getElementById('searchInput');
                 const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
 
@@ -983,9 +992,7 @@
                             header.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"><div class="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-300 flex items-center justify-center text-3xl font-black text-gray-800">${iconChar}</div></div>`;
                         }
 
-                        if (recipe.isGlutenFree) {
-                            header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=37" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
-                        }
+                        if (recipe.isGlutenFree) header.innerHTML += `<div class="absolute top-2 left-2 z-10"><img src="GFEmilia.png?v=38" class="h-6 sm:h-8 w-auto rounded shadow-lg border border-white/20" onerror="this.style.display='none'"></div>`;
 
                         let badgesHtml = '<div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">';
                         if(recipe.isFavorite && !showTrashView) badgesHtml += `<div class="bg-white/90 backdrop-blur p-1.5 rounded-full shadow-sm border border-red-100"><svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg></div>`;
@@ -997,7 +1004,6 @@
 
                         const body = document.createElement('div');
                         body.className = "p-5 flex-1 flex flex-col justify-between";
-                        
                         const tContainer = document.createElement('div');
                         tContainer.className = "flex flex-wrap gap-1.5 mt-auto pt-2"; 
                         
@@ -1010,28 +1016,17 @@
                             t.addEventListener('click', (e) => { e.stopPropagation(); if(!isSpecial) { activeFilter = tag; updateActiveFilterUI(); renderRecipes(); renderFilterTags(); } });
                             tContainer.appendChild(t);
                         });
-
                         body.innerHTML = `<div><h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">${recipe.title || ''}</h3></div>`;
                         body.appendChild(tContainer);
                         card.appendChild(header); card.appendChild(body);
-                        
                     } else {
-                        // --- LISTEN ANSICHT ---
                         card.className = `bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-300 overflow-hidden cursor-pointer flex items-center p-3 h-auto min-h-[90px] ${showTrashView ? 'opacity-70 grayscale-[50%]' : ''}`;
-                        
                         const imgCont = document.createElement('div');
                         imgCont.className = "h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 bg-gray-200 rounded-lg relative overflow-hidden border border-gray-200 mr-4";
-                        if (recipe.imageBase64) {
-                            imgCont.innerHTML = `<img src="${recipe.imageBase64}" class="w-full h-full object-cover">`;
-                        } else {
-                            const iconChar = recipe.title ? recipe.title.charAt(0).toUpperCase() : '🍽️';
-                            imgCont.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800"; 
-                            imgCont.textContent = iconChar; 
-                        }
+                        if (recipe.imageBase64) imgCont.innerHTML = `<img src="${recipe.imageBase64}" class="w-full h-full object-cover">`;
+                        else { const iconChar = recipe.title ? recipe.title.charAt(0).toUpperCase() : '🍽️'; imgCont.className += " bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-2xl font-black text-gray-800"; imgCont.textContent = iconChar; }
 
-                        if (recipe.isGlutenFree) {
-                            imgCont.innerHTML += `<div class="absolute top-1 left-1 bg-amber-400/95 backdrop-blur text-amber-950 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-300 z-10 flex items-center gap-0.5"><span>🌾</span> GF</div>`;
-                        }
+                        if (recipe.isGlutenFree) imgCont.innerHTML += `<div class="absolute top-1 left-1 bg-amber-400/95 backdrop-blur text-amber-950 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-300 z-10 flex items-center gap-0.5"><span>🌾</span> GF</div>`;
 
                         const infoCont = document.createElement('div');
                         infoCont.className = "flex-1 min-w-0 flex flex-col justify-center py-0.5";
@@ -1042,8 +1037,7 @@
                         
                         const headerRow = document.createElement('div');
                         headerRow.className = "flex justify-between items-start gap-2 mb-1";
-                        
-                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=37" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
+                        let titleGf = recipe.isGlutenFree ? `<img src="GFEmilia.png?v=38" class="h-4 sm:h-5 ml-2 rounded shadow inline-block align-text-bottom" onerror="this.style.display='none'">` : '';
                         headerRow.innerHTML = `<div class="flex-1 min-w-0"><h3 class="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">${recipe.title || ''}${titleGf}</h3></div><div class="flex-shrink-0 text-right whitespace-nowrap pl-2">${metaHtml}</div>`;
 
                         let nutLine = '';
@@ -1066,12 +1060,8 @@
                     grid.appendChild(card);
                 });
                 
-                if (count === 0) {
-                    emptyState.classList.remove('hidden');
-                } else {
-                    emptyState.classList.add('hidden');
-                }
-            } catch (err) {}
+                if (count === 0) emptyState.classList.remove('hidden'); else emptyState.classList.add('hidden');
+            } catch (err) { console.error("Fehler beim Rendern der Rezepte:", err); }
         }
 
         // ==========================================
@@ -1092,7 +1082,7 @@
                 card.onclick = () => window.location.hash = `#product-${prod.id}`;
                 card.innerHTML = `
                     <div class="h-32 bg-gray-100 flex justify-center items-center relative p-2 border-b border-gray-200 overflow-hidden">
-                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=37" class="absolute top-2 left-2 h-6 w-auto rounded shadow border border-white/50 z-10" onerror="this.style.display='none'">` : ''}
+                        ${prod.isGlutenFree ? `<img src="GFEmilia.png?v=38" class="absolute top-2 left-2 h-6 w-auto rounded shadow border border-white/50 z-10" onerror="this.style.display='none'">` : ''}
                         ${prod.imageBase64 ? `<img src="${prod.imageBase64}" class="h-full w-full object-contain mix-blend-multiply">` : '<span class="text-4xl opacity-20">🥫</span>'}
                     </div>
                     <div class="p-3 flex-1 flex flex-col justify-between">
@@ -1274,7 +1264,6 @@
                     }
                     
                     const imgUrl = p.image_front_url || p.image_url;
-                    
                     if (imgUrl) {
                         if(statusEl) statusEl.textContent = 'Text importiert. Lade Bild...';
                         try {
@@ -1288,7 +1277,6 @@
                                     if(preview) { preview.src = currentProdImageBase64; preview.classList.remove('hidden'); }
                                     const ph = document.getElementById('prodImagePlaceholder'); if(ph) ph.classList.add('hidden');
                                     const rb = document.getElementById('removeProdImageBtn'); if(rb) rb.classList.remove('hidden');
-                                    
                                     if(statusEl) { statusEl.textContent = 'Produkt komplett importiert! ✅'; statusEl.className = 'text-sm mt-3 font-bold text-green-600 block'; }
                                 }; 
                                 reader.readAsDataURL(blob);
